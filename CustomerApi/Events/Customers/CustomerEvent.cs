@@ -1,5 +1,5 @@
 using CustomerApi.Uris;
-using LogOtter.EventStore.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 using Newtonsoft.Json;
 
 namespace CustomerApi.Events.Customers;

@@ -1,7 +1,8 @@
 using System.Collections.ObjectModel;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
-using LogOtter.EventStore.CosmosDb;
+using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
