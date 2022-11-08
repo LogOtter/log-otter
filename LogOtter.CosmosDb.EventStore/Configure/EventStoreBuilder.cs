@@ -27,13 +27,19 @@ internal class EventStoreBuilder : IEventStoreBuilder
     {
         eventTypes ??= GetEventsOfTypeFromSameAssembly<TBaseEvent>();
 
-        _cosmosDbBuilder.AddContainer<TBaseEvent>(eventContainerName, "/streamId");
+        _cosmosDbBuilder.AddContainer<TBaseEvent>(
+            eventContainerName,
+            "/streamId",
+            defaultTimeToLive: -1
+        );
 
         Services.AddSingleton(sp =>
         {
             var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
+            var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
             var eventStore = new EventStore(
                 cosmosContainer.Container,
+                feedIteratorFactory,
                 new SimpleSerializationTypeMap(eventTypes),
                 JsonSerializer.Create(jsonSerializerSettings)
             );
@@ -58,7 +64,8 @@ internal class EventStoreBuilder : IEventStoreBuilder
         _cosmosDbBuilder.AddContainer<TSnapshot>(
             snapshotContainerName,
             partitionKeyPath,
-            compositeIndexes: compositeIndexes
+            compositeIndexes: compositeIndexes,
+            defaultTimeToLive: -1
         );
 
         Services.AddSingleton<SnapshotRepository<TBaseEvent, TSnapshot>>();
@@ -79,7 +86,7 @@ internal class EventStoreBuilder : IEventStoreBuilder
         where TCatchupSubscriptionHandler : class, ICatchupSubscription<TBaseEvent>
     {
         Services.AddSingleton<TCatchupSubscriptionHandler>();
-        
+
         _cosmosDbBuilder.AddChangeFeedProcessor<
             CosmosDbStorageEvent,
             TBaseEvent,

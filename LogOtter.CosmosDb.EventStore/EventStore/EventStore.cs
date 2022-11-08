@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -7,12 +8,19 @@ namespace LogOtter.CosmosDb.EventStore;
 public class EventStore
 {
     private readonly Container _container;
+    private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly ISerializationTypeMap _typeMap;
     private readonly JsonSerializer _jsonSerializer;
 
-    public EventStore(Container container, ISerializationTypeMap typeMap, JsonSerializer jsonSerializer)
+    public EventStore(
+        Container container,
+        IFeedIteratorFactory feedIteratorFactory,
+        ISerializationTypeMap typeMap,
+        JsonSerializer jsonSerializer
+    )
     {
         _container = container;
+        _feedIteratorFactory = feedIteratorFactory;
         _typeMap = typeMap;
         _jsonSerializer = jsonSerializer;
     }
@@ -51,18 +59,17 @@ public class EventStore
 
         try
         {
-            var transactionalBatchItemRequestOptions = new TransactionalBatchItemRequestOptions
+            var batchRequestOptions = new TransactionalBatchItemRequestOptions
             {
                 EnableContentResponseOnWrite = false
             };
 
-            var batch = storageEvents.Aggregate(
-                _container.CreateTransactionalBatch(new PartitionKey(streamId)),
-                (b, e) => b.CreateItem(
-                    CosmosDbStorageEvent.FromStorageEvent(e, _typeMap, _jsonSerializer),
-                    transactionalBatchItemRequestOptions
-                )
-            );
+            var batch = _container.CreateTransactionalBatch(new PartitionKey(streamId));
+            foreach (var @event in storageEvents)
+            {
+                var cosmosDbStorageEvent = CosmosDbStorageEvent.FromStorageEvent(@event, _typeMap, _jsonSerializer);
+                batch.CreateItem(cosmosDbStorageEvent, batchRequestOptions);
+            }
 
             var batchResponse = firstEventNumber == 1
                 ? await CreateEvents(batch, cancellationToken)
@@ -77,7 +84,7 @@ public class EventStore
                 $"Concurrency conflict when appending to stream {streamId}. Expected revision {firstEventNumber - 1}",
                 ex);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw;
         }
@@ -102,38 +109,26 @@ public class EventStore
             ? int.MaxValue
             : startPosition + numberOfEventsToRead - 1;
 
-        var queryDefinition = new QueryDefinition(@"
-                    SELECT VALUE e
-                    FROM e
-                    WHERE e.streamId = @StreamId
-                        AND (e.eventNumber BETWEEN @LowerBound AND @UpperBound)
-                    ORDER BY e.eventNumber ASC"
-            )
-            .WithParameter("@StreamId", streamId)
-            .WithParameter("@LowerBound", startPosition)
-            .WithParameter("@UpperBound", endPosition);
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var options = new QueryRequestOptions
-        {
-            MaxItemCount = numberOfEventsToRead,
-            PartitionKey = new PartitionKey(streamId)
-        };
+        var query = _container
+            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
+            .OrderBy(e => e.EventNumber)
+            .Take(numberOfEventsToRead);
 
-        using var eventsQuery = _container.GetItemQueryIterator<CosmosDbStorageEvent>(
-            queryDefinition,
-            requestOptions: options
-        );
-        
+        var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
+
         var events = new List<StorageEvent>();
 
-        while (eventsQuery.HasMoreResults)
+        while (feedIterator.HasMoreResults)
         {
-            var response = await eventsQuery.ReadNextAsync(cancellationToken);
+            var response = await feedIterator.ReadNextAsync(cancellationToken);
             //_loggingOptions.OnSuccess(ResponseInformation.FromReadResponse(nameof(ReadStreamForwards), response));
 
-            foreach (var e in response)
+            foreach (var resource in response.Resource)
             {
-                events.Add(FromCosmosStorageEvent(e));
+                events.Add(FromCosmosStorageEvent(resource));
             }
         }
 

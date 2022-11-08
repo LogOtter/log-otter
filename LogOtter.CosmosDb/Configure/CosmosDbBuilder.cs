@@ -34,14 +34,19 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
             .AddSingleton(sp =>
             {
                 var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
-                var container = cosmosContainerFactory.CreateContainerIfNotExistsAsync(
-                    containerName,
-                    partitionKeyPath,
-                    uniqueKeyPolicy,
-                    defaultTimeToLive,
-                    compositeIndexes,
-                    throughputProperties
-                );
+                
+                var container = cosmosContainerFactory
+                    .CreateContainerIfNotExistsAsync(
+                        containerName,
+                        partitionKeyPath,
+                        uniqueKeyPolicy,
+                        defaultTimeToLive,
+                        compositeIndexes,
+                        throughputProperties
+                    )
+                    .GetAwaiter()
+                    .GetResult();
+
                 return new CosmosContainer<T>(container);
             });
 
@@ -69,9 +74,9 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
             activationDate
         );
     }
-    
+
     public ICosmosDbBuilder AddChangeFeedProcessor<
-        TRawDocument, 
+        TRawDocument,
         TDocument,
         TChangeFeedChangeConverter,
         TChangeFeedProcessorHandler
@@ -99,8 +104,8 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
     }
 
     public ICosmosDbBuilder AddChangeFeedProcessor<
-        TRawDocument, 
-        TDocument, 
+        TRawDocument,
+        TDocument,
         TChangeFeedHandlerDocument,
         TChangeFeedChangeConverter,
         TChangeFeedProcessorHandler
@@ -114,7 +119,7 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
         RegisterChangeFeedProcessor(processorName);
-        
+
         var documentType = typeof(TDocument);
 
         if (!_containers.ContainsKey(documentType))
@@ -155,7 +160,8 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
     {
         if (_changeFeedProcessors.Contains(processorName))
         {
-            throw new InvalidOperationException($"Change Feed Processor with the name {processorName} has already been registered");
+            throw new InvalidOperationException(
+                $"Change Feed Processor with the name {processorName} has already been registered");
         }
 
         _changeFeedProcessors.Add(processorName);
@@ -172,7 +178,8 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
 
         if (_containers.Values.Contains(containerName))
         {
-            throw new InvalidOperationException($"Container with the name {containerName} has already been registered.");
+            throw new InvalidOperationException(
+                $"Container with the name {containerName} has already been registered.");
         }
 
         if (string.IsNullOrWhiteSpace(containerName))

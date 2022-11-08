@@ -5,7 +5,7 @@ namespace LogOtter.CosmosDb;
 
 public interface ICosmosContainerFactory
 {
-    Container CreateContainerIfNotExistsAsync(
+    Task<Container> CreateContainerIfNotExistsAsync(
         string containerName,
         string partitionKeyPath,
         UniqueKeyPolicy? uniqueKeyPolicy = null,

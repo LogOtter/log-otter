@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb;
 
-internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument> : IChangeFeedProcessor
+internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : IChangeFeedProcessor
 {
     private readonly string _name;
     private readonly Container _documentContainer;
@@ -14,7 +14,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDo
     private readonly DateTime? _activationDate;
     private IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> _feedChangeConverter;
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
-    private readonly ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument>> _logger;
+    private readonly ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> _logger;
 
     private readonly TimeSpan _fullBatchDelay;
     private readonly TimeSpan _errorDelay;
@@ -31,7 +31,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDo
         ChangeFeedProcessorOptions options,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument>> logger
+        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger
     )
     {
         _name = name;

@@ -35,9 +35,9 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        
-        var changeConverter = ActivatorUtilities.CreateInstance<TChangeFeedChangeConverter>(scope.ServiceProvider);
-        var changeHandler = ActivatorUtilities.CreateInstance<TChangeFeedProcessorHandler>(scope.ServiceProvider);
+
+        var changeConverter = scope.ServiceProvider.GetRequiredService<TChangeFeedChangeConverter>();
+        var changeHandler = scope.ServiceProvider.GetRequiredService<TChangeFeedProcessorHandler>();
 
         var enabled = true;
         if (enabledFunc != null)
@@ -53,9 +53,9 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
 
         var logger = scope
             .ServiceProvider
-            .GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument>>>();
+            .GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
         
-        return new ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument>(
+        return new ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
             processorName,
             documentContainer,
             leaseContainer,

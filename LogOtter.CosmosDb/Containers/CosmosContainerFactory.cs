@@ -12,7 +12,7 @@ public class CosmosContainerFactory : ICosmosContainerFactory
         _database = database;
     }
 
-    public Container CreateContainerIfNotExistsAsync(
+    public async Task<Container> CreateContainerIfNotExistsAsync(
         string containerName, 
         string partitionKeyPath,
         UniqueKeyPolicy? uniqueKeyPolicy = null, 
@@ -41,10 +41,8 @@ public class CosmosContainerFactory : ICosmosContainerFactory
             }
         }
 
-        var containerResponse = _database
-            .CreateContainerIfNotExistsAsync(containerProperties, throughputProperties)
-            .GetAwaiter()
-            .GetResult();
+        var containerResponse = await _database
+            .CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
 
         return containerResponse.Container;
     }
