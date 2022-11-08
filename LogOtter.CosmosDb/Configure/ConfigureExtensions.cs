@@ -34,7 +34,8 @@ public static class ConfigureExtensions
 
             return response.Database;
         });
-        
+
+        serviceCollection.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
         serviceCollection.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();
         serviceCollection.AddSingleton<IChangeFeedProcessorFactory, ChangeFeedProcessorFactory>();
         

@@ -15,5 +15,9 @@
     <ItemGroup>
       <ProjectReference Include="..\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="CustomerApi.Tests" />
+    </ItemGroup>
 
 </Project>
