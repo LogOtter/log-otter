@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb;
 
@@ -27,6 +28,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDo
         bool enabled,
         int? batchSize,
         DateTime? activationDate,
+        ChangeFeedProcessorOptions options,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
         ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDocument>> logger
@@ -36,14 +38,14 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument, TDo
         _documentContainer = documentContainer;
         _leaseContainer = leaseContainer;
         _enabled = enabled;
-        _batchSize = batchSize ?? 100;
+        _batchSize = batchSize ?? options.DefaultBatchSize;
         _activationDate = activationDate;
         _feedChangeConverter = feedChangeConverter;
         _changeHandler = changeHandler;
         _logger = logger;
-        
-        _fullBatchDelay = TimeSpan.FromMilliseconds(500);
-        _errorDelay = TimeSpan.FromSeconds(5);
+
+        _fullBatchDelay = options.FullBatchDelay;
+        _errorDelay = options.ErrorDelay;
         _instanceName = Environment.MachineName;
     }
 

@@ -7,12 +7,14 @@ namespace LogOtter.CosmosDb;
 internal class CosmosDbBuilder : ICosmosDbBuilder
 {
     private readonly IDictionary<Type, string> _containers;
+    private readonly IList<string> _changeFeedProcessors;
 
     public IServiceCollection Services { get; }
 
     public CosmosDbBuilder(IServiceCollection serviceCollection)
     {
         _containers = new Dictionary<Type, string>();
+        _changeFeedProcessors = new List<string>();
 
         Services = serviceCollection;
     }
@@ -111,6 +113,8 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         where TChangeFeedChangeConverter : class, IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
         where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
+        RegisterChangeFeedProcessor(processorName);
+        
         var documentType = typeof(TDocument);
 
         if (!_containers.ContainsKey(documentType))
@@ -147,7 +151,16 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         return this;
     }
 
-    
+    private void RegisterChangeFeedProcessor(string processorName)
+    {
+        if (_changeFeedProcessors.Contains(processorName))
+        {
+            throw new InvalidOperationException($"Change Feed Processor with the name {processorName} has already been registered");
+        }
+
+        _changeFeedProcessors.Add(processorName);
+    }
+
 
     private void RegisterContainer<T>(string containerName)
     {
@@ -155,6 +168,11 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         if (_containers.ContainsKey(documentType))
         {
             throw new InvalidOperationException($"Container for {documentType.Name} has already been registered");
+        }
+
+        if (_containers.Values.Contains(containerName))
+        {
+            throw new InvalidOperationException($"Container with the name {containerName} has already been registered.");
         }
 
         if (string.IsNullOrWhiteSpace(containerName))
