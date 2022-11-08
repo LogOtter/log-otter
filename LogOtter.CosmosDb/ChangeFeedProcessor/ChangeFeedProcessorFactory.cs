@@ -8,13 +8,13 @@ namespace LogOtter.CosmosDb;
 public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
 {
     private readonly Database _database;
-    private readonly string _leasesContainerName;
+    private readonly ChangeFeedProcessorOptions _options;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public ChangeFeedProcessorFactory(Database database, IOptions<CosmosDbOptions> options, IServiceScopeFactory serviceScopeFactory)
     {
         _database = database;
-        _leasesContainerName = options.Value.LeasesContainerName;
+        _options = options.Value.ChangeFeedProcessorOptions;
         _serviceScopeFactory = serviceScopeFactory;
     }
 
@@ -35,7 +35,7 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
     {
         using var scope = _serviceScopeFactory.CreateScope();
-
+        
         var changeConverter = ActivatorUtilities.CreateInstance<TChangeFeedChangeConverter>(scope.ServiceProvider);
         var changeHandler = ActivatorUtilities.CreateInstance<TChangeFeedProcessorHandler>(scope.ServiceProvider);
 
@@ -46,7 +46,7 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         }
 
         var leaseContainer = _database
-            .CreateContainerIfNotExistsAsync(_leasesContainerName, "/id")
+            .CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id")
             .GetAwaiter()
             .GetResult()
             .Container;
@@ -62,6 +62,7 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             enabled,
             batchSize,
             activationDate,
+            _options,
             changeConverter,
             changeHandler,
             logger
