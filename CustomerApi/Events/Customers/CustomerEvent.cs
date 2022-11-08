@@ -1,0 +1,27 @@
+using CustomerApi.Uris;
+using LogOtter.EventStore.CosmosDb;
+using Newtonsoft.Json;
+
+namespace CustomerApi.Events.Customers;
+
+public abstract class CustomerEvent : ISnapshottableEvent<CustomerReadModel>
+{
+    public string SnapshotPartitionKey => CustomerReadModel.StaticPartitionKey;
+    
+    public string EventStreamId => CustomerUri.Uri;
+
+    [JsonProperty("ttl")]
+    public int? Ttl => -1;
+    
+    public CustomerUri CustomerUri { get; }
+
+    public DateTimeOffset Timestamp { get; }
+
+    public CustomerEvent(CustomerUri customerUri, DateTimeOffset timestamp)
+    {
+        CustomerUri = customerUri;
+        Timestamp = timestamp;
+    }
+
+    public abstract void Apply(CustomerReadModel model);
+}

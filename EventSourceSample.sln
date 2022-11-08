@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi", "CustomerApi\CustomerApi.csproj", "{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.EventStore.CosmosDb", "LogOtter.EventStore.CosmosDb\LogOtter.EventStore.CosmosDb.csproj", "{DF6179EC-27F6-4896-9DF4-C4B7560C0583}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
