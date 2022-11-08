@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LogOtter.EventStore.CosmosDb\LogOtter.EventStore.CosmosDb.csproj" />
+      <ProjectReference Include="..\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
     </ItemGroup>
 
 </Project>

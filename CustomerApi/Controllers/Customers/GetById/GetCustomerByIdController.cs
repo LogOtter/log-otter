@@ -1,7 +1,7 @@
 ﻿using CustomerApi.Controllers.Customers.Create;
 using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
-using LogOtter.EventStore.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerApi.Controllers.Customers.GetById;

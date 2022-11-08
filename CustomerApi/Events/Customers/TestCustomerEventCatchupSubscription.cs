@@ -1,4 +1,4 @@
-using LogOtter.EventStore.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 
 namespace CustomerApi.Events.Customers;
 
