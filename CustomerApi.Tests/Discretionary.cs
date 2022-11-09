@@ -11,6 +11,10 @@ public readonly struct Discretionary<T> : IEquatable<Discretionary<T>>
         Value = value;
     }
 
+    public static Discretionary<T> NotSpecified => new();
+
+    public static implicit operator Discretionary<T>(T value) => new(value);
+
     public T GetValueOrDefault(T defaultValue)
     {
         return IsSpecified ? Value : defaultValue;
