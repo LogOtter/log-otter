@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi.Tests", "Custom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing", "LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj", "{6D09015C-5068-4017-A095-532D992118D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore.Testing", "LogOtter.CosmosDb.EventStore.Testing\LogOtter.CosmosDb.EventStore.Testing.csproj", "{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3013166D-3A9F-4979-B741-08D4288F5D28}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{B210B125-45DB-4549-B826-6DA8C552559F}"
@@ -48,10 +46,6 @@ Global
 		{6D09015C-5068-4017-A095-532D992118D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7039596D-DE5F-4354-B120-F802C059029F}.Release|Any CPU.ActiveCfg = Release|Any CPU
