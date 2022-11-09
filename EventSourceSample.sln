@@ -12,6 +12,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore.Testing", "LogOtter.CosmosDb.EventStore.Testing\LogOtter.CosmosDb.EventStore.Testing.csproj", "{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3013166D-3A9F-4979-B741-08D4288F5D28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{B210B125-45DB-4549-B826-6DA8C552559F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers", "legacy\CosmosTestHelpers\CosmosTestHelpers.csproj", "{7039596D-DE5F-4354-B120-F802C059029F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers.IntegrationTests", "legacy\CosmosTestHelpers.IntegrationTests\CosmosTestHelpers.IntegrationTests.csproj", "{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers.Tests", "legacy\CosmosTestHelpers.Tests\CosmosTestHelpers.Tests.csproj", "{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +52,24 @@ Global
 		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00B900DE-5D2C-4FCC-BEF8-8E80BDF936CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7039596D-DE5F-4354-B120-F802C059029F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7039596D-DE5F-4354-B120-F802C059029F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58} = {3013166D-3A9F-4979-B741-08D4288F5D28}
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4} = {3013166D-3A9F-4979-B741-08D4288F5D28}
+		{7039596D-DE5F-4354-B120-F802C059029F} = {B210B125-45DB-4549-B826-6DA8C552559F}
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB} = {B210B125-45DB-4549-B826-6DA8C552559F}
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1} = {B210B125-45DB-4549-B826-6DA8C552559F}
 	EndGlobalSection
 EndGlobal

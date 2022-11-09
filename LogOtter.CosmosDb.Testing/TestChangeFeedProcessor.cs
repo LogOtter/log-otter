@@ -1,4 +1,5 @@
 ﻿using CosmosTestHelpers;
+using CosmosTestHelpers.ContainerMockData;
 
 namespace LogOtter.CosmosDb.Testing;
 
@@ -18,26 +19,33 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>
         bool enabled
     )
     {
-        container.DocumentChanged += OnChanges;
+        container.DataChanged += OnChanges;
         _changeConverter = changeConverter;
         _changeHandler = changeHandler;
         _enabled = enabled;
     }
 
-    private async Task OnChanges(IReadOnlyCollection<object> changes, CancellationToken cancellationToken)
+    private void OnChanges(object? sender, DataChangedEventArgs e)
     {
         if (!_enabled || !_started)
         {
             return;
         }
 
+        var changes = new List<TRawDocument>
+        {
+            e.Deserialize<TRawDocument>()
+        };
+            
         var convertedChanges = changes
-            .Cast<TRawDocument>()
             .Select(_changeConverter.ConvertChange)
             .ToList()
             .AsReadOnly();
-
-        await _changeHandler.ProcessChanges(convertedChanges, cancellationToken);
+        
+        _changeHandler
+            .ProcessChanges(convertedChanges, CancellationToken.None)
+            .GetAwaiter()
+            .GetResult();
     }
 
     public Task Start()
