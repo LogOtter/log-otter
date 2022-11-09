@@ -17,10 +17,10 @@ public abstract class CustomerEvent : ISnapshottableEvent<CustomerReadModel>
 
     public DateTimeOffset Timestamp { get; }
 
-    public CustomerEvent(CustomerUri customerUri, DateTimeOffset timestamp)
+    public CustomerEvent(CustomerUri customerUri, DateTimeOffset? timestamp = null)
     {
         CustomerUri = customerUri;
-        Timestamp = timestamp;
+        Timestamp = timestamp ?? DateTimeOffset.UtcNow;
     }
 
     public abstract void Apply(CustomerReadModel model);

@@ -1,5 +1,4 @@
-﻿using LogOtter.CosmosDb.EventStore.Testing;
-using LogOtter.CosmosDb.Testing;
+﻿using LogOtter.CosmosDb.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -10,17 +9,22 @@ namespace CustomerApi.Tests;
 public class TestCustomerApi : IDisposable
 {
     private readonly TestApplicationFactory _hostedApi;
+    
+    public GivenSteps Given { get; }
 
     public TestCustomerApi()
     {
         _hostedApi = new TestApplicationFactory(ConfigureTestServices);
+
+        Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
     }
 
     private void ConfigureTestServices(IServiceCollection services)
     {
-        services
-            .AddTestCosmosDb()
-            .AddTestEventStore();
+        services.AddTestCosmosDb();
+
+        services.AddTransient<CustomerStore>();
+        services.AddTransient<GivenSteps>();
     }
 
     public HttpClient CreateClient()

@@ -4,7 +4,7 @@ namespace CustomerApi.Events.Customers;
 
 public class CustomerDeleted : CustomerEvent
 {
-    public CustomerDeleted(CustomerUri customerUri, DateTimeOffset timestamp)
+    public CustomerDeleted(CustomerUri customerUri, DateTimeOffset? timestamp = null)
         : base(customerUri, timestamp)
     {
     }

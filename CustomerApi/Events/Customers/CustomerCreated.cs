@@ -16,7 +16,7 @@ public class CustomerCreated : CustomerEvent
         string firstName,
         string lastName,
         DateTimeOffset? timestamp = null
-    ) : base(customerUri, timestamp ?? DateTimeOffset.UtcNow)
+    ) : base(customerUri, timestamp)
     {
         EmailAddress = emailAddress;
         FirstName = firstName;

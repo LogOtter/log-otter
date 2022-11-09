@@ -40,10 +40,7 @@ public class DeleteCustomerController : ControllerBase
             return NoContent();
         }
 
-        var customerDeleted = new CustomerDeleted(
-            customerUri,
-            DateTime.UtcNow
-        );
+        var customerDeleted = new CustomerDeleted(customerUri);
 
         await _customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, customerDeleted);
 

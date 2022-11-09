@@ -38,4 +38,4 @@ public class CreateCustomerController : ControllerBase
     }
 }
 
-public record CreateCustomerRequest([Required]string EmailAddress, [Required]string FirstName, [Required]string LastName);
+public record CreateCustomerRequest([Required, EmailAddress]string EmailAddress, [Required]string FirstName, [Required]string LastName);
