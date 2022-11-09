@@ -1,8 +1,9 @@
-﻿using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.DependencyInjection;
+﻿using LogOtter.CosmosDb;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 
-namespace LogOtter.CosmosDb;
+// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureExtensions
 {
