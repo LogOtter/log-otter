@@ -84,10 +84,6 @@ public class EventStore
                 $"Concurrency conflict when appending to stream {streamId}. Expected revision {firstEventNumber - 1}",
                 ex);
         }
-        catch (Exception ex)
-        {
-            throw;
-        }
     }
 
     public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(

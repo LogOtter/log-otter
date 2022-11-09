@@ -1,4 +1,8 @@
-﻿namespace LogOtter.CosmosDb.EventStore;
+﻿using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
+
+// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureExtensions
 {
