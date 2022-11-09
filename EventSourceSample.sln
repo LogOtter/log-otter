@@ -1,24 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi", "CustomerApi\CustomerApi.csproj", "{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi", "sample\CustomerApi\CustomerApi.csproj", "{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore", "LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj", "{DF6179EC-27F6-4896-9DF4-C4B7560C0583}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore", "src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj", "{DF6179EC-27F6-4896-9DF4-C4B7560C0583}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb", "LogOtter.CosmosDb\LogOtter.CosmosDb.csproj", "{F05BA677-A837-4BCA-A0AC-6C70A6913A05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb", "src\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj", "{F05BA677-A837-4BCA-A0AC-6C70A6913A05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi.Tests", "CustomerApi.Tests\CustomerApi.Tests.csproj", "{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi.Tests", "sample\CustomerApi.Tests\CustomerApi.Tests.csproj", "{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing", "LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj", "{6D09015C-5068-4017-A095-532D992118D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing", "src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj", "{6D09015C-5068-4017-A095-532D992118D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3013166D-3A9F-4979-B741-08D4288F5D28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{B210B125-45DB-4549-B826-6DA8C552559F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing.IntegrationTests", "tests\LogOtter.CosmosDb.Testing.IntegrationTests\LogOtter.CosmosDb.Testing.IntegrationTests.csproj", "{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers", "legacy\CosmosTestHelpers\CosmosTestHelpers.csproj", "{7039596D-DE5F-4354-B120-F802C059029F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing.Tests", "tests\LogOtter.CosmosDb.Testing.Tests\LogOtter.CosmosDb.Testing.Tests.csproj", "{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers.IntegrationTests", "legacy\CosmosTestHelpers.IntegrationTests\CosmosTestHelpers.IntegrationTests.csproj", "{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosTestHelpers.Tests", "legacy\CosmosTestHelpers.Tests\CosmosTestHelpers.Tests.csproj", "{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C015BF56-68E3-4B5C-82CB-846AE27C42C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +44,6 @@ Global
 		{6D09015C-5068-4017-A095-532D992118D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7039596D-DE5F-4354-B120-F802C059029F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7039596D-DE5F-4354-B120-F802C059029F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7039596D-DE5F-4354-B120-F802C059029F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,8 +56,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58} = {3013166D-3A9F-4979-B741-08D4288F5D28}
 		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4} = {3013166D-3A9F-4979-B741-08D4288F5D28}
-		{7039596D-DE5F-4354-B120-F802C059029F} = {B210B125-45DB-4549-B826-6DA8C552559F}
-		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB} = {B210B125-45DB-4549-B826-6DA8C552559F}
-		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1} = {B210B125-45DB-4549-B826-6DA8C552559F}
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
 	EndGlobalSection
 EndGlobal
