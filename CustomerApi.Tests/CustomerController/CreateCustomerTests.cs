@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using CustomerApi.Controllers.Customers.Create;
+using CustomerApi.Uris;
 using FluentAssertions;
 using Xunit;
 
@@ -18,6 +19,25 @@ public class CreateCustomerTests
         var response = await client.PostAsJsonAsync("/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+    
+    [Fact]
+    public async Task Valid_StoredCorrectly()
+    {
+        using var customerApi = new TestCustomerApi();
+        var client = customerApi.CreateClient();
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var response = await client.PostAsJsonAsync("/customers", request);
+        var location = response.Headers.Location?.ToString();
+        location.Should().NotBeNull("Location should be returned");
+        
+        var customerUri = CustomerUri.Parse(location!);
+
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+        );
     }
     
     [Theory]

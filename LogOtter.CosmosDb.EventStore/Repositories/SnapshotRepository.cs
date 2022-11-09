@@ -8,12 +8,16 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
+    private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly Container _snapshotContainer;
     private readonly EventStore _eventStore;
 
-    public SnapshotRepository(CosmosContainer<TSnapshot> snapshotContainer,
-        EventStoreDependency<TBaseEvent> eventStoreDependency)
+    public SnapshotRepository(
+        CosmosContainer<TSnapshot> snapshotContainer,
+        EventStoreDependency<TBaseEvent> eventStoreDependency,
+        IFeedIteratorFactory feedIteratorFactory)
     {
+        _feedIteratorFactory = feedIteratorFactory;
         _snapshotContainer = snapshotContainer.Container;
         _eventStore = eventStoreDependency.EventStore;
     }
@@ -43,7 +47,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
 
         var projectedQuery = applyQuery(query);
 
-        using var feedIterator = projectedQuery.ToFeedIterator();
+        using var feedIterator = _feedIteratorFactory.GetFeedIterator(projectedQuery);
 
         while (feedIterator.HasMoreResults)
         {
@@ -75,7 +79,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
                 .ReadStreamForwards(streamId, startingRevision, int.MaxValue, cancellationToken);
 
             orderedEvents = allEvents
-                .Select(e => Event<TBaseEvent>.FromStorageEvent(e))
+                .Select(Event<TBaseEvent>.FromStorageEvent)
                 .OrderBy(e => e.EventNumber)
                 .ToList();
         }

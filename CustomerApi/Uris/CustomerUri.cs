@@ -69,6 +69,16 @@ public class CustomerUri : IEquatable<CustomerUri>
         return Equals((CustomerUri)obj);
     }
 
+    public static bool operator ==(CustomerUri left, CustomerUri right)
+    {
+        return left.Equals(right);
+    }
+    
+    public static bool operator !=(CustomerUri left, CustomerUri right)
+    {
+        return !left.Equals(right);
+    }
+
     public override int GetHashCode()
     {
         return CustomerId.GetHashCode();
