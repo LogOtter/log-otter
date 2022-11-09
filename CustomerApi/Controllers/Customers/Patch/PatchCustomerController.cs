@@ -23,7 +23,7 @@ public class PatchCustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CustomerResponse>> Patch(
         [FromRoute] string id,
-        [FromBody] CustomerPatchRequest patchRequest
+        [FromBody] PatchCustomerRequest request
     )
     {
         if (!Id.TryParse(id, out var customerId))
@@ -42,20 +42,20 @@ public class PatchCustomerController : ControllerBase
 
         var events = new List<CustomerEvent>();
 
-        if (patchRequest.EmailAddress.IsIncludedInPatch)
+        if (request.EmailAddress.IsIncludedInPatch)
         {
             events.Add(new CustomerEmailAddressChanged(
                 customerUri,
                 customerReadModel.EmailAddress,
-                patchRequest.EmailAddress.Value!,
+                request.EmailAddress.Value!,
                 DateTimeOffset.UtcNow
             ));
         }
 
-        if (patchRequest.FirstName.IsIncludedInPatch || patchRequest.LastName.IsIncludedInPatch)
+        if (request.FirstName.IsIncludedInPatch || request.LastName.IsIncludedInPatch)
         {
-            var newFirstName = patchRequest.FirstName.GetValueIfIncludedOrDefault(customerReadModel.FirstName);
-            var newLastName = patchRequest.LastName.GetValueIfIncludedOrDefault(customerReadModel.LastName);
+            var newFirstName = request.FirstName.GetValueIfIncludedOrDefault(customerReadModel.FirstName);
+            var newLastName = request.LastName.GetValueIfIncludedOrDefault(customerReadModel.LastName);
 
             events.Add(new CustomerNameChanged(
                 customerUri,
@@ -74,8 +74,8 @@ public class PatchCustomerController : ControllerBase
     }
 }
 
-public record CustomerPatchRequest(
-    [RequiredIfPatched] OptionallyPatched<string> EmailAddress,
+public record PatchCustomerRequest(
+    [RequiredIfPatched, EmailAddressIfPatched] OptionallyPatched<string> EmailAddress,
     [RequiredIfPatched] OptionallyPatched<string> FirstName,
     [RequiredIfPatched] OptionallyPatched<string> LastName
 ) : BasePatchRequest;
