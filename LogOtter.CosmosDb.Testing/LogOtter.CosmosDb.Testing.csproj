@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CosmosTestHelpers" Version="0.1.0-alpha2" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\legacy\CosmosTestHelpers\CosmosTestHelpers.csproj" />
       <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj" />
     </ItemGroup>
 
