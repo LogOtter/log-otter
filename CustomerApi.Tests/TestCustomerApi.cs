@@ -11,12 +11,14 @@ public class TestCustomerApi : IDisposable
     private readonly TestApplicationFactory _hostedApi;
     
     public GivenSteps Given { get; }
+    public ThenSteps Then { get; }
 
     public TestCustomerApi()
     {
         _hostedApi = new TestApplicationFactory(ConfigureTestServices);
 
         Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
+        Then = _hostedApi.Services.GetRequiredService<ThenSteps>();
     }
 
     private void ConfigureTestServices(IServiceCollection services)
@@ -25,6 +27,7 @@ public class TestCustomerApi : IDisposable
 
         services.AddTransient<CustomerStore>();
         services.AddTransient<GivenSteps>();
+        services.AddTransient<ThenSteps>();
     }
 
     public HttpClient CreateClient()
