@@ -1,14 +1,18 @@
-﻿namespace LogOtter.CosmosDb.EventStore;
+﻿using Microsoft.Extensions.Options;
+
+namespace LogOtter.CosmosDb.EventStore;
 
 public class EventRepository<TBaseEvent, TSnapshot>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventStore _eventStore;
+    private readonly EventStoreOptions _options;
 
-    public EventRepository(EventStoreDependency<TBaseEvent> eventStoreDependency)
+    public EventRepository(EventStoreDependency<TBaseEvent> eventStoreDependency, IOptions<EventStoreOptions> options)
     {
         _eventStore = eventStoreDependency.EventStore;
+        _options = options.Value;
     }
 
     public async Task<TSnapshot?> Get(
@@ -18,7 +22,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
         CancellationToken cancellationToken = default
     )
     {
-        var streamId = CosmosHelpers.EscapeForCosmosId(id);
+        var streamId = _options.EscapeIdIfRequired(id);
 
         var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, cancellationToken);
 
@@ -57,7 +61,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
         CancellationToken cancellationToken = default
     )
     {
-        var streamId = CosmosHelpers.EscapeForCosmosId(id);
+        var streamId = _options.EscapeIdIfRequired(id);
         var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, cancellationToken);
 
         var events = eventStoreEvents
@@ -95,7 +99,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
             eventToApply.Apply(entity);
         }
 
-        var streamId = CosmosHelpers.EscapeForCosmosId(id);
+        var streamId = _options.EscapeIdIfRequired(id);
 
         var eventData = events
             .Select(e => new EventData(Guid.NewGuid(), e, e.Ttl ?? -1))

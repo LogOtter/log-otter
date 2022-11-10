@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -10,18 +11,21 @@ public class HybridRepository<TBaseEvent, TSnapshot>
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
+    private readonly EventStoreOptions _options;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
         EventRepository<TBaseEvent, TSnapshot> eventRepository,
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
-        IFeedIteratorFactory feedIteratorFactory
+        IFeedIteratorFactory feedIteratorFactory,
+        IOptions<EventStoreOptions> options
     )
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
         _snapshotRepository = snapshotRepository;
         _feedIteratorFactory = feedIteratorFactory;
+        _options = options.Value;
     }
 
     public async IAsyncEnumerable<TSnapshot?> QuerySnapshotsWithCatchupExpensivelyAsync(
@@ -46,7 +50,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
 
                 yield return await ApplyNewEvents(
                     result,
-                    CosmosHelpers.EscapeForCosmosId(result.Id),
+                    _options.EscapeIdIfRequired(result.Id),
                     includeDeleted,
                     cancellationToken
                 );

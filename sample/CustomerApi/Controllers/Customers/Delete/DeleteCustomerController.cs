@@ -19,7 +19,7 @@ public class DeleteCustomerController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute] string id)
+    public async Task<IActionResult> Delete([FromRoute] string id, CancellationToken cancellationToken)
     {
         if (!Id.TryParse(id, out var customerId))
         {
@@ -42,7 +42,12 @@ public class DeleteCustomerController : ControllerBase
 
         var customerDeleted = new CustomerDeleted(customerUri);
 
-        await _customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, customerDeleted);
+        await _customerEventRepository.ApplyEvents(
+            customerUri.Uri,
+            customerReadModel.Revision,
+            cancellationToken,
+            customerDeleted
+        );
 
         return NoContent();
     }
