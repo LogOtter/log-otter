@@ -41,7 +41,7 @@ public class TestChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         }
 
         return new TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
-            (ContainerMock)container.Container,
+            (ContainerMock.ContainerMock)container.Container,
             changeConverter,
             changeHandler,
             enabled

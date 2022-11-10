@@ -4,7 +4,7 @@ using System.Reflection;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 
-namespace LogOtter.CosmosDb.Testing;
+namespace LogOtter.CosmosDb.ContainerMock;
 
 //TODO: check nullability
 

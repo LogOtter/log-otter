@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 
-namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 internal class ContainerItem
 {

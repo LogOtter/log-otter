@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.Azure.Cosmos;
 
-namespace LogOtter.CosmosDb.Testing;
+namespace LogOtter.CosmosDb.ContainerMock;
 
 public class MockItemResponse<T> : ItemResponse<T>
 {

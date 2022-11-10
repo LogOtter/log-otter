@@ -22,7 +22,7 @@ public class InvalidIdTests
     [MemberData(nameof(InvalidIdTestCases))]
     public async Task When_inserting_an_item_with_a_forward_slash_in_the_id__Then_an_error_occurs(string invalidChars)
     {
-        var containerMock = new ContainerMock();
+        var containerMock = new ContainerMock.ContainerMock();
 
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk" };
         Func<Task> act = () => containerMock.CreateItemAsync(model, new PartitionKey(model.PartitionKey));
@@ -34,7 +34,7 @@ public class InvalidIdTests
     [MemberData(nameof(InvalidIdTestCases))]
     public async Task When_inserting_an_item_by_stream_with_a_forward_slash_in_the_id__Then_an_error_occurs(string invalidChars)
     {
-        var containerMock = new ContainerMock();
+        var containerMock = new ContainerMock.ContainerMock();
 
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk" };
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
@@ -48,7 +48,7 @@ public class InvalidIdTests
     [MemberData(nameof(InvalidIdTestCases))]
     public async Task When_upserting_an_item__with_a_forward_slash_in_the_id__Then_an_error_occurs(string invalidChars)
     {
-        var containerMock = new ContainerMock();
+        var containerMock = new ContainerMock.ContainerMock();
 
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk" };
         Func<Task> act = () => containerMock.UpsertItemAsync(model, new PartitionKey(model.PartitionKey));
@@ -60,7 +60,7 @@ public class InvalidIdTests
     [MemberData(nameof(InvalidIdTestCases))]
     public async Task When_upserting_an_item_by_stream__with_a_forward_slash_in_the_id__Then_an_error_occurs(string invalidChars)
     {
-        var containerMock = new ContainerMock();
+        var containerMock = new ContainerMock.ContainerMock();
 
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk"};
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));

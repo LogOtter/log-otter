@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json.Linq;
 
-namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 internal static class JsonHelpers
 {

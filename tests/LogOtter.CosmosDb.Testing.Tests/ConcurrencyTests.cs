@@ -11,7 +11,7 @@ public class ConcurrencyTests
     [Fact]
     public async Task CanSimulateAConcurrencyException()
     {
-        var sut = new ContainerMock(partitionKeyPath: "/partitionKey");
+        var sut = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey");
 
         await sut.UpsertItemAsync(new TestClass { Id = "MyId", PartitionKey = "APartition", MyValue = "Value1" }, new PartitionKey("APartition"));
         sut.TheNextWriteToDocumentRequiresEtagAndWillRaiseAConcurrencyException(new PartitionKey("APartition"), "MyId");

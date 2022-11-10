@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 public class DataChangedEventArgs : EventArgs
 {

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
-using LogOtter.CosmosDb.Testing.ContainerMockData;
-using LogOtter.CosmosDb.Testing.TransactionalBatch;
+using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
+using LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Scripts;
 using Newtonsoft.Json;
 
 #pragma warning disable CS1998
 
-namespace LogOtter.CosmosDb.Testing;
+namespace LogOtter.CosmosDb.ContainerMock;
 
 public class ContainerMock : Container
 {

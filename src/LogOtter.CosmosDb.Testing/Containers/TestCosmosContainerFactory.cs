@@ -6,7 +6,7 @@ namespace LogOtter.CosmosDb.Testing;
 
 public class TestCosmosContainerFactory : ICosmosContainerFactory
 {
-    private readonly ConcurrentBag<ContainerMock> _containers = new();
+    private readonly ConcurrentBag<ContainerMock.ContainerMock> _containers = new();
 
     public Task<Container> CreateContainerIfNotExistsAsync(
         string containerName,
@@ -25,7 +25,7 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
             return Task.FromResult<Container>(existingContainer);
         }
 
-        var container = new ContainerMock(partitionKeyPath, uniqueKeyPolicy, containerName, defaultTimeToLive ?? -1);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy, containerName, defaultTimeToLive ?? -1);
         _containers.Add(container);
         
         return Task.FromResult<Container>(container);

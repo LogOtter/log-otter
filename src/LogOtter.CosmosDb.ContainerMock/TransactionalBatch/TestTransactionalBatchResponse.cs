@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.Azure.Cosmos;
 
-namespace LogOtter.CosmosDb.Testing.TransactionalBatch;
+namespace LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 
 internal class TestTransactionalBatchResponse : TransactionalBatchResponse
 {

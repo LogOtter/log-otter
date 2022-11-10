@@ -1,4 +1,4 @@
-﻿using LogOtter.CosmosDb.Testing.ContainerMockData;
+﻿using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 namespace LogOtter.CosmosDb.Testing;
 
@@ -12,7 +12,7 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>
     private bool _started;
 
     public TestChangeFeedProcessor(
-        ContainerMock container,
+        ContainerMock.ContainerMock container,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> changeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
         bool enabled

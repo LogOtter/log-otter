@@ -1,3 +1,3 @@
-﻿namespace LogOtter.CosmosDb.Testing;
+﻿namespace LogOtter.CosmosDb.ContainerMock;
 
 public record InvocationInformation(string MethodName);

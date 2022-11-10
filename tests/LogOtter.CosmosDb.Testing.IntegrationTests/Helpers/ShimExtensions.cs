@@ -12,7 +12,7 @@ internal static class ShimExtensions
     
     public static async Task<int> CountAsync<TModel>(this Container container, string? partitionKey, Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery)
     {
-        if (container is ContainerMock mock)
+        if (container is ContainerMock.ContainerMock mock)
         {
             return await mock.CountAsync(partitionKey, applyQuery);
         }
@@ -38,7 +38,7 @@ internal static class ShimExtensions
 
     public static async IAsyncEnumerable<TResult> QueryAsync<TModel, TResult>(this Container container, string? partitionKey, Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery)
     {
-        if (container is ContainerMock mock)
+        if (container is ContainerMock.ContainerMock mock)
         {
             var results = mock.QueryAsync(partitionKey, applyQuery);
             await foreach (var result in results)

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using LogOtter.CosmosDb.Testing.ContainerMockData;
+using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using Microsoft.Azure.Cosmos;
 using Xunit;
 
