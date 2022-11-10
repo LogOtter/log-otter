@@ -41,7 +41,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_GetAllItems(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -61,7 +61,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_ReadItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -85,7 +85,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_ReadItemStreamAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -106,7 +106,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_GetItemLinqQueryable(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -128,7 +128,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_CountAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -147,7 +147,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_QueryAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -167,7 +167,7 @@ public class TtlTests
     [MemberData(nameof(UpdateItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_UpsertItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -192,7 +192,7 @@ public class TtlTests
     [MemberData(nameof(UpdateItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_UpsertItemStreamAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -219,7 +219,7 @@ public class TtlTests
     [MemberData(nameof(ReplaceItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_ReplaceItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -244,7 +244,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_CreateItemStreamAsync_GetAllItems(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock.ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 

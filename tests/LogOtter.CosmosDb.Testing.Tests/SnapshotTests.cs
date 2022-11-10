@@ -10,7 +10,7 @@ public class SnapshotTests
     [Fact]
     public async Task RestoringAnEmptySnapshotResetsData()
     {
-        var container = new ContainerMock();
+        var container = new ContainerMock.ContainerMock();
 
         var snapshot = container.CreateSnapshot();
 
@@ -26,7 +26,7 @@ public class SnapshotTests
     [Fact]
     public async Task RestoringASnapshotDeletesData()
     {
-        var container = new ContainerMock();
+        var container = new ContainerMock.ContainerMock();
 
         var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
@@ -45,7 +45,7 @@ public class SnapshotTests
     [Fact]
     public async Task RestoringASnapshotResetsData()
     {
-        var container = new ContainerMock();
+        var container = new ContainerMock.ContainerMock();
 
         var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));

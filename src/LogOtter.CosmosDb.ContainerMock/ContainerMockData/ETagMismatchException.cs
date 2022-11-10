@@ -1,7 +1,7 @@
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 [Serializable]
 public class ETagMismatchException : ContainerMockException

@@ -1,4 +1,4 @@
-﻿namespace LogOtter.CosmosDb.Testing;
+﻿namespace LogOtter.CosmosDb.ContainerMock;
 
 public class ContainerDataSnapshot
 {

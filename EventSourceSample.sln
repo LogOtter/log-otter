@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing.T
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C015BF56-68E3-4B5C-82CB-846AE27C42C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.ContainerMock", "src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj", "{14737F44-DA29-4154-ADAE-3D7D479CAEDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58} = {3013166D-3A9F-4979-B741-08D4288F5D28}

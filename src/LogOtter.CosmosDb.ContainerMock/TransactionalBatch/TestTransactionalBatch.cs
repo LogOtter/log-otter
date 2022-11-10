@@ -2,7 +2,7 @@
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 
-namespace LogOtter.CosmosDb.Testing.TransactionalBatch;
+namespace LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 
 public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 {

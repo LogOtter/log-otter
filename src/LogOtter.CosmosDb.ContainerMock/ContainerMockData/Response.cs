@@ -1,4 +1,4 @@
-﻿namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+﻿namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 internal class Response
 {

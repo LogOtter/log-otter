@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
 
-namespace LogOtter.CosmosDb.Testing;
+namespace LogOtter.CosmosDb.ContainerMock;
 
 public class CosmosQueryableMock<T> : IOrderedQueryable<T>, IQueryProvider
 {

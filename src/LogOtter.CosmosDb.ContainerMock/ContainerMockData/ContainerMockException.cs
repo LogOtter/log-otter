@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using Microsoft.Azure.Cosmos;
 
-namespace LogOtter.CosmosDb.Testing.ContainerMockData;
+namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 [Serializable]
 public class ContainerMockException : Exception

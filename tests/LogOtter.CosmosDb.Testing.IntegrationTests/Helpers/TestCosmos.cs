@@ -27,7 +27,7 @@ public sealed class TestCosmos : IDisposable
     {
         var response = await CreateCosmosContainer(partitionKeyPath, uniqueKeyPolicy);
         _realContainer = response.Container;
-        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy);
+        _testContainer = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy);
     }
 
     public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy = null)
@@ -46,7 +46,7 @@ public sealed class TestCosmos : IDisposable
 
         try
         {
-            _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy);
+            _testContainer = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy);
         }
         catch (CosmosException ex)
         {

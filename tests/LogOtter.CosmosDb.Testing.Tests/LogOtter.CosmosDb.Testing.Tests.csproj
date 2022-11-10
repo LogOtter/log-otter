@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj" />
+      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj" />
     </ItemGroup>
 
 </Project>
