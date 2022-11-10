@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 
@@ -22,25 +23,57 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
         _eventStore = eventStoreDependency.EventStore;
     }
 
-    public async Task<TSnapshot?> GetSnapshot(string id, string partitionKey, bool includeDeleted = false)
+    public async Task<int> CountSnapshotsAsync(
+        string partitionKey,
+        Func<IQueryable<TSnapshot>, IQueryable<TSnapshot>> applyQuery,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = CreateSnapshotQuery(partitionKey, includeDeleted);
+        return await applyQuery(query).CountAsync(cancellationToken);
+    }
+
+    public async Task<int> CountSnapshotsAsync(
+        string partitionKey,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await CountSnapshotsAsync(
+            partitionKey,
+            q => q,
+            includeDeleted,
+            cancellationToken
+        );
+    }
+
+    public async Task<TSnapshot?> GetSnapshot(
+        string id,
+        string partitionKey,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default
+    )
     {
         var streamId = CosmosHelpers.EscapeForCosmosId(id);
-        var result = await GetSnapshotInternal(streamId, partitionKey, includeDeleted);
+        var result = await GetSnapshotInternal(streamId, partitionKey, includeDeleted, cancellationToken);
         return result?.Snapshot;
     }
 
     public IAsyncEnumerable<TSnapshot> QuerySnapshots(
         string partitionKey,
-        bool includeDeleted = false
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default
     )
     {
-        return QuerySnapshots(partitionKey, x => x, includeDeleted);
+        return QuerySnapshots(partitionKey, x => x, includeDeleted, cancellationToken);
     }
 
     public async IAsyncEnumerable<TResult> QuerySnapshots<TResult>(
         string partitionKey,
         Func<IQueryable<TSnapshot>, IQueryable<TResult>> applyQuery,
-        bool includeDeleted = false
+        bool includeDeleted = false,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
         var query = CreateSnapshotQuery(partitionKey, includeDeleted);
@@ -51,7 +84,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
 
         while (feedIterator.HasMoreResults)
         {
-            var batch = await feedIterator.ReadNextAsync();
+            var batch = await feedIterator.ReadNextAsync(cancellationToken);
             foreach (var result in batch)
             {
                 yield return result;
@@ -59,12 +92,16 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
         }
     }
 
-    public async Task ApplyEventsToSnapshot(string id, string partitionKey, ICollection<Event<TBaseEvent>> events,
-        CancellationToken cancellationToken = default)
+    public async Task ApplyEventsToSnapshot(
+        string id,
+        string partitionKey,
+        ICollection<Event<TBaseEvent>> events,
+        CancellationToken cancellationToken = default
+    )
     {
         var streamId = CosmosHelpers.EscapeForCosmosId(id);
 
-        var result = await GetSnapshotInternal(streamId, partitionKey, true);
+        var result = await GetSnapshotInternal(streamId, partitionKey, true, cancellationToken);
         var snapshot = result.HasValue ? result.Value.Snapshot : new TSnapshot { Revision = 0, Id = streamId };
         var eTag = result?.ETag;
 
@@ -75,8 +112,12 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
 
         if (orderedEvents.First().EventNumber != startingRevision || orderedEvents.Last().EventNumber != endRevision)
         {
-            var allEvents = await _eventStore
-                .ReadStreamForwards(streamId, startingRevision, int.MaxValue, cancellationToken);
+            var allEvents = await _eventStore.ReadStreamForwards(
+                streamId,
+                startingRevision,
+                int.MaxValue,
+                cancellationToken
+            );
 
             orderedEvents = allEvents
                 .Select(Event<TBaseEvent>.FromStorageEvent)
@@ -110,12 +151,17 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
     private async Task<(TSnapshot Snapshot, string ETag)?> GetSnapshotInternal(
         string streamId,
         string partitionKey,
-        bool includeDeleted
+        bool includeDeleted,
+        CancellationToken cancellationToken = default
     )
     {
         try
         {
-            var response = await _snapshotContainer.ReadItemAsync<TSnapshot>(streamId, new PartitionKey(partitionKey));
+            var response = await _snapshotContainer.ReadItemAsync<TSnapshot>(
+                streamId,
+                new PartitionKey(partitionKey),
+                cancellationToken: cancellationToken
+            );
 
             if (response.Resource.DeletedAt.HasValue && !includeDeleted)
             {
@@ -130,7 +176,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
         }
     }
 
-    private IQueryable<TSnapshot> CreateSnapshotQuery(string? partitionKey, bool includeDeleted)
+    internal IQueryable<TSnapshot> CreateSnapshotQuery(string? partitionKey, bool includeDeleted)
     {
         var requestOptions = new QueryRequestOptions();
 
