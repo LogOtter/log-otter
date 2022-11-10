@@ -23,7 +23,8 @@ public class PatchCustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CustomerResponse>> Patch(
         [FromRoute] string id,
-        [FromBody] PatchCustomerRequest request
+        [FromBody] PatchCustomerRequest request,
+        CancellationToken cancellationToken
     )
     {
         if (!Id.TryParse(id, out var customerId))
@@ -33,7 +34,11 @@ public class PatchCustomerController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, includeDeleted: true);
+        var customerReadModel = await _customerEventRepository.Get(
+            customerUri.Uri,
+            includeDeleted: true,
+            cancellationToken: cancellationToken
+        );
 
         if (customerReadModel == null)
         {
@@ -67,15 +72,20 @@ public class PatchCustomerController : ControllerBase
             ));
         }
 
-        var updatedCustomer =
-            await _customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, events.ToArray());
+        var updatedCustomer = await _customerEventRepository.ApplyEvents(
+            customerUri.Uri,
+            customerReadModel.Revision,
+            cancellationToken,
+            events.ToArray()
+        );
 
         return Ok(new CustomerResponse(updatedCustomer));
     }
 }
 
 public record PatchCustomerRequest(
-    [RequiredIfPatched, EmailAddressIfPatched] OptionallyPatched<string> EmailAddress,
+    [RequiredIfPatched, EmailAddressIfPatched]
+    OptionallyPatched<string> EmailAddress,
     [RequiredIfPatched] OptionallyPatched<string> FirstName,
     [RequiredIfPatched] OptionallyPatched<string> LastName
 ) : BasePatchRequest;

@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi", "sample\CustomerApi\CustomerApi.csproj", "{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore", "src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj", "{DF6179EC-27F6-4896-9DF4-C4B7560C0583}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb", "src\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj", "{F05BA677-A837-4BCA-A0AC-6C70A6913A05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi.Tests", "sample\CustomerApi.Tests\CustomerApi.Tests.csproj", "{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.Testing", "src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj", "{6D09015C-5068-4017-A095-532D992118D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3013166D-3A9F-4979-B741-08D4288F5D28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.ContainerMock.IntegrationTests", "tests\LogOtter.CosmosDb.ContainerMock.IntegrationTests\LogOtter.CosmosDb.ContainerMock.IntegrationTests.csproj", "{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.ContainerMock.Tests", "tests\LogOtter.CosmosDb.ContainerMock.Tests\LogOtter.CosmosDb.ContainerMock.Tests.csproj", "{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C015BF56-68E3-4B5C-82CB-846AE27C42C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.ContainerMock", "src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj", "{14737F44-DA29-4154-ADAE-3D7D479CAEDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.ShortGuid", "src\LogOtter.ShortGuid\LogOtter.ShortGuid.csproj", "{4EFDA4E7-B2DC-4F33-B0C5-2293CB9F530F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.ShortGuid.Tests", "tests\LogOtter.ShortGuid.Tests\LogOtter.ShortGuid.Tests.csproj", "{55DD0D61-3843-44BB-83EB-41081BB9B822}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF6179EC-27F6-4896-9DF4-C4B7560C0583}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F05BA677-A837-4BCA-A0AC-6C70A6913A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F05BA677-A837-4BCA-A0AC-6C70A6913A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F05BA677-A837-4BCA-A0AC-6C70A6913A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F05BA677-A837-4BCA-A0AC-6C70A6913A05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D09015C-5068-4017-A095-532D992118D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D09015C-5068-4017-A095-532D992118D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D09015C-5068-4017-A095-532D992118D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14737F44-DA29-4154-ADAE-3D7D479CAEDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EFDA4E7-B2DC-4F33-B0C5-2293CB9F530F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EFDA4E7-B2DC-4F33-B0C5-2293CB9F530F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EFDA4E7-B2DC-4F33-B0C5-2293CB9F530F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EFDA4E7-B2DC-4F33-B0C5-2293CB9F530F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55DD0D61-3843-44BB-83EB-41081BB9B822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55DD0D61-3843-44BB-83EB-41081BB9B822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55DD0D61-3843-44BB-83EB-41081BB9B822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55DD0D61-3843-44BB-83EB-41081BB9B822}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58} = {3013166D-3A9F-4979-B741-08D4288F5D28}
+		{71FB4790-4863-4C0C-A6D1-38EC9FF8C3F4} = {3013166D-3A9F-4979-B741-08D4288F5D28}
+		{AB16A96E-15A4-4CB6-B9A6-F72B0803FBE1} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
+		{64482CA6-3D49-45CD-BBAA-DDD62FED05EB} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
+		{55DD0D61-3843-44BB-83EB-41081BB9B822} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
+	EndGlobalSection
+EndGlobal

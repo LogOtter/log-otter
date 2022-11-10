@@ -16,7 +16,7 @@ services.AddSwaggerGen();
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services
     .AddCosmosDb()
-    .AddEventStore()
+    .AddEventStore(options => options.AutoEscapeIds = true)
     .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent")
     .AddSnapshotStoreProjection<CustomerEvent, CustomerReadModel>("Customers",
         compositeIndexes: new[]

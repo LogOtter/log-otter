@@ -20,13 +20,14 @@ public class GetAllCustomersController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IList<CustomerReadModel>>> GetAll()
+    public async Task<ActionResult<IList<CustomerReadModel>>> GetAll(CancellationToken cancellationToken)
     {
         var customerQuery = _customerSnapshotRepository.QuerySnapshots(
             CustomerReadModel.StaticPartitionKey,
             query => query
                 .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
+                .ThenBy(c => c.FirstName),
+            cancellationToken: cancellationToken
         );
 
         var customerReadModels = await customerQuery.ToListAsync();

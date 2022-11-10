@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -12,15 +13,19 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly Container _snapshotContainer;
     private readonly EventStore _eventStore;
+    private readonly EventStoreOptions _options;
 
     public SnapshotRepository(
         CosmosContainer<TSnapshot> snapshotContainer,
         EventStoreDependency<TBaseEvent> eventStoreDependency,
-        IFeedIteratorFactory feedIteratorFactory)
+        IFeedIteratorFactory feedIteratorFactory,
+        IOptions<EventStoreOptions> options
+    )
     {
         _feedIteratorFactory = feedIteratorFactory;
         _snapshotContainer = snapshotContainer.Container;
         _eventStore = eventStoreDependency.EventStore;
+        _options = options.Value;
     }
 
     public async Task<int> CountSnapshotsAsync(
@@ -55,7 +60,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
         CancellationToken cancellationToken = default
     )
     {
-        var streamId = CosmosHelpers.EscapeForCosmosId(id);
+        var streamId = _options.EscapeIdIfRequired(id);
         var result = await GetSnapshotInternal(streamId, partitionKey, includeDeleted, cancellationToken);
         return result?.Snapshot;
     }
@@ -99,7 +104,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
         CancellationToken cancellationToken = default
     )
     {
-        var streamId = CosmosHelpers.EscapeForCosmosId(id);
+        var streamId = _options.EscapeIdIfRequired(id);
 
         var result = await GetSnapshotInternal(streamId, partitionKey, true, cancellationToken);
         var snapshot = result.HasValue ? result.Value.Snapshot : new TSnapshot { Revision = 0, Id = streamId };
