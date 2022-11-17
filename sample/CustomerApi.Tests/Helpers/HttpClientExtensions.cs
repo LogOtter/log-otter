@@ -8,23 +8,6 @@ namespace System.Net.Http.Json;
 
 public static class HttpClientExtensions
 {
-    public static Task<HttpResponseMessage> PatchAsJsonAsync<TValue>(
-        this HttpClient client,
-        string? requestUri,
-        TValue value,
-        JsonSerializerOptions? options = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        if (client == null)
-        {
-            throw new ArgumentNullException(nameof(client));
-        }
-
-        var content = JsonContent.Create(value, mediaType: null, options);
-        return client.PatchAsync(requestUri, content, cancellationToken);
-    }
-
     public static Task<HttpResponseMessage> PatchAsJObjectAsync(
         this HttpClient client,
         string? requestUri,

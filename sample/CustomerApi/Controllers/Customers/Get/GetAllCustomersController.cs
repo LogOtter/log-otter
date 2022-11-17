@@ -12,7 +12,7 @@ public class GetAllCustomersController : ControllerBase
     private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;
 
     public GetAllCustomersController(
-        SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository
+        SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository 
     )
     {
         _customerSnapshotRepository = customerSnapshotRepository;

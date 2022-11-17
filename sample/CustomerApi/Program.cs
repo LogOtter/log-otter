@@ -3,6 +3,7 @@ using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using LogOtter.CosmosDb;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ var configuration = builder.Configuration;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+services.AddLogging(options => { options.AddConfiguration(configuration.GetSection("Logging")); });
 
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services
@@ -28,7 +31,8 @@ services
             }
         }
     )
-    .AddCatchupSubscription<CustomerEvent, TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+    .AddCatchupSubscription<CustomerEvent,
+        TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
 
 services
     .AddHealthChecks()
