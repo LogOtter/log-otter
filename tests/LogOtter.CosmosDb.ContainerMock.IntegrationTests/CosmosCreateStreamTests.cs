@@ -10,7 +10,12 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 [Collection("Integration Tests")]
 public sealed class CosmosCreateStreamTests : IAsyncLifetime, IDisposable
 {
-    private TestCosmos _testCosmos = default!;
+    private readonly TestCosmos _testCosmos;
+
+    public CosmosCreateStreamTests(IntegrationTestsFixture testFixture)
+    {
+        _testCosmos = testFixture.CreateTestCosmos();
+    }
 
     [Fact]
     public async Task CreateStreamNonExistingIsEquivalent()
@@ -102,8 +107,7 @@ public sealed class CosmosCreateStreamTests : IAsyncLifetime, IDisposable
         {
             UniqueKeys = { new UniqueKey { Paths = { "/Name" } } }
         };
-
-        _testCosmos = new TestCosmos();
+        
         await _testCosmos.SetupAsync("/partitionKey", uniqueKeyPolicy);
     }
 
@@ -114,7 +118,7 @@ public sealed class CosmosCreateStreamTests : IAsyncLifetime, IDisposable
 
     public void Dispose()
     {
-        _testCosmos?.Dispose();
+        _testCosmos.Dispose();
     }
 
     private static byte[] GetItemBytes(TestModel model)

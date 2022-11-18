@@ -7,7 +7,12 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 [Collection("Integration Tests")]
 public sealed class CosmosReadItemStreamTests : IAsyncLifetime, IDisposable
 {
-    private TestCosmos _testCosmos = default!;
+    private readonly TestCosmos _testCosmos;
+
+    public CosmosReadItemStreamTests(IntegrationTestsFixture testFixture)
+    {
+        _testCosmos = testFixture.CreateTestCosmos();
+    }
 
     [Fact]
     public async Task ReadWithEmptyIdIsEquivalent()
@@ -34,10 +39,9 @@ public sealed class CosmosReadItemStreamTests : IAsyncLifetime, IDisposable
         }
     } 
         
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        _testCosmos = new TestCosmos();
-        return _testCosmos.SetupAsync("/partitionKey");
+        await _testCosmos.SetupAsync("/partitionKey");
     }
 
     public async Task DisposeAsync()

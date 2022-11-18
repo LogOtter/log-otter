@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Net;
 using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -13,14 +12,9 @@ public sealed class TestCosmos : IDisposable
 
     private Container? _realContainer;
 
-    public TestCosmos()
+    public TestCosmos(CosmosClient client)
     {
-        var testConnectionString = Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING");
-        if (string.IsNullOrWhiteSpace(testConnectionString))
-        {
-            throw new Exception("TEST_COSMOS_CONNECTION_STRING environment variable must be set");
-        }
-        _client = new CosmosClient(testConnectionString);
+        _client = client;
     }
 
     public async Task SetupAsync(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy = null)
@@ -557,26 +551,6 @@ public sealed class TestCosmos : IDisposable
     {
         var dbName = typeof(TestCosmos).Assembly.GetName().Name;
         var database = (await _client.CreateDatabaseIfNotExistsAsync(dbName, throughput: null)).Database;
-
-        var iterator = database.GetContainerQueryIterator<ContainerProperties>();
-        do
-        {
-            foreach (var container in await iterator.ReadNextAsync())
-            {
-                if (container.LastModified < DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(30)))
-                {
-                    try
-                    {
-                        await _client.GetContainer(dbName, container.Id).DeleteContainerAsync();
-                    }
-                    catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        // Another test setup already did the delete in the time it took us to get it, so we don't need to do anything more
-                    }
-                }
-            }
-        }
-        while (iterator.HasMoreResults);
 
         var containerProperties = new ContainerProperties
         {
