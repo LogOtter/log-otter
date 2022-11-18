@@ -1,12 +1,13 @@
-﻿using CustomerApi.Controllers.Customers.Create;
-using CustomerApi.Events.Customers;
+﻿using CustomerApi.Events.Customers;
 using LogOtter.CosmosDb.EventStore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerApi.Controllers.Customers.Get;
 
 [ApiController]
 [Route("customers")]
+[Authorize(Roles = "Customers.Read,Customers.ReadWrite")]
 public class GetAllCustomersController : ControllerBase
 {
     private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;

@@ -1,12 +1,14 @@
 ﻿using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerApi.Controllers.Customers.Delete;
 
 [ApiController]
 [Route("customers")]
+[Authorize(Roles = "Customers.Delete")]
 public class DeleteCustomerController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;

@@ -16,9 +16,10 @@ public class PatchCustomerTests
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
         
         using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
         
-        var client = customerApi.CreateClient();
+        var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
@@ -31,9 +32,10 @@ public class PatchCustomerTests
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
         using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
-        var client = customerApi.CreateClient();
+        var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };
         await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
@@ -61,8 +63,9 @@ public class PatchCustomerTests
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
         
         using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
-        var client = customerApi.CreateClient();
+        var client = customerApi.CreateClient(authHeader);
 
         var request = new JsonObject();
         if (emailAddress.IsIncludedInPatch)
@@ -83,4 +86,34 @@ public class PatchCustomerTests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task Unauthorized()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+        
+        using var customerApi = new TestCustomerApi();
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+        
+        var client = customerApi.CreateClient();
+        var request = new { FirstName = "Bobby" };
+        var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task Forbidden()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+        
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+        
+        var client = customerApi.CreateClient(authHeader);
+        var request = new { FirstName = "Bobby" };
+        var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
 }

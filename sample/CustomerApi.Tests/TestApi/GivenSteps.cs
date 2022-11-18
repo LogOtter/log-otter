@@ -1,4 +1,6 @@
-﻿using CustomerApi.Events.Customers;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
 
 namespace CustomerApi.Tests;
@@ -6,10 +8,19 @@ namespace CustomerApi.Tests;
 public class GivenSteps
 {
     private readonly CustomerStore _customerStore;
+    private readonly ConsumerStore _consumerStore;
 
-    public GivenSteps(CustomerStore customerStore)
+    public GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore)
     {
         _customerStore = customerStore;
+        _consumerStore = consumerStore;
+    }
+
+    public Task<AuthenticationHeaderValue> AnExistingConsumer(params string[] roles)
+    {
+        var token = new JwtSecurityTokenHandler().WriteToken(_consumerStore.GivenAnExistingConsumer("customer-api", roles));
+        
+        return Task.FromResult(new AuthenticationHeaderValue("Bearer", token));
     }
 
     public async Task<CustomerReadModel> AnExistingCustomer(
