@@ -18,9 +18,6 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
-          
-      - name: Prepare Testcontainers
-        run: docker pull testcontainers/ryuk:0.3.4
 
       - name: Restore dependencies
         run: dotnet restore
