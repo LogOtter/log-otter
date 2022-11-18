@@ -31,6 +31,12 @@ public class IntegrationTestsFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _container.StartAsync();
+
+        if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
+        {
+            // Adding small delay when running on GitHub actions since it takes a while for the ports to get mapped
+            await Task.Delay(100);
+        }
     }
 
     public async Task DisposeAsync()
