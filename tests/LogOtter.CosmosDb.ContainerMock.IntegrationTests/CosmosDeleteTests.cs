@@ -8,7 +8,12 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 [Collection("Integration Tests")]
 public sealed class CosmosDeleteTests : IAsyncLifetime, IDisposable
 {
-    private TestCosmos _testCosmos = default!;
+    private readonly TestCosmos _testCosmos;
+
+    public CosmosDeleteTests(IntegrationTestsFixture testFixture)
+    {
+        _testCosmos = testFixture.CreateTestCosmos();
+    }
 
     [Fact]
     public async Task DeleteExistingWithWrongETagIsEquivalent()
@@ -66,15 +71,14 @@ public sealed class CosmosDeleteTests : IAsyncLifetime, IDisposable
         realResult.Resource.Should().BeEquivalentTo(testResult.Resource);
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         var uniqueKeyPolicy = new UniqueKeyPolicy
         {
             UniqueKeys = { new UniqueKey { Paths = { "/Name" } } }
         };
-
-        _testCosmos = new TestCosmos();
-        return _testCosmos.SetupAsync("/partitionKey", uniqueKeyPolicy);
+        
+        await _testCosmos.SetupAsync("/partitionKey", uniqueKeyPolicy);
     }
 
     public async Task DisposeAsync()
@@ -84,6 +88,6 @@ public sealed class CosmosDeleteTests : IAsyncLifetime, IDisposable
 
     public void Dispose()
     {
-        _testCosmos?.Dispose();
+        _testCosmos.Dispose();
     }
 }

@@ -8,7 +8,12 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 [Collection("Integration Tests")]
 public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 {
-    private TestCosmos _testCosmos = default!;
+    private readonly TestCosmos _testCosmos;
+
+    public CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixture)
+    {
+        _testCosmos = testFixture.CreateTestCosmos();
+    }
 
     [Fact]
     public async Task GivenAQueryUsingEqualsWhenExecutingThenTheResultsShouldMatch()
@@ -464,7 +469,6 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 
     public Task InitializeAsync()
     {
-        _testCosmos = new TestCosmos();
         return _testCosmos.SetupAsync("/partitionKey");
     }
 
@@ -475,7 +479,7 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 
     public void Dispose()
     {
-        _testCosmos?.Dispose();
+        _testCosmos.Dispose();
     }
 
     private bool GetTrue() => true;
