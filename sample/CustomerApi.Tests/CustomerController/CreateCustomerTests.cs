@@ -13,7 +13,9 @@ public class CreateCustomerTests
     public async Task Valid_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
-        var client = customerApi.CreateClient();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
+        
+        var client = customerApi.CreateClient(authHeader);
         var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var response = await client.PostAsJsonAsync("/customers", request);
@@ -25,7 +27,9 @@ public class CreateCustomerTests
     public async Task Valid_StoredCorrectly()
     {
         using var customerApi = new TestCustomerApi();
-        var client = customerApi.CreateClient();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
+        
+        var client = customerApi.CreateClient(authHeader);
         var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var response = await client.PostAsJsonAsync("/customers", request);
@@ -51,11 +55,40 @@ public class CreateCustomerTests
     public async Task Invalid_ReturnsBadRequest(string email, string firstName, string lastName)
     {
         using var customerApi = new TestCustomerApi();
-        var client = customerApi.CreateClient();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
+        
+        var client = customerApi.CreateClient(authHeader);
         var request = new CreateCustomerRequest(email, firstName, lastName);
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [Fact]
+    public async Task Unauthorized()
+    {
+        using var customerApi = new TestCustomerApi();
+
+        var client = customerApi.CreateClient();
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var response = await client.PostAsJsonAsync("/customers", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+    
+    [Fact]
+    public async Task Forbidden()
+    {
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
+        
+        var client = customerApi.CreateClient(authHeader);
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var response = await client.PostAsJsonAsync("/customers", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 }

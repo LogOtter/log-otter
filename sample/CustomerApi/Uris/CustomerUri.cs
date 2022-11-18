@@ -4,7 +4,7 @@ namespace CustomerApi.Uris;
 
 public class CustomerUri : IEquatable<CustomerUri>
 {
-    private static readonly Regex CustomerUriRegex = new Regex("^/customers/(?<CustomerId>[0-9A-Za-z]+)$");
+    private static readonly Regex CustomerUriRegex = new("^/customers/(?<CustomerId>[0-9A-Za-z]+)$");
 
     public string CustomerId { get; }
 

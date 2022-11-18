@@ -14,7 +14,9 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddLogging(options => { options.AddConfiguration(configuration.GetSection("Logging")); });
+services
+    .AddAuthentication()
+    .AddJwtBearer();
 
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services
@@ -50,8 +52,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseHealthChecks("/healthcheck");
-
-app.UseAuthorization();
 
 app.MapControllers();
 

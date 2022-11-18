@@ -2,12 +2,14 @@
 using CustomerApi.Uris;
 using HttpPatch;
 using LogOtter.CosmosDb.EventStore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerApi.Controllers.Customers.Patch;
 
 [ApiController]
 [Route("customers")]
+[Authorize(Roles = "Customers.ReadWrite")]
 public class PatchCustomerController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;

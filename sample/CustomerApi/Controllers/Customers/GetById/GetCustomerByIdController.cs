@@ -2,12 +2,14 @@
 using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerApi.Controllers.Customers.GetById;
 
 [ApiController]
 [Route("customers")]
+[Authorize(Roles = "Customers.Read,Customers.ReadWrite")]
 public class GetCustomerByIdController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
