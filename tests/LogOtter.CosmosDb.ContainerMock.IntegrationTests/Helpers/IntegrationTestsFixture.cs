@@ -13,7 +13,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
     public IntegrationTestsFixture()
     {
         _container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-            .WithDatabase(new CosmosDbTestcontainerConfiguration())
+            .WithDatabase(new CosmosDbTestcontainerConfiguration { PartitionCount = 20 })
             .Build();
     }
 
