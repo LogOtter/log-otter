@@ -9,6 +9,7 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 public class IntegrationTestsFixture : IAsyncLifetime
 {
     private readonly CosmosDbTestcontainer _container;
+    private bool _started;
 
     public IntegrationTestsFixture()
     {
@@ -19,6 +20,11 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
     public TestCosmos CreateTestCosmos()
     {
+        if (!_started)
+        {
+            throw new Exception("ERROR: Container not started!");
+        }
+        
         var cosmosClient = new CosmosClient(_container.ConnectionString, new CosmosClientOptions
         {
             ConnectionMode = ConnectionMode.Gateway,
@@ -31,6 +37,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _container.StartAsync();
+        _started = true;
 
         if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
         {
