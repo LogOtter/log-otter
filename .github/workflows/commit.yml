@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04       # Use old version for now due to https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45
 
     steps:
       - name: Checkout
