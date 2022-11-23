@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04       # Use old version for now due to https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/45
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -27,6 +27,8 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --logger trx --results-directory TestResults
+        env:
+          TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
 
       - name: Test Report
         uses: dorny/test-reporter@v1
