@@ -8,35 +8,39 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public class IntegrationTestsFixture : IAsyncLifetime
 {
+    private readonly bool _useTestContainers;
     private readonly CosmosDbTestcontainer _container;
+    private readonly string _cosmosConnectionString;
 
     public IntegrationTestsFixture()
     {
+        _cosmosConnectionString = Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING") ?? "";
+        _useTestContainers = string.IsNullOrWhiteSpace(_cosmosConnectionString);
+
         _container = new TestcontainersBuilder<CosmosDbTestcontainer>()
-            .WithDatabase(new CosmosDbTestcontainerConfiguration { PartitionCount = 20 })
+            .WithDatabase(new CosmosDbTestcontainerConfiguration())
             .Build();
     }
 
     public TestCosmos CreateTestCosmos()
     {
-        var cosmosClient = new CosmosClient(_container.ConnectionString, new CosmosClientOptions
-        {
-            ConnectionMode = ConnectionMode.Gateway,
-            HttpClientFactory = () => _container.HttpClient, 
-            RequestTimeout = TimeSpan.FromMinutes(3) 
-        });
+        var cosmosClient = !_useTestContainers
+            ? new CosmosClient(_cosmosConnectionString)
+            : new CosmosClient(_container.ConnectionString, new CosmosClientOptions
+            {
+                ConnectionMode = ConnectionMode.Gateway,
+                HttpClientFactory = () => _container.HttpClient,
+                RequestTimeout = TimeSpan.FromMinutes(3)
+            });
 
         return new TestCosmos(cosmosClient);
     }
 
     public async Task InitializeAsync()
     {
-        await _container.StartAsync();
-
-        if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
+        if (_useTestContainers)
         {
-            // Adding small delay when running on GitHub actions since it takes a while for the ports to get mapped
-            await Task.Delay(100);
+            await _container.StartAsync();
         }
     }
 
