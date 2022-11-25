@@ -24,7 +24,7 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSolutionRelativeContentRoot($@"tests\{GetType().Assembly.GetName().Name}");
+        builder.UseSolutionRelativeContentRoot(Path.Combine("tests", GetType().Assembly.GetName().Name!));
         
         switch(_serializationEngine)
         {
