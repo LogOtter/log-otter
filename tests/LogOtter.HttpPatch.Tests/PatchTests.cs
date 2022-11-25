@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Net;
+using System.Net.Http.Json;
 using FluentAssertions;
 using LogOtter.HttpPatch.Tests.Api;
 using LogOtter.HttpPatch.Tests.Api.Controllers;
