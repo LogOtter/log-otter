@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  release:
+    types: ["published"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Parse version
+        id: version
+        run: .\build\Get-Version.ps1 -Ref "${env:GITHUB_REF}"
+        shell: pwsh
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+        env:
+          TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
+          
+      - name: Pack
+        run: dotnet pack --configuration Release --output .nupkgs -p:VersionPrefix="${{ steps.version.outputs.version_3 }}" --version-suffix "${{ steps.version.outputs.version_suffix }}"
+
+      - name: Publish
+        run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json
+        working-directory: .nupkgs
+
+      - name: Upload artifact to action
+        uses: actions/upload-artifact@v3
+        with:
+          name: nupkgs
+          path: .nupkgs/
+
+      - name: Upload artifacts to release
+        uses: AButler/upload-release-assets@v2.0.2
+        with:
+          files: ".nupkgs/*.nupkg"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
