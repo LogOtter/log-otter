@@ -7,7 +7,8 @@ This repository contains:
 
 * CosmosDB library
 * Event Store library
-* ShortGuid
+* ShortGuid ([docs](docs/ShortGuid.md))
+* HttpPatch ([docs](docs/HttpPatch.md))
 
 ## Usage
 

@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HttpPatch" Version="1.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
+      <ProjectReference Include="..\..\src\LogOtter.HttpPatch\LogOtter.HttpPatch.csproj" />
       <ProjectReference Include="..\..\src\LogOtter.ShortGuid\LogOtter.ShortGuid.csproj" />
     </ItemGroup>
     
