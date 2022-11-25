@@ -3,7 +3,6 @@ using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using LogOtter.CosmosDb;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Logging.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

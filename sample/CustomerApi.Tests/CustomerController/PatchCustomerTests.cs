@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using CustomerApi.Uris;
 using FluentAssertions;
-using HttpPatch;
+using LogOtter.HttpPatch;
 using Xunit;
 
 namespace CustomerApi.Tests.CustomerController;

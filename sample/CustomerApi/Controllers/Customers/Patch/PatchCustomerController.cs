@@ -1,7 +1,7 @@
 ﻿using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
-using HttpPatch;
 using LogOtter.CosmosDb.EventStore;
+using LogOtter.HttpPatch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
