@@ -16,7 +16,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchName(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -34,7 +34,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchCount(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -54,7 +54,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchAddress(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -76,7 +76,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchDescription(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -94,7 +94,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchDescriptionToNull(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -112,7 +112,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CantPatchPrimitiveToNull(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -127,7 +127,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CantPatchWhenViolatingAttributesOnSubObject(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -142,7 +142,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CantPatchNameToNull(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -157,7 +157,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CantPatchNameToShort(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -172,7 +172,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchEnumUsingString(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);
@@ -190,7 +190,7 @@ public class PatchTests
     [InlineData(SerializationEngine.SystemText)]
     public async Task CanPatchPeople(SerializationEngine serializationEngine)
     {
-        using var testApi = new TestApi(serializationEngine);
+        await using var testApi = new TestApi(serializationEngine);
         using var client = testApi.CreateClient();
 
         testApi.DataStore.UpsertResource(InitialState);

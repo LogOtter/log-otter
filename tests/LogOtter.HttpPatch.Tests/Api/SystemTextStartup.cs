@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace LogOtter.HttpPatch.Tests.Api;
 
 public class SystemTextStartup
