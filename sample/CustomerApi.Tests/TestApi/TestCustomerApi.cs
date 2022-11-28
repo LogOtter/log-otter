@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using CustomerApi.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,6 +13,8 @@ namespace CustomerApi.Tests;
 public class TestCustomerApi : IDisposable
 {
     private readonly TestApplicationFactory _hostedApi;
+
+    public Uri BaseAddress => _hostedApi.Server.BaseAddress;
 
     public GivenSteps Given { get; }
     public ThenSteps Then { get; }
@@ -44,6 +47,11 @@ public class TestCustomerApi : IDisposable
                 ValidateAudience = false,
                 ValidateIssuer = false
             };
+        });
+
+        services.PostConfigure<PageOptions>(options =>
+        {
+            options.PageSize = 5;
         });
     }
 

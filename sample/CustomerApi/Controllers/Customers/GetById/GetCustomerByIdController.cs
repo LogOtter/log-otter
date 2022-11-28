@@ -22,7 +22,7 @@ public class GetCustomerByIdController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CustomerReadModel>> GetById(
+    public async Task<ActionResult<CustomerResponse>> GetById(
         [FromRoute] string id,
         CancellationToken cancellationToken
     )

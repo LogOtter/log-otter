@@ -9,6 +9,7 @@ This repository contains:
 * Event Store library
 * ShortGuid ([docs](docs/ShortGuid.md))
 * HttpPatch ([docs](docs/HttpPatch.md))
+* JsonHal ([docs](docs/JsonHal.md))
 
 ## Usage
 

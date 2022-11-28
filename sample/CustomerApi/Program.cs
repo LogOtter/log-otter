@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using LogOtter.CosmosDb;
@@ -18,6 +19,8 @@ services
     .AddJwtBearer();
 
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
+services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
+
 services
     .AddCosmosDb()
     .AddEventStore(options => options.AutoEscapeIds = true)

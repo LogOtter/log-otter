@@ -22,7 +22,7 @@ public class CreateCustomerController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateCustomer(
+    public async Task<ActionResult<CustomerResponse>> CreateCustomer(
         [Required] CreateCustomerRequest customerData,
         CancellationToken cancellationToken
     )
