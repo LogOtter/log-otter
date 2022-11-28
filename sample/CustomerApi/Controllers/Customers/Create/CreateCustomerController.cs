@@ -46,6 +46,3 @@ public class CreateCustomerController : ControllerBase
         return Created(customerUri.Uri, new CustomerResponse(customer));
     }
 }
-
-public record CreateCustomerRequest([Required, EmailAddress] string EmailAddress, [Required] string FirstName,
-    [Required] string LastName);
