@@ -6,6 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <Description>An in-memory version of a Cosmos Container for use with testing.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">

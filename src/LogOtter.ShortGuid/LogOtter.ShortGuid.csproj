@@ -6,6 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     
+    <PropertyGroup>
+        <Description>A library to create string identifiers that are as unique as GUIDs.</Description>
+    </PropertyGroup>
+    
     <ItemGroup>
         <InternalsVisibleTo Include="LogOtter.ShortGuid.Tests" />
     </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿# ShortGuid
 
-A library to create more string identifiers that are as unique as GUIDs.
+A library to create string identifiers that are as unique as GUIDs.
 
 ## Usage
 

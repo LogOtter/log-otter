@@ -1,6 +1,6 @@
 ﻿# JsonHal
 
-A library to aid building JsonHal links.
+A library to help build JsonHal links.
 
 ## Usage
 
@@ -57,3 +57,7 @@ response.Links.AddSelfLink(Url.Link(
     new { page = currentPage }  // replace with route parameters 
 ));
 ```
+
+## More Information
+
+See [HAL - Hypertext Application Language](https://stateless.group/hal_specification.html) for the specification
