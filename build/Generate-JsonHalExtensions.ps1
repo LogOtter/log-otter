@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $solutionDirectory = Split-Path $PSScriptRoot
-$outputFile = Join-Path $solutionDirectory 'src' 'LogOtter.JsonHal' 'JsonHalLinkCollectionExtensions.cs'
+$outputFile = Join-Path $solutionDirectory 'src' 'LogOtter.JsonHal' 'JsonHalLinkCollectionExtensions.generated.cs'
 
 $predefinedLinkTypes = @('Self', 'First', 'Prev', 'Next', 'Last')
 
@@ -19,7 +19,7 @@ using System.CodeDom.Compiler;
 namespace LogOtter.JsonHal;
 
 [GeneratedCode(""Powershell Script"", ""1.0.0"")]
-public static class JsonHalLinkCollectionExtensions
+public static partial class JsonHalLinkCollectionExtensions
 {".TrimStart()
 
 foreach($linkType in $predefinedLinkTypes) {

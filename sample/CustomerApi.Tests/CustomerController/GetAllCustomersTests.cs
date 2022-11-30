@@ -32,8 +32,10 @@ public class GetAllCustomersTests
         customersResponse.Customers.Should().HaveCount(2);
 
         customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(1);
-        customersResponse.Links.First().Should().BeEquivalentTo(new JsonHalLink("self", new Uri(customerApi.BaseAddress, "/customers?page=1").ToString()));
+        customersResponse.Links.Should().HaveCount(3);
+        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetSelfHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
 
         var bob = customersResponse.Customers.FirstOrDefault(c => c.CustomerUri == "/customers/ExistingUser");
         bob.Should().NotBeNull();
@@ -78,16 +80,18 @@ public class GetAllCustomersTests
         customersResponse.Customers.Should().HaveCount(5);
 
         customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(2);
+        customersResponse.Links.Should().HaveCount(4);
+        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
         customersResponse.Links.GetSelfHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
         customersResponse.Links.GetNextHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
+        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
     }
     
     [Fact]
     public async Task Valid_MultiplePages_Page2()
     {
         using var customerApi = new TestCustomerApi();
-        for (var i = 0; i < 15; i++)
+        for (var i = 0; i < 20; i++)
         {
             await customerApi.Given.AnExistingCustomer(CustomerUri.Parse($"/customers/ExistingUser{i}"));    
         }
@@ -109,10 +113,12 @@ public class GetAllCustomersTests
         customersResponse.Customers.Should().HaveCount(5);
 
         customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(3);
+        customersResponse.Links.Should().HaveCount(5);
+        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
         customersResponse.Links.GetPrevHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
         customersResponse.Links.GetSelfHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
         customersResponse.Links.GetNextHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=3").ToString());
+        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=4").ToString());
     }
     
     [Fact]

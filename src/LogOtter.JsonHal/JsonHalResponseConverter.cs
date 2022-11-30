@@ -37,7 +37,7 @@ public class JsonHalLinkCollectionConverter : JsonConverter<JsonHalLinkCollectio
         writer.WriteEndObject();
     }
 
-    public override JsonHalLinkCollection? Read(ref Utf8JsonReader reader, Type typeToConvert,
+    public override JsonHalLinkCollection Read(ref Utf8JsonReader reader, Type typeToConvert,
         JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
@@ -104,14 +104,14 @@ public class JsonHalLinkCollectionConverter : JsonConverter<JsonHalLinkCollectio
         }
 
         var hrefs = new List<string>();
-        
+
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndArray)
             {
                 return hrefs;
             }
-            
+
             var href = ReadLinkHref(ref reader);
 
             if (href != null)
