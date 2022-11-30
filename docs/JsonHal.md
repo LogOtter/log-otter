@@ -43,6 +43,12 @@ response.Links.AddNextLink("https://example.com/data?page=4");
 response.Links.AddLastLink("https://example.com/data?page=5");
 ```
 
+For paged responses, use the helper to generate all links (`first`, `prev`, `self`, `next`, `last`):
+
+```c#
+response.Links.AddPagedLinks(currentPage, totalPages, p => $"https://example.com/data?page={p}");
+```
+
 Use ASP.NET `Url` helper for help crafting full URLs, e.g.
 
 ```c#

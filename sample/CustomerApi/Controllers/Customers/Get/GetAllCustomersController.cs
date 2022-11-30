@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
+using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.JsonHal;
 using Microsoft.AspNetCore.Authorization;
@@ -35,43 +36,31 @@ public class GetAllCustomersController : ControllerBase
         var currentPage = page.GetValueOrDefault(1);
         var pageSize = _pageOptions.Value.PageSize;
 
+        var totalCount = await _customerSnapshotRepository.CountSnapshotsAsync(
+            CustomerReadModel.StaticPartitionKey,
+            cancellationToken: cancellationToken
+        );
+
         var customerQuery = _customerSnapshotRepository.QuerySnapshots(
             CustomerReadModel.StaticPartitionKey,
             query => query
                 .OrderBy(c => c.LastName)
                 .ThenBy(c => c.FirstName)
-                .Skip((currentPage - 1) * pageSize)
-                .Take(pageSize + 1),
+                .Page(currentPage, pageSize),
             cancellationToken: cancellationToken
         );
 
         var customerReadModels = await customerQuery.ToListAsync();
 
         var response = new CustomersResponse(customerReadModels
-            .Take(pageSize)
             .Select(readModel => new CustomerResponse(readModel))
             .ToList());
-        
-        response.Links.AddSelfLink(Url.Link(
+
+        var totalPages = PageHelpers.CalculatePageCount(pageSize, totalCount);
+        response.Links.AddPagedLinks(currentPage, totalPages, p => Url.Link(
             "GetAllCustomers",
-            new { page = currentPage }
+            new { page = p }
         )!);
-        
-        if (currentPage > 1)
-        {
-            response.Links.AddPrevLink(Url.Link(
-                "GetAllCustomers",
-                new { page = currentPage - 1 }
-            )!);
-        }
-        
-        if (customerReadModels.Count > pageSize)
-        {
-            response.Links.AddNextLink(Url.Link(
-                "GetAllCustomers",
-                new { page = currentPage + 1 }
-            )!);
-        }
 
         return Ok(response);
     }
