@@ -90,6 +90,8 @@ public class TestCustomerApi : IDisposable
                 .ConfigureLogging(options =>
                 {
                     options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                    options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware",
+                        logLevel => logLevel >= LogLevel.Error);
                 });
         }
     }
