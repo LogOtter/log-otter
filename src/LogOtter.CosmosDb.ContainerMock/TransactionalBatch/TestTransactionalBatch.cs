@@ -36,7 +36,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
                 .GetAwaiter()
                 .GetResult();
 
-            response.AddResult(itemResponse);
+            response.AddResult(itemResponse, item);
         });
 
         return this;
@@ -52,7 +52,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
                 .ReadItemStreamAsync(id, _partitionKey, itemRequestOptions)
                 .GetAwaiter()
                 .GetResult();
-
+            
             response.AddResult(itemResponse);
         });
 
@@ -133,7 +133,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     )
     {
         var snapshot = _containerMock.CreateSnapshot();
-
+        
         var response = new TestTransactionalBatchResponse();
 
         while (_actions.Any())
