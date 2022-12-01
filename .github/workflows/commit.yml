@@ -26,7 +26,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Test
-        run: dotnet test --no-build --logger trx --results-directory TestResults
+        run: dotnet test --no-build
         env:
           TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
 
@@ -35,5 +35,5 @@ jobs:
         if: success() || failure()
         with:
           name: .NET Tests
-          path: TestResults/*.trx
+          path: .test-results/*.trx
           reporter: dotnet-trx
