@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CustomerApi.Tests;
@@ -85,7 +86,11 @@ public class TestCustomerApi : IDisposable
         {
             builder
                 .ConfigureTestServices(_configureTestServices)
-                .ConfigureServices(_configureServices);
+                .ConfigureServices(_configureServices)
+                .ConfigureLogging(options =>
+                {
+                    options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                });
         }
     }
 }
