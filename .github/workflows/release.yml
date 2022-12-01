@@ -34,7 +34,7 @@ jobs:
           TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
           
       - name: Pack
-        run: dotnet pack --configuration Release --output .nupkgs -p:VersionPrefix="${{ steps.version.outputs.version_3 }}" --version-suffix "${{ steps.version.outputs.version_suffix }}"
+        run: dotnet pack --configuration Release -p:VersionPrefix="${{ steps.version.outputs.version_3 }}" --version-suffix "${{ steps.version.outputs.version_suffix }}"
 
       - name: Publish
         run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json

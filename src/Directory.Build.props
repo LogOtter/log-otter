@@ -10,6 +10,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PackageOutputPath>$(MSBuildThisFileDirectory)..\.nupkgs</PackageOutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -18,6 +19,6 @@
 
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\"/>
-        <None Include="$(MSBuildThisFileDirectory)\..\build\icons\log-otter-128.png" Pack="true" PackagePath="\icon.png"/>
+        <None Include="$(MSBuildThisFileDirectory)..\build\icons\log-otter-128.png" Pack="true" PackagePath="\icon.png"/>
     </ItemGroup>
 </Project>
