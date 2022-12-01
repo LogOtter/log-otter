@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace LogOtter.HttpPatch.Tests.Api;
 
@@ -41,6 +42,11 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
         builder.ConfigureTestServices(sc =>
         {
             sc.AddSingleton<TestDataStore>();
+        });
+
+        builder.ConfigureLogging(options =>
+        {
+            options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
         });
     }
 }
