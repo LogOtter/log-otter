@@ -1,4 +1,5 @@
 using CustomerApi.Uris;
+using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
 
@@ -28,5 +29,10 @@ public class CustomerNameChanged : CustomerEvent
     {
         model.FirstName = NewFirstName;
         model.LastName = NewLastName;
+    }
+
+    public override string GetDescription()
+    {
+        return $"Name changed from '{Obfuscate.Name(OldFirstName, OldLastName)}' to '{Obfuscate.Name(NewFirstName, NewLastName)}'";
     }
 }

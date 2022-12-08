@@ -13,4 +13,6 @@ public interface ICosmosContainerFactory
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
         ThroughputProperties? throughputProperties = null
     );
+
+    Container GetContainer(string containerName);
 }

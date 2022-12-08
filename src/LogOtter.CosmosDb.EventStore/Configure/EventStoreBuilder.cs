@@ -33,6 +33,17 @@ internal class EventStoreBuilder : IEventStoreBuilder
             defaultTimeToLive: -1
         );
 
+        var metadata = new EventStoreMetadata(
+            typeof(TBaseEvent),
+            typeof(TSnapshot),
+            eventContainerName,
+            eventTypes,
+            new SimpleSerializationTypeMap(eventTypes),
+            jsonSerializerSettings
+        );
+        
+        Services.AddSingleton(metadata);
+
         Services.AddSingleton(sp =>
         {
             var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
@@ -40,8 +51,8 @@ internal class EventStoreBuilder : IEventStoreBuilder
             var eventStore = new EventStore(
                 cosmosContainer.Container,
                 feedIteratorFactory,
-                new SimpleSerializationTypeMap(eventTypes),
-                JsonSerializer.Create(jsonSerializerSettings)
+                metadata.SerializationTypeMap,
+                JsonSerializer.Create(metadata.JsonSerializerSettings)
             );
             return new EventStoreDependency<TBaseEvent>(eventStore);
         });
