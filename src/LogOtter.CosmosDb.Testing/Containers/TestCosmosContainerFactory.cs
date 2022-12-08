@@ -30,4 +30,9 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
         
         return Task.FromResult<Container>(container);
     }
+
+    public Container GetContainer(string containerName)
+    {
+        return _containers.Single(c => c.Id == containerName);
+    }
 }

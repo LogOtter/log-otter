@@ -1,4 +1,5 @@
 ﻿using CustomerApi.Uris;
+using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
 
@@ -30,5 +31,10 @@ public class CustomerCreated : CustomerEvent
         model.FirstName = FirstName;
         model.LastName = LastName;
         model.CreatedOn = Timestamp;
+    }
+
+    public override string GetDescription()
+    {
+        return $"{Obfuscate.Email(EmailAddress)} created";
     }
 }

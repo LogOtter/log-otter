@@ -13,4 +13,9 @@ public class CustomerDeleted : CustomerEvent
     {
         model.DeletedAt = Timestamp;
     }
+
+    public override string GetDescription()
+    {
+        return "Deleted";
+    }
 }

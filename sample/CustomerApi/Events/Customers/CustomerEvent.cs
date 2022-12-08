@@ -24,4 +24,7 @@ public abstract class CustomerEvent : ISnapshottableEvent<CustomerReadModel>
     }
 
     public abstract void Apply(CustomerReadModel model);
+
+    [EventDescription]
+    public abstract string? GetDescription();
 }

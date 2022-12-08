@@ -1,5 +1,9 @@
 ﻿using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
+using LogOtter.CosmosDb.EventStore.EventStreamApi;
+using LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -15,7 +19,35 @@ public static class ConfigureExtensions
         {
             cosmosDbBuilder.Services.Configure(setupAction);
         }
-        
+
+        cosmosDbBuilder.Services.AddSingleton<EventStoreCatalog>();
+        cosmosDbBuilder.Services.AddSingleton<EventDescriptionGenerator>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventStreamsHandler>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventStreamHandler>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventsHandler>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventHandler>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventBodyHandler>();
+
         return new EventStoreBuilder(cosmosDbBuilder);
+    }
+
+    public static IApplicationBuilder UseEventStreamsApi(
+        this IApplicationBuilder app,
+        Action<EventStreamsApiOptions>? setupAction = null
+    )
+    {
+        EventStreamsApiOptions options;
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<EventStreamsApiOptions>>().Value;
+            setupAction?.Invoke(options);
+        }
+
+        return app.UseEventStreamsApi(options);
+    }
+
+    public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, EventStreamsApiOptions options)
+    {
+        return app.UseMiddleware<EventStreamsApiMiddleware>(options);
     }
 }

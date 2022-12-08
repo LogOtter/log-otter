@@ -46,4 +46,9 @@ public class CosmosContainerFactory : ICosmosContainerFactory
 
         return containerResponse.Container;
     }
+
+    public Container GetContainer(string containerName)
+    {
+        return _database.GetContainer(containerName);
+    }
 }

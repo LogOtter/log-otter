@@ -16,6 +16,7 @@
       <ProjectReference Include="..\..\src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
       <ProjectReference Include="..\..\src\LogOtter.HttpPatch\LogOtter.HttpPatch.csproj" />
       <ProjectReference Include="..\..\src\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
+      <ProjectReference Include="..\..\src\LogOtter.Obfuscate\LogOtter.Obfuscate.csproj" />
       <ProjectReference Include="..\..\src\LogOtter.ShortGuid\LogOtter.ShortGuid.csproj" />
     </ItemGroup>
     
