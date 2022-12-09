@@ -10,7 +10,8 @@ internal class Event
     public Guid EventId { get; }
     public int TimeToLive { get; }
     public string Description { get; }
-    
+    public DateTimeOffset Timestamp { get; }
+
     public Event(
         string id,
         string streamId,
@@ -19,7 +20,8 @@ internal class Event
         int eventNumber,
         Guid eventId,
         int timeToLive,
-        string description
+        string description,
+        DateTimeOffset timestamp
     )
     {
         Id = id;
@@ -30,5 +32,6 @@ internal class Event
         EventId = eventId;
         TimeToLive = timeToLive;
         Description = description;
+        Timestamp = timestamp;
     }
 }

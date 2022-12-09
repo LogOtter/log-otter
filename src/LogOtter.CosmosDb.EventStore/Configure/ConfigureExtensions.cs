@@ -2,6 +2,7 @@
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
+using LogOtter.CosmosDb.EventStore.EventStreamUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 
@@ -49,5 +50,25 @@ public static class ConfigureExtensions
     public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, EventStreamsApiOptions options)
     {
         return app.UseMiddleware<EventStreamsApiMiddleware>(options);
+    }
+    
+    public static IApplicationBuilder UseEventStreamsUI(
+        this IApplicationBuilder app,
+        Action<EventStreamsUIOptions>? setupAction = null
+    )
+    {
+        EventStreamsUIOptions options;
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            options = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<EventStreamsUIOptions>>().Value;
+            setupAction?.Invoke(options);
+        }
+
+        return app.UseEventStreamsUI(options);
+    }
+    
+    public static IApplicationBuilder UseEventStreamsUI(this IApplicationBuilder app, EventStreamsUIOptions options)
+    {
+        return app.UseMiddleware<EventStreamsUIMiddleware>(options);
     }
 }

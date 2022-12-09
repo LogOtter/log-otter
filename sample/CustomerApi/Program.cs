@@ -51,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.UseEventStreamsApi();
+    app.UseEventStreamsUI();
 }
 
 app.UseHttpsRedirection();
