@@ -60,10 +60,10 @@ internal class GetEventHandler : BaseHandler
         };
 
         var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
-        var storageEvent = (CosmosDbStorageEvent?)null;
+        var storageEvent = (CosmosDbStorageEventWithTimestamp?)null;
         
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
         
@@ -91,7 +91,8 @@ internal class GetEventHandler : BaseHandler
             storageEvent.EventNumber,
             storageEvent.EventId,
             storageEvent.TimeToLive,
-            _eventDescriptionGenerator.GetDescription(storageEvent, metaData)
+            _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
+            storageEvent.Timestamp
         );
 
         await httpContext.Response.WriteJsonAsync(@event, EventStreamsApiMiddleware.JsonSerializerOptions);

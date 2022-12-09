@@ -1,0 +1,78 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Stream Viewer</title>
+    
+    <link rel="stylesheet" href="Libraries/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="Libraries/bootstrap.icons/bootstrap.icons.css">
+
+    <script src="Libraries/vue/vue.global.prod.js"></script>
+    <script src="Libraries/dayjs/dayjs.min.js"></script>
+    <script src="Libraries/dayjs/relativeTime.js"></script>
+    <script>dayjs.extend(window.dayjs_plugin_relativeTime)</script>
+
+    <style>
+        body {
+            min-height: 100vh;
+        }
+
+        main {
+            height: 100vh;
+            max-height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+    </style>
+</head>
+<body>
+<main id="app" class="d-flex flex-nowrap">
+    <sidebar :event-streams="eventStreams"></sidebar>
+    <root-page :event-streams="eventStreams"></root-page>
+</main>
+
+<script type="module">
+    const {createApp} = Vue;
+    import Sidebar from "./Components/Sidebar.js";
+    import RootPage from "./Pages/RootPage.js";
+
+    createApp({
+        components: {
+            Sidebar,
+            RootPage
+        },
+        methods: {
+            async fetchEventStreams() {
+                this.eventStreams = [];
+
+                const eventStreams = [];
+
+                let url = 'api/';
+                
+                do {
+                    const response = await fetch(url);
+                    const jsonResponse = await response.json();
+                    for (const definition of jsonResponse.definitions) {
+                        eventStreams.push(definition);
+                    }
+                    url = jsonResponse?._links?.next?.href;
+                } while (!!url);
+
+                this.eventStreams = eventStreams;
+            }
+        },
+        data() {
+            return {
+                eventStreams: []
+            }
+        },
+        mounted() {
+            this.fetchEventStreams();
+        }
+    }).mount('#app');
+</script>
+
+<script src="Libraries/bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>

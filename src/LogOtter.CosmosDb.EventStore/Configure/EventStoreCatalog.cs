@@ -36,7 +36,7 @@ internal class EventStoreCatalog
     private IReadOnlyCollection<EventStreamDefinition> GenerateDefinitions()
     {
         return _eventStoreMetaData
-            .Select(e => new EventStreamDefinition(e.EventBaseType.Name))
+            .Select(e => new EventStreamDefinition(e.EventBaseType.Name, e.EventBaseType.FullName!))
             .ToList()
             .AsReadOnly();
     }
