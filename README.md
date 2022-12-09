@@ -5,11 +5,12 @@ and the tools to test them.
 
 This repository contains:
 
-* CosmosDB library
-* Event Store library
-* ShortGuid ([docs](docs/ShortGuid.md))
-* HttpPatch ([docs](docs/HttpPatch.md))
-* JsonHal ([docs](docs/JsonHal.md))
+* CosmosDB library ([docs](src/LogOtter.CosmosDb))
+* Event Store library ([docs](src/LogOtter.CosmosDb.EventStore))
+* ShortGuid ([docs](src/LogOtter.ShortGuid))
+* HttpPatch ([docs](src/LogOtter.HttpPatch))
+* JsonHal ([docs](src/LogOtter.JsonHal))
+* Obfuscate ([docs](src/LogOtter.Obfuscate))
 
 ## Usage
 

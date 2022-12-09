@@ -8,6 +8,7 @@
 * [HttpPatch](../src/LogOtter.HttpPatch/README.md)
 * [JsonHal](../src/LogOtter.JsonHal/README.md)
 * [ShortGuid](../src/LogOtter.ShortGuid/README.md)
+* [Obfuscate](../src/LogOtter.Obfuscate/README.md)
 
 ## Development
 * [Building Locally](BuildingLocally.md)
