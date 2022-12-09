@@ -2,7 +2,7 @@
 
 export default {
     components: {
-      EventBody  
+      EventBody
     },
     data() {
         return {

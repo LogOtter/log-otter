@@ -1,24 +1,24 @@
 ﻿export default {
     data() {
-      return {
-          eventBody: null,
-          loading: false
-      }  
+        return {
+            eventBody: null,
+            loading: false
+        }
     },
     mounted() {
-      this.fetchEventBody();
+        this.fetchEventBody();
     },
     methods: {
-      async fetchEventBody() {
-          this.loading = true;
+        async fetchEventBody() {
+            this.loading = true;
 
-          const url = `api/${this.eventStreamName}/${encodeURIComponent(this.streamId)}/events/${this.eventId}/body`;
-          
-          const response = await fetch(url);
-          this.eventBody = JSON.stringify(await response.json(), null, '  ');
-          
-          this.loading = false;
-      }  
+            const url = `api/${this.eventStreamName}/${encodeURIComponent(this.streamId)}/events/${this.eventId}/body`;
+
+            const response = await fetch(url);
+            this.eventBody = JSON.stringify(await response.json(), null, '  ');
+
+            this.loading = false;
+        }
     },
     props: {
         eventStreamName: String,
