@@ -50,7 +50,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.UseEventStreamsApi();
+    app.UseEventStreamsApi(options =>
+    {
+        options.EnableCors = true;
+        options.AccessControlAllowMethods = "GET";
+        options.AccessControlAllowOrigin = "*";
+    });
     app.UseEventStreamsUI();
 }
 
