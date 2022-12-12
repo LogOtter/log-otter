@@ -39,12 +39,15 @@ export default {
 <template>
   <div>
     <div v-if="loading">Loading...</div>
-    <div
-      v-if="!loading"
-      class="card"
-      style="max-height: 500px; overflow-y: auto"
-    >
+    <div v-if="!loading" class="card">
       <json-viewer :value="eventBody" :expand-depth="3" copyable></json-viewer>
     </div>
   </div>
 </template>
+
+<style scoped>
+.card {
+  max-height: 500px;
+  overflow-y: auto;
+}
+</style>

@@ -48,8 +48,9 @@ export default defineComponent({
               ref="timeTooltip"
               data-bs-toggle="tooltip"
               :data-bs-title="formatTimestamp(event.timestamp)"
-              >{{ formatTimestampFromNow(event.timestamp) }}</span
             >
+              {{ formatTimestampFromNow(event.timestamp) }}
+            </span>
           </div>
         </div>
         <div class="col-auto">
