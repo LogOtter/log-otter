@@ -32,4 +32,8 @@
     <ItemGroup>
         <EmbeddedResource Include="EventStreamUI/**/*" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="EventStreamUI\wwwroot" />
+    </ItemGroup>
 </Project>
