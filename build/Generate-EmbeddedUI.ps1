@@ -1,3 +1,5 @@
+param([switch]$SkipNpmInstall)
+
 $ErrorActionPreference = 'Stop'
 
 $solutionDirectory = Split-Path $PSScriptRoot
@@ -14,8 +16,10 @@ New-Item $outputDirectory -ItemType Directory | Out-Null
 Push-Location $embeddedUISrcDirectory
 
 try {
-  Write-Host 'Restoring npm packages...'
-  & npm install
+  if (!$SkipNpmInstall) {
+    Write-Host 'Restoring npm packages...'
+    & npm install
+  }
 
   Write-Host ''
   Write-Host 'Building site...'
