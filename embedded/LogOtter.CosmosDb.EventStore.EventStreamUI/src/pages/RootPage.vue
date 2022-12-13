@@ -36,7 +36,7 @@ export default defineComponent({
         return {
           view: EventListPage,
           properties: {
-            eventStreamName: eventListRegex[1],
+            eventStreamName: decodeURIComponent(eventListRegex[1]),
             streamId: decodeURIComponent(eventListRegex[2]),
           },
         };
