@@ -1,7 +1,13 @@
 <script lang="ts">
-import StreamIdSearchPanel from "../components/StreamIdSearchPanel.vue";
-import EventCard from "../components/EventCard.vue";
-import type Event from "@/types/Event";
+import StreamIdSearchPanel from "@/components/StreamIdSearchPanel.vue";
+import EventCard from "@/components/EventCard.vue";
+import {
+  EventStreamsService,
+  type Event,
+} from "@/services/EventStreamsService";
+import isVisible from "@/helpers/IsVisible";
+
+const eventStreamsService = new EventStreamsService();
 
 export default {
   components: {
@@ -10,32 +16,61 @@ export default {
   },
   data() {
     return {
+      loading: false,
       events: [] as Event[],
+      nextPageUrl: undefined as string | undefined,
     };
   },
   methods: {
     search(streamId: string) {
-      window.location.hash = `#/${this.eventStreamName}/${encodeURIComponent(
-        streamId
-      )}`;
+      window.location.hash = `#/${encodeURIComponent(
+        this.eventStreamName
+      )}/${encodeURIComponent(streamId)}`;
     },
     async fetchEvents() {
+      this.loading = true;
       const events: Event[] = [];
 
-      let url = `${import.meta.env.VITE_API_BASE_URL}api/${
-        this.eventStreamName
-      }/${encodeURIComponent(this.streamId)}/events`;
+      const response = await eventStreamsService.getEvents(
+        this.eventStreamName,
+        this.streamId
+      );
 
-      do {
-        const response = await fetch(url);
-        const jsonResponse = await response.json();
-        for (const event of jsonResponse.events) {
-          events.push(event);
-        }
-        url = jsonResponse?._links?.next?.href;
-      } while (url);
+      for (const event of response.data) {
+        events.push(event);
+      }
+
+      this.nextPageUrl = response.nextPage;
 
       this.events = events;
+      this.loading = false;
+
+      if (isVisible(this.$refs.loadMore as HTMLElement)) {
+        this.fetchNextPage();
+      }
+    },
+    async fetchNextPage() {
+      if (!this.nextPageUrl || this.loading) {
+        return;
+      }
+
+      this.loading = true;
+
+      var response = await eventStreamsService.getEventsWithUrl(
+        this.nextPageUrl
+      );
+
+      for (const event of response.data) {
+        this.events.push(event);
+      }
+
+      this.nextPageUrl = response.nextPage;
+
+      this.loading = false;
+
+      if (isVisible(this.$refs.loadMore as HTMLElement)) {
+        this.fetchNextPage();
+      }
     },
   },
   props: {
@@ -50,12 +85,19 @@ export default {
   },
   mounted() {
     this.fetchEvents();
+
+    const root = this.$refs.root as HTMLElement;
+    root.closest("#rootPage")!.addEventListener("scroll", () => {
+      if (isVisible(this.$refs.loadMore as HTMLElement)) {
+        this.fetchNextPage();
+      }
+    });
   },
 };
 </script>
 
 <template>
-  <div class="m-3">
+  <div class="m-3" ref="root">
     <h1 class="display-5 fw-bold mb-4">{{ eventStreamName }}</h1>
     <stream-id-search-panel
       @search="search"
@@ -69,6 +111,18 @@ export default {
         v-for="event in events"
         :key="event.eventId"
       ></event-card>
+
+      <div v-if="loading">
+        <div
+          class="card mb-1 px-3 py-4 placeholder-glow"
+          v-for="index in 3"
+          :key="index"
+        >
+          <span class="placeholder col-5 mb-2"></span>
+          <span class="placeholder col-3"></span>
+        </div>
+      </div>
     </div>
+    <span ref="loadMore"></span>
   </div>
 </template>

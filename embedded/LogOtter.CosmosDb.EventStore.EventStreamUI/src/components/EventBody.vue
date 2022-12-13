@@ -1,5 +1,8 @@
 <script lang="ts">
+import { EventStreamsService } from "@/services/EventStreamsService";
 import JsonViewer from "vue-json-viewer";
+
+const eventStreamsService = new EventStreamsService();
 
 export default {
   components: {
@@ -18,12 +21,11 @@ export default {
     async fetchEventBody() {
       this.loading = true;
 
-      const url = `${import.meta.env.VITE_API_BASE_URL}api/${
-        this.eventStreamName
-      }/${encodeURIComponent(this.streamId)}/events/${this.eventId}/body`;
-
-      const response = await fetch(url);
-      this.eventBody = await response.json();
+      this.eventBody = await eventStreamsService.getEventBody(
+        this.eventStreamName,
+        this.streamId,
+        this.eventId
+      );
 
       this.loading = false;
     },
@@ -38,7 +40,12 @@ export default {
 
 <template>
   <div>
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading" class="card p-3 placeholder-glow">
+      <span class="placeholder col-3 mb-2"></span>
+      <span class="placeholder col-4 mb-2"></span>
+      <span class="placeholder col-2 mb-2"></span>
+      <span class="placeholder col-3"></span>
+    </div>
     <div v-if="!loading" class="card">
       <json-viewer :value="eventBody" :expand-depth="3" copyable></json-viewer>
     </div>

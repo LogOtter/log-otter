@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import StreamIdSearchPanel from "../components/StreamIdSearchPanel.vue";
+import StreamIdSearchPanel from "@/components/StreamIdSearchPanel.vue";
 
 export default defineComponent({
   components: {
@@ -8,13 +8,16 @@ export default defineComponent({
   },
   methods: {
     search(streamId: string) {
-      window.location.hash = `#/${this.eventStreamName}/${encodeURIComponent(
-        streamId
-      )}`;
+      window.location.hash = `#/${encodeURIComponent(
+        this.eventStreamName
+      )}/${encodeURIComponent(streamId)}`;
     },
   },
   props: {
-    eventStreamName: String,
+    eventStreamName: {
+      type: String,
+      required: true,
+    },
   },
 });
 </script>

@@ -6,6 +6,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./assets/main.css";
 import * as dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+
 dayjs.extend(relativeTime);
 
 createApp(App).mount("#app");

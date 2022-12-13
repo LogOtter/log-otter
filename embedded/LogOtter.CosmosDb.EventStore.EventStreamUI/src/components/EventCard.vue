@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type Event from "../types/Event";
-import EventBody from "./EventBody.vue";
+import type { Event } from "@/services/EventStreamsService";
+import EventBody from "@/components/EventBody.vue";
 import dayjs from "dayjs";
 import { Tooltip } from "bootstrap";
 
