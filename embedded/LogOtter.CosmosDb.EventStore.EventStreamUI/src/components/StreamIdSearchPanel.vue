@@ -13,6 +13,10 @@ export default defineComponent({
   },
   methods: {
     submit() {
+      if (!this.streamId.trim()) {
+        return;
+      }
+
       this.$emit("search", this.streamId);
     },
   },
@@ -26,10 +30,12 @@ export default defineComponent({
 
 <template>
   <div class="card mb-3">
+    <div class="card-header">
+      <label for="search">Stream ID</label>
+    </div>
     <div class="card-body">
       <div class="mb-3">
         <form @submit="submit">
-          <label class="form-label" for="search">Stream ID</label>
           <div class="input-group">
             <input
               type="text"
