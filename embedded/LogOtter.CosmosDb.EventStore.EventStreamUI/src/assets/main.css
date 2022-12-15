@@ -8,3 +8,9 @@ main {
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+@media (max-width: 576px) {
+  .sidebar-margin {
+    margin-left: 40px;
+  }
+}
