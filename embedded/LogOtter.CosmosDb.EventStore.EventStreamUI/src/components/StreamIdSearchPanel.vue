@@ -35,7 +35,7 @@ export default defineComponent({
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <form @submit="submit">
+        <form @submit.prevent="submit">
           <div class="input-group">
             <input
               type="text"

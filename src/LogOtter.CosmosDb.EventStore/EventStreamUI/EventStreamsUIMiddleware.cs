@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,9 +14,8 @@ internal class EventStreamsUIMiddleware
 {
     private const string EmbeddedFileNamespace = "LogOtter.CosmosDb.EventStore.EventStreamUI.wwwroot";
 
-    private readonly RequestDelegate _next;
-    private readonly EventStreamsUIOptions _options;
     private readonly StaticFileMiddleware _staticFileMiddleware;
+    private readonly PathString _rootPath;
 
     public EventStreamsUIMiddleware(
         RequestDelegate next,
@@ -24,15 +24,34 @@ internal class EventStreamsUIMiddleware
         EventStreamsUIOptions options
     )
     {
-        _next = next;
-        _options = options;
-
+        _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
         _staticFileMiddleware = CreateStaticFileMiddleware(next, hostingEnv, loggerFactory, options);
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
+        var currentPath = httpContext.Request.Path.EnsurePathDoesNotEndWithSlash();
+        if (currentPath == _rootPath)
+        {
+            if (!httpContext.Request.Path.EndsWithSlash())
+            {
+                httpContext.Response.Redirect(_rootPath);
+                return;
+            }
+
+            httpContext.Request.Path = _rootPath + "/index.html";
+        }
+
         await _staticFileMiddleware.Invoke(httpContext);
+
+        if (httpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
+        {
+            if (currentPath.StartsWithSegments(_rootPath))
+            {
+                var remainingPath = currentPath.Value![_rootPath.Value!.Length..];
+                httpContext.Response.Redirect(_rootPath + "/#" + remainingPath);
+            }
+        }
     }
 
     private static StaticFileMiddleware CreateStaticFileMiddleware(
@@ -44,9 +63,13 @@ internal class EventStreamsUIMiddleware
     {
         var staticFileOptions = new StaticFileOptions
         {
-            RequestPath = string.IsNullOrEmpty(options.RoutePrefix) ? string.Empty : $"/{options.RoutePrefix.TrimStart('/')}",
-            FileProvider = new EmbeddedFileProvider(typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly,
-                EmbeddedFileNamespace),
+            RequestPath = string.IsNullOrEmpty(options.RoutePrefix)
+                ? string.Empty
+                : $"/{options.RoutePrefix.Trim('/')}",
+            FileProvider = new EmbeddedFileProvider(
+                typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly,
+                EmbeddedFileNamespace
+            )
         };
 
         return new StaticFileMiddleware(next, hostingEnv, Options.Create(staticFileOptions), loggerFactory);
