@@ -20,6 +20,12 @@ internal static class HttpExtensions
 
         await response.WriteAsync(json, new UTF8Encoding(false));
     }
+
+    public static void Redirect(this HttpResponse response, string location)
+    {
+        response.StatusCode = (int)HttpStatusCode.Redirect;
+        response.Headers.Location = location;
+    } 
     
     public static string GetHost(this HttpRequest request)
     {
@@ -48,4 +54,19 @@ internal static class HttpExtensions
 
         return 1;
     }
+
+    public static bool EndsWithSlash(this PathString path)
+    {
+        return path.HasValue && path.Value.EndsWith("/", StringComparison.Ordinal);
+    }
+
+    public static PathString EnsurePathDoesNotEndWithSlash(this PathString path)
+    {
+        if (path.EndsWithSlash())
+        {
+            return new PathString(path.Value!.TrimEnd('/'));
+        }
+        return path;
+    }
+
 }
