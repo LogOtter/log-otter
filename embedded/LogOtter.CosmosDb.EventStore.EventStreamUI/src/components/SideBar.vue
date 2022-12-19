@@ -15,6 +15,7 @@ export default defineComponent({
       currentHash: window.location.hash,
       eventStreams: [] as EventStream[],
       nextPageUrl: undefined as string | undefined,
+      version: "",
     };
   },
   methods: {
@@ -62,6 +63,11 @@ export default defineComponent({
         this.fetchNextPage();
       }
     },
+    async fetchVersion() {
+      var version = await eventStreamsService.getVersion();
+
+      this.version = version.packageVersion;
+    },
     isActive(eventStream: EventStream) {
       return (
         this.currentPath === "/" + eventStream.name ||
@@ -76,6 +82,8 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData();
+
+    this.fetchVersion();
 
     const sidebar = this.$refs.sidebar as HTMLElement;
 
@@ -143,6 +151,10 @@ export default defineComponent({
       </li>
       <span ref="loadMore"></span>
     </ul>
+    <hr />
+    <div class="text-muted">
+      <small v-if="version">v{{ version }}</small>
+    </div>
   </div>
 </template>
 

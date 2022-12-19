@@ -17,7 +17,7 @@ internal class GetEventsHandler : BaseHandler
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _eventStoreOptions;
 
-    protected override Regex PathRegex => new(@"^(?<EventStreamName>[^/]+)/(?<StreamId>[^/]+)/events/$");
+    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/streams/(?<StreamId>[^/]+)/events/$");
 
     public GetEventsHandler(
         EventStoreCatalog eventStoreCatalog,

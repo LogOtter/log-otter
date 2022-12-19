@@ -2,5 +2,5 @@
 
 public record EventStreamsUIOptions
 {
-    public string RoutePrefix { get; init; } = "/event-streams";
+    public string RoutePrefix { get; init; } = "/logotter";
 }

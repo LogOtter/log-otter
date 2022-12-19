@@ -9,7 +9,7 @@ internal class GetEventStreamsHandler : BaseHandler
 {
     private readonly EventStoreCatalog _eventStoreCatalog;
 
-    protected override Regex PathRegex => new(@"^$");
+    protected override Regex PathRegex => new(@"^event-streams/$");
 
     public GetEventStreamsHandler(EventStoreCatalog eventStoreCatalog)
     {
