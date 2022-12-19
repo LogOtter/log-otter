@@ -15,7 +15,7 @@ internal class GetEventHandler : BaseHandler
     private readonly ICosmosContainerFactory _containerFactory;
     private readonly EventStoreOptions _eventStoreOptions;
 
-    protected override Regex PathRegex => new(@"^(?<EventStreamName>[^/]+)/(?<StreamId>[^/]+)/events/(?<EventId>[^/]+)/$");
+    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/streams/(?<StreamId>[^/]+)/events/(?<EventId>[^/]+)/$");
 
     public GetEventHandler(
         EventStoreCatalog eventStoreCatalog,

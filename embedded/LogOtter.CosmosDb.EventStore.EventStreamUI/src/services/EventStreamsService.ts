@@ -16,14 +16,19 @@ export interface Page<T> {
   nextPage: string | undefined;
 }
 
-const BASE_URL = `${import.meta.env.VITE_API_BASE_URL}api/`;
+export interface Version {
+  packageVersion: string;
+  apiVersion: number;
+}
+
+const BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 export class EventStreamsService {
   async getEventStreams(
     url: string | undefined = undefined
   ): Promise<Page<EventStream>> {
     if (!url) {
-      url = BASE_URL;
+      url = `${BASE_URL}event-streams/`;
     } else {
       if (!url.startsWith(BASE_URL)) {
         throw new Error("invalid url");
@@ -44,9 +49,9 @@ export class EventStreamsService {
     streamId: string
   ): Promise<Page<Event>> {
     return this.getEventsWithUrl(
-      `${BASE_URL}${encodeURIComponent(eventStreamName)}/${encodeURIComponent(
-        streamId
-      )}/events`
+      `${BASE_URL}event-streams/${encodeURIComponent(
+        eventStreamName
+      )}/streams/${encodeURIComponent(streamId)}/events`
     );
   }
 
@@ -69,9 +74,16 @@ export class EventStreamsService {
     streamId: string,
     eventId: string
   ): Promise<any> {
-    const url = `${BASE_URL}${encodeURIComponent(
+    const url = `${BASE_URL}event-streams/${encodeURIComponent(
       eventStreamName
-    )}/${encodeURIComponent(streamId)}/events/${eventId}/body`;
+    )}/streams/${encodeURIComponent(streamId)}/events/${eventId}/body`;
+
+    const response = await fetch(url);
+    return await response.json();
+  }
+
+  async getVersion(): Promise<Version> {
+    const url = `${BASE_URL}version`;
 
     const response = await fetch(url);
     return await response.json();

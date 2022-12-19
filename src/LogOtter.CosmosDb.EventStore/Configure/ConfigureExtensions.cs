@@ -28,6 +28,7 @@ public static class ConfigureExtensions
         cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventsHandler>();
         cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventHandler>();
         cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventBodyHandler>();
+        cosmosDbBuilder.Services.AddSingleton<IHandler, GetVersionHandler>();
 
         return new EventStoreBuilder(cosmosDbBuilder);
     }
