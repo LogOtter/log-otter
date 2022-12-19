@@ -103,4 +103,11 @@ export default defineComponent({
     </div>
     <span ref="loadMore"></span>
   </div>
+  <div v-if="!loading && !eventStreams.length">
+    <div class="card m-3 p-3 text-muted">
+      <span>
+        <i class="bi-info-square me-2"></i> No event streams configured
+      </span>
+    </div>
+  </div>
 </template>
