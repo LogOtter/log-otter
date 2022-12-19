@@ -13,7 +13,7 @@ internal class GetEventStreamHandler : BaseHandler
         _eventStoreCatalog = eventStoreCatalog;
     }
 
-    protected override Regex PathRegex => new(@"^(?<EventStreamName>[^/]+)/$");
+    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/$");
 
     public override async Task Handle(HttpContext httpContext, Match match)
     {

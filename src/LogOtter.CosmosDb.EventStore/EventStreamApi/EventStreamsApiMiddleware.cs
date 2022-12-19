@@ -7,7 +7,6 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
 internal class EventStreamsApiMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly EventStreamsApiOptions _options;
     private readonly IEnumerable<IHandler> _handlers;
 
     public const int PageSize = 20;
@@ -25,7 +24,6 @@ internal class EventStreamsApiMiddleware
     )
     {
         _next = next;
-        _options = options;
         _handlers = handlers;
 
         foreach (var handler in _handlers)
