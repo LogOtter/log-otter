@@ -83,6 +83,14 @@ export default {
       required: true,
     },
   },
+  watch: {
+    streamId() {
+      this.fetchEvents();
+    },
+    eventStreamName() {
+      this.fetchEvents();
+    },
+  },
   mounted() {
     this.fetchEvents();
 
@@ -111,6 +119,12 @@ export default {
         v-for="event in events"
         :key="event.eventId"
       ></event-card>
+
+      <div v-if="!loading && !events.length">
+        <div class="card mb-1 p-3 text-muted">
+          <span><i class="bi-info-square me-2"></i> No events found </span>
+        </div>
+      </div>
 
       <div v-if="loading">
         <div

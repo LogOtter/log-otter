@@ -3,6 +3,7 @@ using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ services
 
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
+services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStreamsApi"));
 
 services
     .AddCosmosDb()
