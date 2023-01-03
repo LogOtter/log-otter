@@ -1,0 +1,46 @@
+﻿### Healthcheck
+GET https://{{ host }}/healthcheck
+
+> {% 
+    client.test("Request executed successfully", function() {
+      client.assert(response.status === 200, "Response status is not 200");
+      client.assert(response.body === 'Healthy', "Response does not return 'Healthy'");
+    });
+%}
+
+### Get all customers
+GET https://{{ host }}/customers
+Accept: application/json
+Authorization: Bearer {{ token }}
+
+### Get a single customer
+GET https://{{ host }}/customers/{{ test-customer-id }}
+Accept: application/json
+Authorization: Bearer {{ token }}
+
+### Create a customer
+POST https://{{ host }}/customers
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "emailAddress": "{{ $random.email }}",
+  "firstName": "Bob",
+  "lastName": "Bobertson"
+}
+
+### Patch a customer
+PATCH https://{{ host }}/customers/{{ test-customer-id }}
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "firstName": "Bob"
+}
+
+### Delete a customer
+DELETE https://{{ host }}/customers/nGN3dYwFfL3BzChcW9WQszXD
+Accept: application/json
+Authorization: Bearer {{ token }}
