@@ -8,24 +8,6 @@ $embeddedUISrcDirectory = Join-Path $solutionDirectory 'embedded' 'LogOtter.Cosm
 $distDirectory = Join-Path $embeddedUISrcDirectory 'dist'
 $outputDirectory = Join-Path $solutionDirectory 'src' 'LogOtter.CosmosDb.EventStore' 'EventStreamUI' 'wwwroot'
 
-$currentHashes = @()
-$generatedHashes = @()
-
-Push-Location $outputDirectory
-
-try {
-  Write-Host 'Computing current embedded UI hash...'
-  foreach ($file in (Get-ChildItem $outputDirectory -Recurse -File)) {
-    $currentHashes += @{ 
-      Filename = Resolve-Path $file.FullName -Relative
-      Hash = ($file | Get-FileHash ).Hash 
-    }
-  }
-} 
-finally {
-  Pop-Location
-}
-
 Push-Location $embeddedUISrcDirectory
 
 try {
@@ -45,38 +27,49 @@ finally {
 
 Push-Location $distDirectory
 
+$errors = @()
+
 try {
-  Write-Host 'Computing new embedded UI hash...'
-  foreach ($file in (Get-ChildItem $distDirectory -Recurse -File)) {
-    $generatedHashes += @{ 
-      Filename = Resolve-Path $file.FullName -Relative
-      Hash = ($file | Get-FileHash ).Hash 
+  Write-Host 'Comparing files...'
+
+  foreach ($expectedFileInfo in (Get-ChildItem $distDirectory -Recurse -File)) {
+    $relativePath = Resolve-Path $expectedFileInfo.FullName -Relative
+    Write-Host "  * $relativePath " -NoNewLine
+
+    $expectedFile = (Get-Content $expectedFileInfo.FullName -Raw) -Replace "`r`n", "`n"
+    
+    $actualFilename = Join-Path $outputDirectory $relativePath
+    if(-not (Test-Path $actualFilename)) {
+      Write-Host '[MISSING]' -ForegroundColor Red
+      $errors += "Missing $relativePath"
+      continue
     }
+
+    $actualFile = (Get-Content $actualFilename -Raw) -Replace "`r`n", "`n"
+
+    if($actualFile -ne $expectedFile) {
+      Write-Host '[OUT OF DATE]' -ForegroundColor Red
+      $errors += "Contents do not match for $relativePath"
+      continue
+    }
+
+    Write-Host '[SUCCESS]' -ForegroundColor Green
   }
 }
 finally {
   Pop-Location
 }
 
-Write-Host ''
-Write-Host 'Comparing hashes...'
-
-if ($generatedHashes.Count -ne $currentHashes.Count) {
-  Write-Error 'Embedded UI is out of date (different files) - run build/Generate-EmbeddedUI.ps1'
-  return
-}
-
-foreach($hash in $currentHashes) {
-  Write-Host "Checking $($hash.Filename)..."
-  $matchingHash = $generatedHashes | where { $_.Filename -eq $hash.Filename }
-
-  if($matchingHash -eq $null) {
-    Write-Error "Embedded UI is out of date (missing $($hash.Filename)) - run build/Generate-EmbeddedUI.ps1"
+if($errors.Count -gt 0) {
+  
+  Write-Host ''
+  Write-Host 'Errors:'
+  foreach($error in $errors) {
+    Write-Host "  * $error"
   }
+  Write-Host ''
 
-  if($matchingHash.Hash -ne $hash.Hash) {
-    Write-Error "Embedded UI is out of date (different hash for $($hash.Filename)) - run build/Generate-EmbeddedUI.ps1"
-  }
+  Write-Error "Embedded UI is out of date - run build/Generate-EmbeddedUI.ps1"
 }
 
 Write-Host 'Embedded UI is up to date'
