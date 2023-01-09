@@ -8,9 +8,23 @@ $embeddedUISrcDirectory = Join-Path $solutionDirectory 'embedded' 'LogOtter.Cosm
 $distDirectory = Join-Path $embeddedUISrcDirectory 'dist'
 $outputDirectory = Join-Path $solutionDirectory 'src' 'LogOtter.CosmosDb.EventStore' 'EventStreamUI' 'wwwroot'
 
-Write-Host 'Computing current embedded UI hash...'
-$childHash = (Get-ChildItem $outputDirectory -Recurse -File | Get-FileHash -Algorithm MD5).Hash | Out-String
-$currentHash = Get-FileHash -InputStream ([IO.MemoryStream]::new([char[]]$childHash))
+$currentHashes = @()
+$generatedHashes = @()
+
+Push-Location $outputDirectory
+
+try {
+  Write-Host 'Computing current embedded UI hash...'
+  foreach ($file in (Get-ChildItem $outputDirectory -Recurse -File)) {
+    $currentHashes += @{ 
+      Filename = Resolve-Path $file.FullName -Relative
+      Hash = ($file | Get-FileHash ).Hash 
+    }
+  }
+} 
+finally {
+  Pop-Location
+}
 
 Push-Location $embeddedUISrcDirectory
 
@@ -24,19 +38,45 @@ try {
   Write-Host ''
   Write-Host 'Building site...'
   & npm run build
-
-  Write-Host 'Computing new embedded UI hash...'
-  $childHash = (Get-ChildItem $distDirectory -Recurse -File | Get-FileHash -Algorithm MD5).Hash | Out-String
-  $newHash = Get-FileHash -InputStream ([IO.MemoryStream]::new([char[]]$childHash))
 }
 finally {
   Pop-Location
 }
 
-if ($newHash -ne $currentHash) {
-  Write-Error 'Embedded UI is out of date - run build/Generate-EmbeddedUI.ps1'
+Push-Location $distDirectory
+
+try {
+  Write-Host 'Computing new embedded UI hash...'
+  foreach ($file in (Get-ChildItem $distDirectory -Recurse -File)) {
+    $generatedHashes += @{ 
+      Filename = Resolve-Path $file.FullName -Relative
+      Hash = ($file | Get-FileHash ).Hash 
+    }
+  }
 }
-else {
-  Write-Host 'Embedded UI is up to date'
+finally {
+  Pop-Location
 }
 
+Write-Host ''
+Write-Host 'Comparing hashes...'
+
+if ($generatedHashes.Count -ne $currentHashes.Count) {
+  Write-Error 'Embedded UI is out of date (different files) - run build/Generate-EmbeddedUI.ps1'
+  return
+}
+
+foreach($hash in $currentHashes) {
+  Write-Host "Checking $($hash.Filename)..."
+  $matchingHash = $generatedHashes | where { $_.Filename -eq $hash.Filename }
+
+  if($matchingHash -eq $null) {
+    Write-Error "Embedded UI is out of date (missing $($hash.Filename)) - run build/Generate-EmbeddedUI.ps1"
+  }
+
+  if($matchingHash.Hash -ne $hash.Hash) {
+    Write-Error "Embedded UI is out of date (different hash for $($hash.Filename)) - run build/Generate-EmbeddedUI.ps1"
+  }
+}
+
+Write-Host 'Embedded UI is up to date'
