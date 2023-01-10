@@ -30,6 +30,7 @@ Push-Location $distDirectory
 $errors = @()
 
 try {
+  Write-Host ''
   Write-Host 'Comparing files...'
 
   foreach ($expectedFileInfo in (Get-ChildItem $distDirectory -Recurse -File)) {
