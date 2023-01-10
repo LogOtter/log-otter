@@ -16,6 +16,7 @@ export default defineComponent({
       eventStreams: [] as EventStream[],
       nextPageUrl: undefined as string | undefined,
       version: "",
+      isExpanded: false,
     };
   },
   methods: {
@@ -106,12 +107,28 @@ export default defineComponent({
 
 <template>
   <div
-    class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar"
+    class="close"
+    :class="{ show: isExpanded }"
+    @click="() => (isExpanded = false)"
+  >
+    <i class="bi-x-circle-fill"></i>
+  </div>
+  <div
+    class="open"
+    :class="{ show: !isExpanded }"
+    @click="() => (isExpanded = true)"
+  >
+    <i class="bi-list"></i>
+  </div>
+  <div
+    class="flex-column flex-shrink-0 p-3 text-bg-dark sidebar"
+    :class="{ collapsed: !isExpanded }"
     ref="sidebar"
   >
     <a
       href="./"
-      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+      class="d-flex align-items-center text-white text-decoration-none"
+      @click="() => (isExpanded = false)"
     >
       <img
         src="@/assets/log-otter-grayscale.svg"
@@ -128,6 +145,7 @@ export default defineComponent({
           href="#"
           class="nav-link text-white"
           :class="{ active: currentPath == '/' }"
+          @click="() => (isExpanded = false)"
         >
           <i class="bi-house-door me-2"></i>
           Home
@@ -138,6 +156,7 @@ export default defineComponent({
           :href="'#/' + eventStream.name"
           class="nav-link text-white"
           :class="{ active: isActive(eventStream) }"
+          @click="() => (isExpanded = false)"
         >
           <i class="bi-journals me-2"></i>
           {{ eventStream.name }}
@@ -159,8 +178,58 @@ export default defineComponent({
 </template>
 
 <style scoped>
+.close {
+  display: none;
+}
+.open {
+  display: none;
+}
+
 .sidebar {
   width: 280px;
   overflow-y: auto;
+  display: flex;
+}
+
+@media (max-width: 576px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+  }
+
+  .sidebar.collapsed {
+    margin-left: -280px;
+  }
+
+  .close.show {
+    display: block;
+    position: absolute;
+    font-size: 32px;
+    color: #ffffff;
+    background: #212529;
+    top: 10px;
+    left: 264px;
+    width: 41px;
+    height: 49px;
+    border-radius: 0 28px 28px 0;
+    z-index: 9999;
+    cursor: pointer;
+  }
+
+  .open.show {
+    display: block;
+    position: absolute;
+    font-size: 32px;
+    background: rgba(255, 255, 255, 0.5);
+    top: 12px;
+    left: 24px;
+    width: 32px;
+    height: 32px;
+    z-index: 9999;
+    cursor: pointer;
+  }
 }
 </style>

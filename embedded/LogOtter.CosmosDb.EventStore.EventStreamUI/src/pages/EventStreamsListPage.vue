@@ -61,23 +61,30 @@ export default defineComponent({
         this.fetchNextPage();
       }
     },
+    scrollHandler() {
+      if (isVisible(this.$refs.loadMore as HTMLElement)) {
+        this.fetchNextPage();
+      }
+    },
   },
   mounted() {
     this.fetchData();
 
     const root = this.$refs.root as HTMLElement;
-    root.closest("#rootPage")!.addEventListener("scroll", () => {
-      if (isVisible(this.$refs.loadMore as HTMLElement)) {
-        this.fetchNextPage();
-      }
-    });
+    root.closest("#rootPage")!.addEventListener("scroll", this.scrollHandler);
+  },
+  beforeUnmount() {
+    const root = this.$refs.root as HTMLElement;
+    root
+      .closest("#rootPage")!
+      .removeEventListener("scroll", this.scrollHandler);
   },
 });
 </script>
 
 <template>
   <div class="m-3" ref="root">
-    <h1 class="display-5 fw-bold mb-4">Event Streams</h1>
+    <h1 class="display-5 fw-bold mb-4 sidebar-margin">Event Streams</h1>
     <div v-if="loading">
       <div class="card mb-2 placeholder-glow" v-for="index in 3" :key="index">
         <div class="card-body">
