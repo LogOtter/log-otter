@@ -72,6 +72,11 @@ export default {
         this.fetchNextPage();
       }
     },
+    scrollHandler() {
+      if (isVisible(this.$refs.loadMore as HTMLElement)) {
+        this.fetchNextPage();
+      }
+    },
   },
   props: {
     eventStreamName: {
@@ -95,18 +100,20 @@ export default {
     this.fetchEvents();
 
     const root = this.$refs.root as HTMLElement;
-    root.closest("#rootPage")!.addEventListener("scroll", () => {
-      if (isVisible(this.$refs.loadMore as HTMLElement)) {
-        this.fetchNextPage();
-      }
-    });
+    root.closest("#rootPage")!.addEventListener("scroll", this.scrollHandler);
+  },
+  beforeUnmount() {
+    const root = this.$refs.root as HTMLElement;
+    root
+      .closest("#rootPage")!
+      .removeEventListener("scroll", this.scrollHandler);
   },
 };
 </script>
 
 <template>
   <div class="m-3" ref="root">
-    <h1 class="display-5 fw-bold mb-4">{{ eventStreamName }}</h1>
+    <h1 class="display-5 fw-bold mb-4 sidebar-margin">{{ eventStreamName }}</h1>
     <stream-id-search-panel
       @search="search"
       :starting-stream-id="streamId"

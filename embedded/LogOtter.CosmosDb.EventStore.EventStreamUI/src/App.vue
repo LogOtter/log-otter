@@ -15,5 +15,3 @@ export default defineComponent({
   <side-bar></side-bar>
   <root-page></root-page>
 </template>
-
-<style scoped></style>
