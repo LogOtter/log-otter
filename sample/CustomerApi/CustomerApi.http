@@ -1,5 +1,5 @@
 ﻿### Healthcheck
-GET https://{{ host }}/healthcheck
+GET {{ host }}/healthcheck
 
 > {% 
     client.test("Request executed successfully", function() {
@@ -9,17 +9,17 @@ GET https://{{ host }}/healthcheck
 %}
 
 ### Get all customers
-GET https://{{ host }}/customers
+GET {{ host }}/customers
 Accept: application/json
 Authorization: Bearer {{ token }}
 
 ### Get a single customer
-GET https://{{ host }}/customers/{{ test-customer-id }}
+GET {{ host }}/customers/{{ test-customer-id }}
 Accept: application/json
 Authorization: Bearer {{ token }}
 
 ### Create a customer
-POST https://{{ host }}/customers
+POST {{ host }}/customers
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{ token }}
@@ -31,7 +31,7 @@ Authorization: Bearer {{ token }}
 }
 
 ### Patch a customer
-PATCH https://{{ host }}/customers/{{ test-customer-id }}
+PATCH {{ host }}/customers/{{ test-customer-id }}
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{ token }}
@@ -41,6 +41,6 @@ Authorization: Bearer {{ token }}
 }
 
 ### Delete a customer
-DELETE https://{{ host }}/customers/nGN3dYwFfL3BzChcW9WQszXD
+DELETE {{ host }}/customers/nGN3dYwFfL3BzChcW9WQszXD
 Accept: application/json
 Authorization: Bearer {{ token }}
