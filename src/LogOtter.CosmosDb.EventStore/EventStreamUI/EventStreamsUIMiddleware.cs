@@ -43,15 +43,6 @@ internal class EventStreamsUIMiddleware
         }
 
         await _staticFileMiddleware.Invoke(httpContext);
-
-        if (httpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
-        {
-            if (currentPath.StartsWithSegments(_rootPath))
-            {
-                var remainingPath = currentPath.Value![_rootPath.Value!.Length..];
-                httpContext.Response.Redirect(_rootPath + "/#" + remainingPath);
-            }
-        }
     }
 
     private static StaticFileMiddleware CreateStaticFileMiddleware(
