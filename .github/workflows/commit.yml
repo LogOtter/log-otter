@@ -41,7 +41,7 @@ jobs:
       - name: Publish docker image
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ github.sha }}' -p:ContainerImageTag=commit.${{ github.sha }} -p:ContainerRegistry=docker://
+          dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ github.sha }}' -p:ContainerImageTag=commit.${{ github.sha }}
       
       - name: Push docker image to GitHub Container Registry
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
