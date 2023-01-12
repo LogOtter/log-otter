@@ -38,11 +38,15 @@ jobs:
           path: .test-results/*.trx
           reporter: dotnet-trx
       
-      - name: Publish to container registry
+      - name: Publish docker image
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ github.sha }}' -p:ContainerImageTag=commit.${{ github.sha }} -p:ContainerRegistry=docker://
+      
+      - name: Push docker image to GitHub Container Registry
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} > docker login ghcr.io -u AButler --password-stdin
-          dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ github.sha }}' -p:ContainerImageTag=commit.${{ github.sha }}
           docker image tag customer-api:commit.${{ github.sha }} ghcr.io/logotter/customer-api:commit.${{ github.sha }}
           docker image tag customer-api:commit.${{ github.sha }} ghcr.io/logotter/customer-api:latest
           docker image push --all-tags ghcr.io/logotter/customer-api
