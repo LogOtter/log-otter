@@ -2,7 +2,4 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-    <ItemGroup>
-        <ContainerLabel Include="org.opencontainers.image.source" Value="https://github.com/LogOtter/log-otter" />
-    </ItemGroup>
 </Project>
