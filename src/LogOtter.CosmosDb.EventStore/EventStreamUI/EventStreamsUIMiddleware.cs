@@ -35,7 +35,7 @@ internal class EventStreamsUIMiddleware
         {
             if (!httpContext.Request.Path.EndsWithSlash())
             {
-                httpContext.Response.Redirect(_rootPath);
+                httpContext.Response.Redirect(_rootPath + "/");
                 return;
             }
 
