@@ -5,13 +5,10 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>79fdfe97-46a6-4803-84be-e9426f8866de</UserSecretsId>
-        <PublishProfile>DefaultContainer</PublishProfile>
-        <ContainerImageName>customer-api</ContainerImageName>
     </PropertyGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-        <PackageReference Include="Microsoft.NET.Build.Containers" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
