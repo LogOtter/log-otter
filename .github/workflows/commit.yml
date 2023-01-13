@@ -59,9 +59,13 @@ jobs:
         with:
           global-json-file: global.json
           
+      - name: Generate variables
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          
       - name: Publish for docker image
         run: |
-          dotnet publish --configuration Release -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ github.sha }}' --output bin/docker-publish
+          dotnet publish --configuration Release -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ steps.vars.outputs.sha_short }}' --output bin/docker-publish
         working-directory: sample/CustomerApi
 
       - name: Log in to the Container registry
@@ -86,4 +90,7 @@ jobs:
           push: true
           context: sample/CustomerApi
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}   
+          labels: ${{ steps.meta.outputs.labels }}
+            
+      - name: Trigger app service container update
+        run: curl ${{ secrets.CUSTOMER_API_DEPLOY_WEBHOOK_URL }} -H "" -d ""
