@@ -81,6 +81,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          context: samples/CustomerApi
+          context: sample/CustomerApi
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}   
