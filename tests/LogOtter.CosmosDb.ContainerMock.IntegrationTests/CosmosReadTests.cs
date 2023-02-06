@@ -29,11 +29,13 @@ public sealed class CosmosReadTests : IAsyncLifetime, IDisposable
             realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
         }
     } 
-        
-    //TODO: Verify if this is just a problem with the emulator
-    [Fact(Skip = "Failing with Cosmos Emulator")]
+    
+    [SkippableFact]
     public async Task ReadWithInvalidIdIsEquivalent()
     {
+        var isUsingCosmosDbEmulator = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING"));
+        Skip.If(isUsingCosmosDbEmulator, "The CosmosDb emulator does not behave like the real CosmosDb in this scenario");
+        
         var (realException, testException) = await _testCosmos.WhenReadItemProducesException<TestModel>("#");
 
         realException.Should().NotBeNull();
