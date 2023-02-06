@@ -3,6 +3,7 @@ using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using Microsoft.Azure.Cosmos;
 
