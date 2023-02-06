@@ -1,13 +1,11 @@
-﻿using LogOtter.CosmosDb;
-using LogOtter.CosmosDb.EventStore;
-using LogOtter.CosmosDb.EventStore.EventStreamApi;
+﻿using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 using LogOtter.CosmosDb.EventStore.EventStreamUI;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
+namespace LogOtter.CosmosDb.EventStore;
 
 public static class ConfigureExtensions
 {

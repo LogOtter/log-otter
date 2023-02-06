@@ -1,9 +1,8 @@
-﻿using LogOtter.CosmosDb;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
+namespace LogOtter.CosmosDb;
 
 public static class ConfigureExtensions
 {
@@ -16,18 +15,20 @@ public static class ConfigureExtensions
         {
             serviceCollection.Configure(setupAction);
         }
-        
+
+        serviceCollection.AddSingleton<IValidateOptions<CosmosDbOptions>, CosmosDbOptionsValidator>();
+
         serviceCollection.AddSingleton(sp =>
         {
             var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
             return new CosmosClient(options.ConnectionString, options.ClientOptions);
         });
-        
+
         serviceCollection.AddSingleton(sp =>
         {
             var cosmosDbOptions = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
             var client = sp.GetRequiredService<CosmosClient>();
-        
+
             var response = client
                 .CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId)
                 .GetAwaiter()
@@ -39,7 +40,7 @@ public static class ConfigureExtensions
         serviceCollection.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
         serviceCollection.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();
         serviceCollection.AddSingleton<IChangeFeedProcessorFactory, ChangeFeedProcessorFactory>();
-        
+
         serviceCollection.AddHostedService<ChangeFeedProcessorRunnerService>();
 
         return new CosmosDbBuilder(serviceCollection);

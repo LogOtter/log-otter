@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Azure.Cosmos" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection"  />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <PackageReference Include="Microsoft.Extensions.Options" />

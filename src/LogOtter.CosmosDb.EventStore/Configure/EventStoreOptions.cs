@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb.EventStore;
 
-public class EventStoreOptions
+public record EventStoreOptions
 {
     public bool AutoEscapeIds { get; set; }
 }

@@ -2,10 +2,10 @@ using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb;
 
-public class CosmosDbOptions
+public record CosmosDbOptions
 {
-    public string ConnectionString { get; set; } = default!;
-    public string DatabaseId { get; set; } = default!;
-    public ChangeFeedProcessorOptions ChangeFeedProcessorOptions { get; set; } = new ChangeFeedProcessorOptions();
+    public string ConnectionString { get; set; } = "";
+    public string DatabaseId { get; set; } = "";
+    public ChangeFeedProcessorOptions ChangeFeedProcessorOptions { get; set; } = new();
     public CosmosClientOptions? ClientOptions { get; set; }
 }
