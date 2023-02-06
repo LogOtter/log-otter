@@ -3,6 +3,7 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Azure.Cosmos;
 using Xunit;
+#pragma warning disable CS0618
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
@@ -17,7 +18,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
         _cosmosConnectionString = Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING") ?? "";
         _useTestContainers = string.IsNullOrWhiteSpace(_cosmosConnectionString);
 
-        _container = new TestcontainersBuilder<CosmosDbTestcontainer>()
+        _container = new ContainerBuilder<CosmosDbTestcontainer>()
             .WithDatabase(new CosmosDbTestcontainerConfiguration())
             .Build();
     }
