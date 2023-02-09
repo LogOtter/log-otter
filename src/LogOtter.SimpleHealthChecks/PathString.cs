@@ -4,8 +4,6 @@ namespace LogOtter.SimpleHealthChecks;
 
 internal class PathString : IEquatable<PathString>
 {
-    public static readonly PathString Empty = new(string.Empty);
-
     public PathString(string? value)
     {
         if (!string.IsNullOrEmpty(value) && value[0] != '/')
@@ -34,7 +32,7 @@ internal class PathString : IEquatable<PathString>
             }
         }
 
-        remaining = Empty;
+        remaining = new(string.Empty);
         return false;
     }
 

@@ -32,15 +32,17 @@ public class SimpleHealthCheckOptions
     private static IDictionary<HealthStatus, int> ValidateStatusCodesMapping(IDictionary<HealthStatus, int> mapping)
     {
         var missingHealthStatus = Enum.GetValues<HealthStatus>().Except(mapping.Keys).ToList();
-        if (missingHealthStatus.Count > 0)
+        if (missingHealthStatus.Count == 0)
         {
-            var missing = string.Join(", ", missingHealthStatus.Select(status => $"{nameof(HealthStatus)}.{status}"));
-            var message =
-                $"The {nameof(ResultStatusCodes)} dictionary must include an entry for all possible " +
-                $"{nameof(HealthStatus)} values. Missing: {missing}";
-            throw new InvalidOperationException(message);
+            return mapping;
         }
 
-        return mapping;
+        var missing = string.Join(", ", missingHealthStatus.Select(status => $"{nameof(HealthStatus)}.{status}"));
+        var message =
+            $"The {nameof(ResultStatusCodes)} dictionary must include an entry for all possible " +
+            $"{nameof(HealthStatus)} values. Missing: {missing}";
+        
+        throw new InvalidOperationException(message);
+
     }
 }

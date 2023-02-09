@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace LogOtter.SimpleHealthChecks;
 
@@ -15,7 +14,7 @@ public static class ConfigureExtensions
             services.Configure(configure);
         }
 
-        services.AddSingleton<IHostedService, SimpleHealthCheckService>();
+        services.AddHostedService<SimpleHealthCheckService>();
 
         return new SimpleHealthChecksBuilder(services);
     }

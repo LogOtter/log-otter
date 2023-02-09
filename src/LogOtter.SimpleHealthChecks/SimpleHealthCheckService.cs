@@ -104,4 +104,10 @@ internal class SimpleHealthCheckService : BackgroundService
 
         await options.ResponseWriter(context, result);
     }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        _listener.Stop();
+        return base.StopAsync(cancellationToken);
+    }
 }

@@ -13,14 +13,12 @@ internal class SimpleHealthChecksBuilder : ISimpleHealthChecksBuilder
 
     public ISimpleHealthChecksBuilder AddEndpoint(string path)
     {
-        AddEndpoint(new PathString(path), new SimpleHealthCheckOptions());
-        return this;
+        return AddEndpoint(new PathString(path), new SimpleHealthCheckOptions());
     }
 
     public ISimpleHealthChecksBuilder AddEndpoint(string path, SimpleHealthCheckOptions options)
     {
-        AddEndpoint(new PathString(path), options);
-        return this;
+        return AddEndpoint(new PathString(path), options);
     }
 
     private ISimpleHealthChecksBuilder AddEndpoint(PathString path, SimpleHealthCheckOptions options)

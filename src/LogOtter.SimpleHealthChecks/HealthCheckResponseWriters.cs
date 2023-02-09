@@ -13,6 +13,7 @@ internal static class HealthCheckResponseWriters
     public static Task WriteMinimalPlaintext(HttpListenerContext httpContext, HealthReport result)
     {
         httpContext.Response.ContentType = "text/plain";
+        
         return result.Status switch
         {
             HealthStatus.Degraded => httpContext.Response.OutputStream.WriteAsync(DegradedBytes.AsMemory()).AsTask(),
