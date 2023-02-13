@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,10 +11,11 @@ internal class SimpleHealthCheckService : BackgroundService
     private readonly IEnumerable<SimpleHealthCheckOptionsMap> _requestMaps;
     private readonly ILogger<SimpleHealthCheckService> _logger;
     private readonly SimpleHealthCheckHostOptions _hostOptions;
-    private readonly HttpListener _listener = new();
+    private readonly IHttpListener _listener;
 
     public SimpleHealthCheckService(
         HealthCheckService healthCheckService,
+        IHttpListenerFactory httpListenerFactory,
         IEnumerable<SimpleHealthCheckOptionsMap> requestMaps,
         IOptions<SimpleHealthCheckHostOptions> options,
         ILogger<SimpleHealthCheckService> logger
@@ -25,13 +25,14 @@ internal class SimpleHealthCheckService : BackgroundService
         _requestMaps = requestMaps;
         _hostOptions = options.Value;
         _logger = logger;
+        _listener = httpListenerFactory.Create();
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
-            _listener.Prefixes.Add($"{_hostOptions.Scheme}://{_hostOptions.Hostname}:{_hostOptions.Port}/");
+            _listener.Configure(_hostOptions.Scheme, _hostOptions.Hostname, _hostOptions.Port);
             _listener.Start();
 
             _logger.LogInformation("SimpleHealthCheckService started on {Scheme}://{Host}:{Port}",
@@ -45,21 +46,34 @@ internal class SimpleHealthCheckService : BackgroundService
                 var httpContext = await _listener.GetContextAsync();
                 await ProcessHealthCheck(httpContext, cancellationToken);
             }
+
+            _listener.Stop();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "ERROR: SimpleHealthCheckService: {Message}", e.Message);
+            _logger.LogError(e, "SimpleHealthCheckService: {Message}", e.Message);
         }
     }
 
-    private async Task ProcessHealthCheck(HttpListenerContext context, CancellationToken cancellationToken)
+    private async Task ProcessHealthCheck(IHttpListenerContext context, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await ProcessHealthCheckInternal(context, cancellationToken);
+        }
+        finally
+        {
+            context.Response.Close();
+        }
+    }
+
+    private async Task ProcessHealthCheckInternal(IHttpListenerContext context, CancellationToken cancellationToken)
     {
         var request = context.Request;
 
-        _logger.LogInformation(
-            "SimpleHealthCheckService received a request from {Endpoint}", request.RemoteEndPoint);
+        _logger.LogInformation("SimpleHealthCheckService received a request from {Endpoint}", request.RemoteEndPoint);
 
-        using var response = context.Response;
+        var response = context.Response;
 
         if (!string.Equals(request.HttpMethod, "GET", StringComparison.InvariantCultureIgnoreCase))
         {
@@ -84,10 +98,9 @@ internal class SimpleHealthCheckService : BackgroundService
 
         if (!options.ResultStatusCodes.TryGetValue(result.Status, out var statusCode))
         {
-            var message =
-                $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}." +
-                $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain" +
-                $"an entry for {result.Status}.";
+            var message = $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}." +
+                          $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain" +
+                          $"an entry for {result.Status}.";
 
             throw new InvalidOperationException(message);
         }
@@ -96,18 +109,11 @@ internal class SimpleHealthCheckService : BackgroundService
 
         if (!options.AllowCachingResponses)
         {
-            var headers = response.Headers;
-            headers[HttpResponseHeader.CacheControl] = "no-store, no-cache";
-            headers[HttpResponseHeader.Pragma] = "no-cache";
-            headers[HttpResponseHeader.Expires] = "Thu, 01 Jan 1970 00:00:00 GMT";
+            response.AddHeader("Cache-Control", "no-store, no-cache");
+            response.AddHeader("Pragma", "no-cache");
+            response.AddHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT");
         }
 
         await options.ResponseWriter(context, result);
-    }
-
-    public override Task StopAsync(CancellationToken cancellationToken)
-    {
-        _listener.Stop();
-        return base.StopAsync(cancellationToken);
     }
 }

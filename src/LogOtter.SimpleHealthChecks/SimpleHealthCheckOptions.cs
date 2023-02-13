@@ -26,7 +26,7 @@ public class SimpleHealthCheckOptions
         set => _resultStatusCodes = ValidateStatusCodesMapping(value);
     }
 
-    public Func<HttpListenerContext, HealthReport, Task> ResponseWriter { get; set; } =
+    public Func<IHttpListenerContext, HealthReport, Task> ResponseWriter { get; set; } =
         HealthCheckResponseWriters.WriteMinimalPlaintext;
 
     private static IDictionary<HealthStatus, int> ValidateStatusCodesMapping(IDictionary<HealthStatus, int> mapping)

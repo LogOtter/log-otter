@@ -10,7 +10,7 @@ internal static class HealthCheckResponseWriters
     private static readonly byte[] HealthyBytes = Encoding.UTF8.GetBytes(HealthStatus.Healthy.ToString());
     private static readonly byte[] UnhealthyBytes = Encoding.UTF8.GetBytes(HealthStatus.Unhealthy.ToString());
 
-    public static Task WriteMinimalPlaintext(HttpListenerContext httpContext, HealthReport result)
+    public static Task WriteMinimalPlaintext(IHttpListenerContext httpContext, HealthReport result)
     {
         httpContext.Response.ContentType = "text/plain";
         
