@@ -6,7 +6,7 @@ namespace LogOtter.SimpleHealthChecks.Tests;
 public class IncorrectUriTests
 {
     [Fact]
-    public async Task DefaultReturnsNotFoundWhenNotMapped()
+    public async Task ReturnsNotFoundWhenNotMapped()
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
@@ -23,7 +23,7 @@ public class IncorrectUriTests
     }
 
     [Fact]
-    public async Task DefaultReturnsNotFoundWhenMappedIncorrectly()
+    public async Task ReturnsNotFoundWhenMappedIncorrectly()
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
