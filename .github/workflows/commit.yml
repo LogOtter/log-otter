@@ -80,6 +80,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/logotter/customer-api
+          labels: |
+            org.opencontainers.image.title=Customer API
+            org.opencontainers.image.description=Sample API showing how to use LogOtter
 
       - name: (customer-api) Build and push Docker image
         uses: docker/build-push-action@v4
@@ -99,6 +102,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/logotter/customer-worker
+          labels: |
+            org.opencontainers.image.title=Customer Worker
+            org.opencontainers.image.description=Sample worker showing how to use LogOtter
 
       - name: (customer-worker) Build and push Docker image
         uses: docker/build-push-action@v4
