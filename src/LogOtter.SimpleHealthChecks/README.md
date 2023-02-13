@@ -100,3 +100,13 @@ private static Task WriteResponse(HttpListenerContext context, HealthReport heal
     return context.Response.OutputStream.WriteAsync(memoryStream.ToArray().AsMemory()).AsTask();
 }
 ```
+
+## Running locally
+
+In order to run locally, you'll either need to run with Admin permissions or run `netsh` as an administrator first:
+
+```pwsh
+# Run as Administrator
+# Note: change port 80 if required
+netsh http add urlacl url=http://+:80/ user=$env:USERDOMAIN\$env:USERNAME
+```

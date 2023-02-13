@@ -14,6 +14,7 @@ public static class ConfigureExtensions
             services.Configure(configure);
         }
 
+        services.AddSingleton<IHttpListenerFactory, HttpListenerFactory>();
         services.AddHostedService<SimpleHealthCheckService>();
 
         return new SimpleHealthChecksBuilder(services);

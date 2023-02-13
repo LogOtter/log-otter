@@ -71,7 +71,11 @@ internal class SimpleHealthCheckService : BackgroundService
     {
         var request = context.Request;
 
-        _logger.LogInformation("SimpleHealthCheckService received a request from {Endpoint}", request.RemoteEndPoint);
+        _logger.LogInformation(
+            "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath}",
+            request.RemoteEndPoint,
+            request.Url!.PathAndQuery
+        );
 
         var response = context.Response;
 
