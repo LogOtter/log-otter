@@ -10,16 +10,20 @@ internal static class HealthCheckResponseWriters
     private static readonly byte[] HealthyBytes = Encoding.UTF8.GetBytes(HealthStatus.Healthy.ToString());
     private static readonly byte[] UnhealthyBytes = Encoding.UTF8.GetBytes(HealthStatus.Unhealthy.ToString());
 
-    public static Task WriteMinimalPlaintext(IHttpListenerContext httpContext, HealthReport result)
+    public static async Task WriteMinimalPlaintext(IHttpListenerContext context, HealthReport result)
     {
-        httpContext.Response.ContentType = "text/plain";
-        
-        return result.Status switch
+        var response = context.Response;
+
+        response.ContentType = "text/plain";
+
+        var bytes = result.Status switch
         {
-            HealthStatus.Degraded => httpContext.Response.OutputStream.WriteAsync(DegradedBytes.AsMemory()).AsTask(),
-            HealthStatus.Healthy => httpContext.Response.OutputStream.WriteAsync(HealthyBytes.AsMemory()).AsTask(),
-            HealthStatus.Unhealthy => httpContext.Response.OutputStream.WriteAsync(UnhealthyBytes.AsMemory()).AsTask(),
-            _ => httpContext.Response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(result.Status.ToString())).AsTask()
+            HealthStatus.Degraded => DegradedBytes,
+            HealthStatus.Healthy => HealthyBytes,
+            HealthStatus.Unhealthy => UnhealthyBytes,
+            _ => Encoding.UTF8.GetBytes(result.Status.ToString())
         };
+
+        await response.OutputStream.WriteAsync(bytes);
     }
 }

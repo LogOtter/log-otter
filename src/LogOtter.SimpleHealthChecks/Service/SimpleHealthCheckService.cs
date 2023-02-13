@@ -28,7 +28,7 @@ internal class SimpleHealthCheckService : BackgroundService
         _listener = httpListenerFactory.Create();
     }
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
@@ -41,10 +41,18 @@ internal class SimpleHealthCheckService : BackgroundService
                 _hostOptions.Port
             );
 
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 var httpContext = await _listener.GetContextAsync();
-                await ProcessHealthCheck(httpContext, cancellationToken);
+
+                try
+                {
+                    await ProcessHealthCheck(httpContext, stoppingToken);
+                }
+                finally
+                {
+                    httpContext.Response.Close();
+                }
             }
 
             _listener.Stop();
@@ -56,18 +64,6 @@ internal class SimpleHealthCheckService : BackgroundService
     }
 
     private async Task ProcessHealthCheck(IHttpListenerContext context, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await ProcessHealthCheckInternal(context, cancellationToken);
-        }
-        finally
-        {
-            context.Response.Close();
-        }
-    }
-
-    private async Task ProcessHealthCheckInternal(IHttpListenerContext context, CancellationToken cancellationToken)
     {
         var request = context.Request;
 
