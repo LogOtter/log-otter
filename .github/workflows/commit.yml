@@ -1,5 +1,5 @@
 name: Commit
-  
+
 on:
   push:
     branches: ["main"]
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-     
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -41,9 +41,9 @@ jobs:
           name: .NET Tests
           path: .test-results/*.trx
           reporter: dotnet-trx
-          
+
   publish:
-    name: Publish to GitHub Container Registry
+    name: Publish to Azure
     runs-on: ubuntu-latest
     needs: build
     permissions:
@@ -58,15 +58,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: global.json
-          
+
       - name: Generate variables
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          
-      - name: Publish for docker image
-        run: |
-          dotnet publish --configuration Release -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ steps.vars.outputs.sha_short }}' --output bin/docker-publish
-        working-directory: sample/CustomerApi
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
@@ -75,22 +70,43 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
+      - name: (customer-api) Build for docker image
+        run: |
+          dotnet publish --configuration Release -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ steps.vars.outputs.sha_short }}' --output bin/docker-publish
+        working-directory: sample/CustomerApi
+
+      - name: (customer-api) Generate metadata for Docker
+        id: api-meta
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/logotter/customer-api
-          labels: |
-            org.opencontainers.image.title=Customer API
-            org.opencontainers.image.description=Sample API showing how to use LogOtter
 
-      - name: Build and push Docker image
+      - name: (customer-api) Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           push: true
           context: sample/CustomerApi
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-            
+          tags: ${{ steps.api-meta.outputs.tags }}
+          labels: ${{ steps.api-meta.outputs.labels }}
+
+      - name: (customer-worker) Build for docker image
+        run: |
+          dotnet publish --configuration Release -p:VersionPrefix="0.0.0" --version-suffix 'commit+${{ steps.vars.outputs.sha_short }}' --output bin/docker-publish
+        working-directory: sample/CustomerWorker
+
+      - name: (customer-worker) Generate metadata for Docker
+        id: worker-meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/logotter/customer-worker
+
+      - name: (customer-worker) Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: sample/CustomerWorker
+          tags: ${{ steps.worker-meta.outputs.tags }}
+          labels: ${{ steps.worker-meta.outputs.labels }}
+
       - name: Trigger app service container update
         run: curl '${{ secrets.CUSTOMER_API_DEPLOY_WEBHOOK_URL }}' -H "" -d ""
