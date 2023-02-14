@@ -143,3 +143,5 @@ jobs:
 
           curl $customer_api_webhook -H "" -d ""
           curl $customer_worker_webhook -H "" -d ""
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}

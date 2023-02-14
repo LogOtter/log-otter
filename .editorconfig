@@ -16,3 +16,6 @@ indent_size = 2
 
 [*.tf]
 indent_size = 2
+
+[*.{ps1,psm1}]
+indent_size = 2

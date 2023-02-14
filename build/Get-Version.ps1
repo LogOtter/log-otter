@@ -5,6 +5,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+function Write-GitHubOutput([string]$Name, [string]$Value) {
+  Write-Output "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+}
+
 $tagNameRegex = '^refs/tags/(?<TagName>\S+)$'
 $versionRegex = '^v?(?<Major>\d+)\.(?<Minor>\d+)\.(?<Patch>\d+)(?<Suffix>-[A-Za-z0-9-]+)?$'
 
@@ -28,11 +32,11 @@ if (![string]::IsNullOrWhiteSpace($suffix)) {
   $suffixStripped = $suffix.Substring(1)
 }
 
-Write-Host "::set-output name=tag_name::$tagName"
-Write-Host "::set-output name=version_full::$major.$minor.$patch$suffix"
-Write-Host "::set-output name=version_major::$major"
-Write-Host "::set-output name=version_minor::$minor"
-Write-Host "::set-output name=version_patch::$patch"
-Write-Host "::set-output name=version_suffix::$suffixStripped"
-Write-Host "::set-output name=version_2::$major.$minor"
-Write-Host "::set-output name=version_3::$major.$minor.$patch"
+Write-GitHubOutput -Name 'tag_name' -Value $tagName
+Write-GitHubOutput -Name 'version_full' -Value "$major.$minor.$patch$suffix"
+Write-GitHubOutput -Name 'version_major' -Value $major
+Write-GitHubOutput -Name 'version_minor' -Value $minor
+Write-GitHubOutput -Name 'version_patch' -Value $patch
+Write-GitHubOutput -Name 'version_suffix' -Value $suffixStripped
+Write-GitHubOutput -Name 'version_2' -Value "$major.$minor"
+Write-GitHubOutput -Name 'version_3' -Value "$major.$minor.$patch"
