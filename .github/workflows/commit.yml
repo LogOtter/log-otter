@@ -119,15 +119,18 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -input=false
+        working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Terraform Apply
         run: terraform apply -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -input=false
+        working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Trigger container update
+        working-directory: sample/terraform
         run: |
           customer_api_webhook=$(terraform output customer_api_webhook | tr -d '"')
           customer_worker_webhook=$(terraform output customer_worker_webhook | tr -d '"')
