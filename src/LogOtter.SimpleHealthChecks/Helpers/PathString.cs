@@ -4,6 +4,8 @@ namespace LogOtter.SimpleHealthChecks;
 
 internal class PathString : IEquatable<PathString>
 {
+    public static PathString Root => new("/");
+
     public PathString(string? value)
     {
         if (!string.IsNullOrEmpty(value) && value[0] != '/')

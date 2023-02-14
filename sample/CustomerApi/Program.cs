@@ -59,7 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseHealthChecks("/healthcheck");
+app.UseHealthChecks("/health");
 
 app.MapControllers();
 
