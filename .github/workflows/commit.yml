@@ -123,8 +123,14 @@ jobs:
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
+      - name: Terraform Plan
+        run: terraform plan -out tfplan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
       - name: Terraform Apply
-        run: terraform apply -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -input=false
+        run: terraform apply -input=false tfplan
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
