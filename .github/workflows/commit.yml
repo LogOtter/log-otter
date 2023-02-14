@@ -141,6 +141,9 @@ jobs:
           customer_api_webhook=$(terraform output -raw customer_api_webhook)
           customer_worker_webhook=$(terraform output -raw customer_worker_webhook)
 
+          echo "Customer API Webhook: $customer_api_webhook"
+          echo "Customer Worker Webhook: $customer_worker_webhook"
+
           curl $customer_api_webhook -H "" -d ""
           curl $customer_worker_webhook -H "" -d ""
         env:
