@@ -5,4 +5,4 @@ EXPOSE 80
 FROM base AS final
 WORKDIR /app
 COPY ["bin/docker-publish/", "."]
-ENTRYPOINT ["dotnet", "CustomerWorker.exe"]
+ENTRYPOINT ["dotnet", "CustomerWorker.dll"]
