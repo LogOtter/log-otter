@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using System.Text;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,6 +8,8 @@ namespace LogOtter.SimpleHealthChecks;
 
 internal class SimpleHealthCheckService : BackgroundService
 {
+    private static readonly byte[] OkBytes = Encoding.UTF8.GetBytes("OK");
+
     private readonly HealthCheckService _healthCheckService;
     private readonly IEnumerable<SimpleHealthCheckOptionsMap> _requestMaps;
     private readonly ILogger<SimpleHealthCheckService> _logger;
@@ -82,6 +85,14 @@ internal class SimpleHealthCheckService : BackgroundService
         }
 
         var requestPath = new PathString(request.Url!.PathAndQuery);
+
+        if (requestPath.Equals(PathString.Root))
+        {
+            response.StatusCode = 200;
+            response.ContentType = "text/plain";
+            await response.OutputStream.WriteAsync(OkBytes, cancellationToken);
+            return;
+        }
 
         var options = _requestMaps
             .Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
