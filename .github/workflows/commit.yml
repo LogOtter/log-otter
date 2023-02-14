@@ -113,6 +113,3 @@ jobs:
           context: sample/CustomerWorker
           tags: ${{ steps.worker-meta.outputs.tags }}
           labels: ${{ steps.worker-meta.outputs.labels }}
-
-      - name: Trigger app service container update
-        run: curl '${{ secrets.CUSTOMER_API_DEPLOY_WEBHOOK_URL }}' -H "" -d ""
