@@ -1,0 +1,5 @@
+azurerm_tenant_id        = "9250401f-a3d7-4c8a-ac19-21350d9099cf"
+azurerm_subscription_id  = "f8d65b0d-53e8-48c4-87cf-3cf4ca474262"
+azurerm_client_id        = "7af0f21e-50c6-46ed-8f26-b0021619b201"
+docker_registry_url      = "https://ghcr.io"
+docker_registry_username = "AButler"
