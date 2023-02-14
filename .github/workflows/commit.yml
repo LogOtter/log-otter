@@ -138,11 +138,8 @@ jobs:
       - name: Trigger container update
         working-directory: sample/terraform
         run: |
-          customer_api_webhook=$(terraform output customer_api_webhook | tr -d '"')
-          customer_worker_webhook=$(terraform output customer_worker_webhook | tr -d '"')
-
-          echo 'Customer API Webhook:'
-          echo $customer_api_webhook
+          customer_api_webhook=$(terraform output -raw customer_api_webhook)
+          customer_worker_webhook=$(terraform output -raw customer_worker_webhook)
 
           curl $customer_api_webhook -H "" -d ""
           curl $customer_worker_webhook -H "" -d ""
