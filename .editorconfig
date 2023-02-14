@@ -3,7 +3,7 @@
 [*]
 charset = utf-8
 indent_style = space
-indent_size = 4
+indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 150
@@ -11,11 +11,5 @@ max_line_length = 150
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{yml,yaml}]
-indent_size = 2
-
-[*.tf]
-indent_size = 2
-
-[*.{ps1,psm1}]
-indent_size = 2
+[*.cs]
+indent_size = 4

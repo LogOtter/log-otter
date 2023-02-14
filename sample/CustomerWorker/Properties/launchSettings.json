@@ -1,11 +1,11 @@
 {
-    "profiles": {
-        "CustomerWorker": {
-            "commandName": "Project",
-            "dotnetRunMessages": true,
-            "environmentVariables": {
-                "DOTNET_ENVIRONMENT": "Development"
-            }
-        }
+  "profiles": {
+    "CustomerWorker": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
     }
+  }
 }
