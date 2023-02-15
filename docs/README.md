@@ -9,6 +9,7 @@
 * [JsonHal](../src/LogOtter.JsonHal/README.md)
 * [ShortGuid](../src/LogOtter.ShortGuid/README.md)
 * [Obfuscate](../src/LogOtter.Obfuscate/README.md)
+* [SimpleHealthChecks](../src/LogOtter.SimpleHealthChecks/README.md)
 
 ## Development
 * [Building Locally](BuildingLocally.md)
