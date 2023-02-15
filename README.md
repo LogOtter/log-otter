@@ -11,6 +11,7 @@ This repository contains:
 * HttpPatch ([docs](src/LogOtter.HttpPatch))
 * JsonHal ([docs](src/LogOtter.JsonHal))
 * Obfuscate ([docs](src/LogOtter.Obfuscate))
+* SimpleHealthChecks ([docs](src/LogOtter.SimpleHealthChecks))
 
 ## Usage
 
