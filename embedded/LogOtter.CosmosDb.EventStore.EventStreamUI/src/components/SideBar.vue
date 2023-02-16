@@ -1,14 +1,12 @@
 <script lang="ts">
-import { defineComponent } from "vue";
-import {
-  EventStreamsService,
-  type EventStream,
-} from "@/services/EventStreamsService";
+import { defineComponent, inject } from "vue";
 import isVisible from "@/helpers/IsVisible";
-
-var eventStreamsService = new EventStreamsService();
+import type { EventStreamsService, EventStream } from "@/services/EventStreamsService";
 
 export default defineComponent({
+  setup() {
+    return { eventStreamsService: inject<EventStreamsService>("eventStreamsService")! };
+  },
   data() {
     return {
       loading: false,
@@ -24,7 +22,7 @@ export default defineComponent({
       this.loading = true;
       this.eventStreams = [];
 
-      const response = await eventStreamsService.getEventStreams();
+      const response = await this.eventStreamsService.getEventStreams();
 
       const eventStreams = [];
 
@@ -48,9 +46,7 @@ export default defineComponent({
 
       this.loading = true;
 
-      const response = await eventStreamsService.getEventStreams(
-        this.nextPageUrl
-      );
+      const response = await this.eventStreamsService.getEventStreams(this.nextPageUrl);
 
       for (const definition of response.data) {
         this.eventStreams.push(definition);
@@ -65,15 +61,12 @@ export default defineComponent({
       }
     },
     async fetchVersion() {
-      var version = await eventStreamsService.getVersion();
+      var version = await this.eventStreamsService.getVersion();
 
       this.version = version.packageVersion;
     },
     isActive(eventStream: EventStream) {
-      return (
-        this.currentPath === "/" + eventStream.name ||
-        this.currentPath.startsWith("/" + eventStream.name + "/")
-      );
+      return this.currentPath === "/" + eventStream.name || this.currentPath.startsWith("/" + eventStream.name + "/");
     },
   },
   computed: {
@@ -106,58 +99,27 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
-    class="close"
-    :class="{ show: isExpanded }"
-    @click="() => (isExpanded = false)"
-  >
+  <div class="close" :class="{ show: isExpanded }" @click="() => (isExpanded = false)">
     <i class="bi-x-circle-fill"></i>
   </div>
-  <div
-    class="open"
-    :class="{ show: !isExpanded }"
-    @click="() => (isExpanded = true)"
-  >
+  <div class="open" :class="{ show: !isExpanded }" @click="() => (isExpanded = true)">
     <i class="bi-list"></i>
   </div>
-  <div
-    class="flex-column flex-shrink-0 p-3 text-bg-dark sidebar"
-    :class="{ collapsed: !isExpanded }"
-    ref="sidebar"
-  >
-    <a
-      href="./"
-      class="d-flex align-items-center text-white text-decoration-none"
-      @click="() => (isExpanded = false)"
-    >
-      <img
-        src="@/assets/log-otter-grayscale.svg"
-        class="me-2"
-        width="32"
-        alt="LogOtter"
-      />
+  <div class="flex-column flex-shrink-0 p-3 text-bg-dark sidebar" :class="{ collapsed: !isExpanded }" ref="sidebar">
+    <a href="./" class="d-flex align-items-center text-white text-decoration-none" @click="() => (isExpanded = false)">
+      <img src="@/assets/log-otter-grayscale.svg" class="me-2" width="32" alt="LogOtter" />
       <span class="fs-5">Event Stream Viewer</span>
     </a>
     <hr />
     <ul class="nav nav-pills flex-column mb-auto">
       <li>
-        <a
-          href="#"
-          class="nav-link text-white"
-          :class="{ active: currentPath == '/' }"
-          @click="() => (isExpanded = false)"
-        >
+        <a href="#" class="nav-link text-white" :class="{ active: currentPath == '/' }" @click="() => (isExpanded = false)">
           <i class="bi-house-door me-2"></i>
           Home
         </a>
       </li>
       <li v-for="eventStream in eventStreams" :key="eventStream.name">
-        <a
-          :href="'#/' + eventStream.name"
-          class="nav-link text-white"
-          :class="{ active: isActive(eventStream) }"
-          @click="() => (isExpanded = false)"
-        >
+        <a :href="'#/' + eventStream.name" class="nav-link text-white" :class="{ active: isActive(eventStream) }" @click="() => (isExpanded = false)">
           <i class="bi-journals me-2"></i>
           {{ eventStream.name }}
         </a>

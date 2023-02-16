@@ -1,15 +1,14 @@
 <script lang="ts">
 import StreamIdSearchPanel from "@/components/StreamIdSearchPanel.vue";
 import EventCard from "@/components/EventCard.vue";
-import {
-  EventStreamsService,
-  type Event,
-} from "@/services/EventStreamsService";
+import type { Event, EventStreamsService } from "@/services/EventStreamsService";
 import isVisible from "@/helpers/IsVisible";
-
-const eventStreamsService = new EventStreamsService();
+import { inject } from "vue";
 
 export default {
+  setup() {
+    return { eventStreamsService: inject<EventStreamsService>("eventStreamsService")! };
+  },
   components: {
     StreamIdSearchPanel,
     EventCard,
@@ -23,18 +22,13 @@ export default {
   },
   methods: {
     search(streamId: string) {
-      window.location.hash = `#/${encodeURIComponent(
-        this.eventStreamName
-      )}/${encodeURIComponent(streamId)}`;
+      window.location.hash = `#/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(streamId)}`;
     },
     async fetchEvents() {
       this.loading = true;
       const events: Event[] = [];
 
-      const response = await eventStreamsService.getEvents(
-        this.eventStreamName,
-        this.streamId
-      );
+      const response = await this.eventStreamsService.getEvents(this.eventStreamName, this.streamId);
 
       for (const event of response.data) {
         events.push(event);
@@ -56,9 +50,7 @@ export default {
 
       this.loading = true;
 
-      var response = await eventStreamsService.getEventsWithUrl(
-        this.nextPageUrl
-      );
+      var response = await this.eventStreamsService.getEventsWithUrl(this.nextPageUrl);
 
       for (const event of response.data) {
         this.events.push(event);
@@ -104,9 +96,7 @@ export default {
   },
   beforeUnmount() {
     const root = this.$refs.root as HTMLElement;
-    root
-      .closest("#rootPage")!
-      .removeEventListener("scroll", this.scrollHandler);
+    root.closest("#rootPage")!.removeEventListener("scroll", this.scrollHandler);
   },
 };
 </script>
@@ -114,18 +104,9 @@ export default {
 <template>
   <div class="m-3" ref="root">
     <h1 class="display-5 fw-bold mb-4 sidebar-margin">{{ eventStreamName }}</h1>
-    <stream-id-search-panel
-      @search="search"
-      :starting-stream-id="streamId"
-    ></stream-id-search-panel>
+    <stream-id-search-panel @search="search" :starting-stream-id="streamId"></stream-id-search-panel>
     <div>
-      <event-card
-        :event-stream-name="eventStreamName"
-        :stream-id="streamId"
-        :event="event"
-        v-for="event in events"
-        :key="event.eventId"
-      ></event-card>
+      <event-card :event-stream-name="eventStreamName" :stream-id="streamId" :event="event" v-for="event in events" :key="event.eventId"></event-card>
 
       <div v-if="!loading && !events.length">
         <div class="card mb-1 p-3 text-muted">
@@ -134,11 +115,7 @@ export default {
       </div>
 
       <div v-if="loading">
-        <div
-          class="card mb-1 px-3 py-4 placeholder-glow"
-          v-for="index in 3"
-          :key="index"
-        >
+        <div class="card mb-1 px-3 py-4 placeholder-glow" v-for="index in 3" :key="index">
           <span class="placeholder col-5 mb-2"></span>
           <span class="placeholder col-3"></span>
         </div>

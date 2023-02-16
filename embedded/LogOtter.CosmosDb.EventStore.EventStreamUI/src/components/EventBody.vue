@@ -1,10 +1,12 @@
 <script lang="ts">
-import { EventStreamsService } from "@/services/EventStreamsService";
+import type { EventStreamsService } from "@/services/EventStreamsService";
+import { inject } from "vue";
 import JsonViewer from "vue-json-viewer";
 
-const eventStreamsService = new EventStreamsService();
-
 export default {
+  setup() {
+    return { eventStreamsService: inject<EventStreamsService>("eventStreamsService")! };
+  },
   components: {
     JsonViewer,
   },
@@ -21,11 +23,7 @@ export default {
     async fetchEventBody() {
       this.loading = true;
 
-      this.eventBody = await eventStreamsService.getEventBody(
-        this.eventStreamName,
-        this.streamId,
-        this.eventId
-      );
+      this.eventBody = await this.eventStreamsService.getEventBody(this.eventStreamName, this.streamId, this.eventId);
 
       this.loading = false;
     },

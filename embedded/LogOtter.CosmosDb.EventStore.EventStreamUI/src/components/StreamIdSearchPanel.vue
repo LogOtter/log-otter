@@ -37,14 +37,7 @@ export default defineComponent({
       <div class="mb-3">
         <form @submit.prevent="submit">
           <div class="input-group">
-            <input
-              type="text"
-              ref="search"
-              id="search"
-              class="form-control"
-              placeholder="Enter stream ID"
-              v-model="streamId"
-            />
+            <input type="text" ref="search" id="search" class="form-control" placeholder="Enter stream ID" v-model="streamId" />
             <button class="btn btn-outline-secondary" type="submit">
               <i class="bi-search"></i>
             </button>

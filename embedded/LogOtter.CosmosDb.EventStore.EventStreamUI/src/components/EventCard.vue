@@ -44,11 +44,7 @@ export default defineComponent({
           <h6 class="card-title">{{ event.description }}</h6>
           <div class="card-subtitle text-muted">
             {{ event.eventNumber }} &middot; {{ event.bodyType }} &middot;
-            <span
-              ref="timeTooltip"
-              data-bs-toggle="tooltip"
-              :data-bs-title="formatTimestamp(event.timestamp)"
-            >
+            <span ref="timeTooltip" data-bs-toggle="tooltip" :data-bs-title="formatTimestamp(event.timestamp)">
               {{ formatTimestampFromNow(event.timestamp) }}
             </span>
           </div>
@@ -66,11 +62,7 @@ export default defineComponent({
       </div>
     </div>
     <div class="card-body pt-0" v-if="expanded">
-      <event-body
-        :event-stream-name="eventStreamName"
-        :stream-id="streamId"
-        :event-id="event.eventId"
-      ></event-body>
+      <event-body :event-stream-name="eventStreamName" :stream-id="streamId" :event-id="event.eventId"></event-body>
     </div>
   </div>
 </template>

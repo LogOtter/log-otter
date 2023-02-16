@@ -26,6 +26,6 @@ internal abstract class BaseHandler : IHandler
 
     protected async Task WriteJson<T>(HttpResponse response, T value)
     {
-        await response.WriteJsonAsync(value, JsonSerializerOptions);
+        await response.WriteAsJsonAsync(value, JsonSerializerOptions);
     }
 }

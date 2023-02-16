@@ -8,9 +8,7 @@ export default defineComponent({
   },
   methods: {
     search(streamId: string) {
-      window.location.hash = `#/${encodeURIComponent(
-        this.eventStreamName
-      )}/${encodeURIComponent(streamId)}`;
+      window.location.hash = `#/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(streamId)}`;
     },
   },
   props: {

@@ -1,9 +1,11 @@
 ﻿using System.Reflection;
+using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -11,20 +13,25 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamUI;
 
 internal class EventStreamsUIMiddleware
 {
+    private readonly IWebHostEnvironment _hostEnvironment;
     private const string EmbeddedFileNamespace = "LogOtter.CosmosDb.EventStore.EventStreamUI.wwwroot";
 
     private readonly StaticFileMiddleware _staticFileMiddleware;
     private readonly PathString _rootPath;
+    private readonly PathString _apiRoutePrefix;
 
     public EventStreamsUIMiddleware(
         RequestDelegate next,
-        IWebHostEnvironment hostingEnv,
+        IWebHostEnvironment hostEnvironment,
         ILoggerFactory loggerFactory,
-        EventStreamsUIOptions options
+        EventStreamsUIOptions options,
+        EventStreamsApiOptionsContainer apiOptionsContainer
     )
     {
+        _hostEnvironment = hostEnvironment;
         _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
-        _staticFileMiddleware = CreateStaticFileMiddleware(next, hostingEnv, loggerFactory, options);
+        _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
+        _apiRoutePrefix = apiOptionsContainer.Options.RoutePrefix;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -39,9 +46,28 @@ internal class EventStreamsUIMiddleware
             }
 
             httpContext.Request.Path = _rootPath + "/index.html";
+        } else if (currentPath.StartsWithSegments($"{_rootPath}/config", out var remaining) && remaining == PathString.Empty)
+        {
+            WriteConfigJson(httpContext.Response);
+            return;
         }
 
         await _staticFileMiddleware.Invoke(httpContext);
+    }
+
+    private void WriteConfigJson(HttpResponse response)
+    {
+        var config = new
+        {
+            ApiBaseUrl = _apiRoutePrefix.Value
+        };
+
+        if (_hostEnvironment.IsDevelopment())
+        {
+            response.Headers.AccessControlAllowOrigin = "*";
+        }
+
+        response.WriteAsJsonAsync(config);
     }
 
     private static StaticFileMiddleware CreateStaticFileMiddleware(

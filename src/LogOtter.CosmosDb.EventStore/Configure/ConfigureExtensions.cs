@@ -14,19 +14,23 @@ public static class ConfigureExtensions
         Action<EventStoreOptions>? setupAction = null
     )
     {
+        var services = cosmosDbBuilder.Services;
+
         if (setupAction != null)
         {
-            cosmosDbBuilder.Services.Configure(setupAction);
+            services.Configure(setupAction);
         }
 
-        cosmosDbBuilder.Services.AddSingleton<EventStoreCatalog>();
-        cosmosDbBuilder.Services.AddSingleton<EventDescriptionGenerator>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventStreamsHandler>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventStreamHandler>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventsHandler>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventHandler>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetEventBodyHandler>();
-        cosmosDbBuilder.Services.AddSingleton<IHandler, GetVersionHandler>();
+        services.AddSingleton<EventStoreCatalog>();
+        services.AddSingleton<EventDescriptionGenerator>();
+        services.AddSingleton<IHandler, GetEventStreamsHandler>();
+        services.AddSingleton<IHandler, GetEventStreamHandler>();
+        services.AddSingleton<IHandler, GetEventsHandler>();
+        services.AddSingleton<IHandler, GetEventHandler>();
+        services.AddSingleton<IHandler, GetEventBodyHandler>();
+        services.AddSingleton<IHandler, GetVersionHandler>();
+
+        services.AddSingleton<EventStreamsApiOptionsContainer>();
 
         return new EventStoreBuilder(cosmosDbBuilder);
     }
@@ -48,6 +52,12 @@ public static class ConfigureExtensions
 
     public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, EventStreamsApiOptions options)
     {
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            var optionsContainer = scope.ServiceProvider.GetRequiredService<EventStreamsApiOptionsContainer>();
+            optionsContainer.UpdateOptions(options);
+        }
+
         return app.MapWhen(c => c.Request.Path.StartsWithSegments(options.RoutePrefix), a => a.UseMiddleware<EventStreamsApiMiddleware>(options));
     }
 
