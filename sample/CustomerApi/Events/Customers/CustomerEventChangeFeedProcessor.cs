@@ -1,5 +1,4 @@
 using LogOtter.CosmosDb;
-using LogOtter.CosmosDb.EventStore;
 
 namespace CustomerApi.Events.Customers;
 
@@ -21,7 +20,7 @@ public class CustomerEventChangeFeedProcessor : IChangeFeedProcessorChangeHandle
                 customerEvent.CustomerUri
             );
         }
-        
+
         return Task.CompletedTask;
     }
 }

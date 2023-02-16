@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Documents;
 
 namespace LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 

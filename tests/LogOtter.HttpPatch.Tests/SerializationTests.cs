@@ -4,6 +4,7 @@ using LogOtter.HttpPatch.Tests.Api;
 using Newtonsoft.Json;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+// ReSharper disable NotAccessedPositionalProperty.Local
 
 namespace LogOtter.HttpPatch.Tests;
 
@@ -23,7 +24,7 @@ public class SerializationTests
         deserialized.Primitive.IsIncludedInPatch.Should().BeFalse();
         deserialized.Address.IsIncludedInPatch.Should().BeFalse();
     }
-    
+
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     public void UndefinedIsShownAsNotInPatch(SerializationEngine engine)

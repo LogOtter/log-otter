@@ -1,4 +1,3 @@
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
 namespace LogOtter.CosmosDb.EventStore;

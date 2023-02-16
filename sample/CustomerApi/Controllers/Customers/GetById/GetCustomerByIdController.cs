@@ -1,5 +1,4 @@
-﻿using CustomerApi.Controllers.Customers.Create;
-using CustomerApi.Events.Customers;
+﻿using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.AspNetCore.Authorization;
