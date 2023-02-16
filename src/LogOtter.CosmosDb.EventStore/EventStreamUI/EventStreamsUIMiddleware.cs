@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,12 +12,11 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamUI;
 
 internal class EventStreamsUIMiddleware
 {
-    private readonly IWebHostEnvironment _hostEnvironment;
     private const string EmbeddedFileNamespace = "LogOtter.CosmosDb.EventStore.EventStreamUI.wwwroot";
 
     private readonly StaticFileMiddleware _staticFileMiddleware;
     private readonly PathString _rootPath;
-    private readonly PathString _apiRoutePrefix;
+    private readonly EventStreamsApiOptions _apiOptions;
 
     public EventStreamsUIMiddleware(
         RequestDelegate next,
@@ -28,10 +26,9 @@ internal class EventStreamsUIMiddleware
         EventStreamsApiOptionsContainer apiOptionsContainer
     )
     {
-        _hostEnvironment = hostEnvironment;
         _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
         _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
-        _apiRoutePrefix = apiOptionsContainer.Options.RoutePrefix;
+        _apiOptions = apiOptionsContainer.Options;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -46,7 +43,8 @@ internal class EventStreamsUIMiddleware
             }
 
             httpContext.Request.Path = _rootPath + "/index.html";
-        } else if (currentPath.StartsWithSegments($"{_rootPath}/config", out var remaining) && remaining == PathString.Empty)
+        }
+        else if (currentPath.StartsWithSegments($"{_rootPath}/config", out var remaining) && remaining == PathString.Empty)
         {
             WriteConfigJson(httpContext.Response);
             return;
@@ -59,12 +57,17 @@ internal class EventStreamsUIMiddleware
     {
         var config = new
         {
-            ApiBaseUrl = _apiRoutePrefix.Value
+            ApiBaseUrl = _apiOptions.RoutePrefix.Value
         };
 
-        if (_hostEnvironment.IsDevelopment())
+        if (_apiOptions.EnableCors)
         {
-            response.Headers.AccessControlAllowOrigin = "*";
+            var headers = response.Headers;
+
+            headers.AccessControlAllowMethods = _apiOptions.AccessControlAllowMethods;
+            headers.AccessControlAllowOrigin = _apiOptions.AccessControlAllowOrigin;
+            headers.AccessControlAllowCredentials = _apiOptions.AccessControlAllowCredentials;
+            headers.AccessControlAllowHeaders = _apiOptions.AccessControlAllowHeaders;
         }
 
         response.WriteAsJsonAsync(config);
