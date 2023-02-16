@@ -13,6 +13,8 @@ internal class EventStreamsApiMiddleware
 
     public const int PageSize = 20;
 
+    public PathString RoutePrefix { get; }
+
     public EventStreamsApiMiddleware(
         RequestDelegate next,
         EventStreamsApiOptions options,
@@ -24,6 +26,8 @@ internal class EventStreamsApiMiddleware
         _handlerMap = handlers
             .Select(h => (h, BuildTemplateMatcher(h.Template)))
             .ToList();
+
+        RoutePrefix = _options.RoutePrefix;
 
         foreach (var map in _handlerMap)
         {

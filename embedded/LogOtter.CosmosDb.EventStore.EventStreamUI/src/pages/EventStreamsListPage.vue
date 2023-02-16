@@ -1,14 +1,12 @@
 <script lang="ts">
 import isVisible from "@/helpers/IsVisible";
-import {
-  EventStreamsService,
-  type EventStream,
-} from "@/services/EventStreamsService";
-import { defineComponent } from "vue";
-
-var eventStreamsService = new EventStreamsService();
+import type { EventStream, EventStreamsService } from "@/services/EventStreamsService";
+import { defineComponent, inject } from "vue";
 
 export default defineComponent({
+  setup() {
+    return { eventStreamsService: inject<EventStreamsService>("eventStreamsService")! };
+  },
   data() {
     return {
       loading: false,
@@ -21,7 +19,7 @@ export default defineComponent({
       this.loading = true;
       this.eventStreams = [];
 
-      var response = await eventStreamsService.getEventStreams();
+      var response = await this.eventStreamsService.getEventStreams();
 
       const eventStreams = [];
 
@@ -45,9 +43,7 @@ export default defineComponent({
 
       this.loading = true;
 
-      var response = await eventStreamsService.getEventStreams(
-        this.nextPageUrl
-      );
+      var response = await this.eventStreamsService.getEventStreams(this.nextPageUrl);
 
       for (const definition of response.data) {
         this.eventStreams.push(definition);
@@ -75,9 +71,7 @@ export default defineComponent({
   },
   beforeUnmount() {
     const root = this.$refs.root as HTMLElement;
-    root
-      .closest("#rootPage")!
-      .removeEventListener("scroll", this.scrollHandler);
+    root.closest("#rootPage")!.removeEventListener("scroll", this.scrollHandler);
   },
 });
 </script>
@@ -97,11 +91,7 @@ export default defineComponent({
         </div>
       </div>
     </div>
-    <div
-      class="card mb-2"
-      v-for="eventStream in eventStreams"
-      :key="eventStream.name"
-    >
+    <div class="card mb-2" v-for="eventStream in eventStreams" :key="eventStream.name">
       <div class="card-body">
         <h5 class="card-title">{{ eventStream.name }}</h5>
         <div class="card-subtitle text-muted">{{ eventStream.typeName }}</div>
@@ -112,9 +102,7 @@ export default defineComponent({
   </div>
   <div v-if="!loading && !eventStreams.length">
     <div class="card m-3 p-3 text-muted">
-      <span>
-        <i class="bi-info-square me-2"></i> No event streams configured
-      </span>
+      <span> <i class="bi-info-square me-2"></i> No event streams configured </span>
     </div>
   </div>
 </template>
