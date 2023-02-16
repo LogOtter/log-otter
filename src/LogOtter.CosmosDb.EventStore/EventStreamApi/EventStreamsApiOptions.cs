@@ -1,10 +1,12 @@
-﻿namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
 
 public record EventStreamsApiOptions {
-    public string RoutePrefix { get; init; } = "/logotter/api";
-    public bool EnableCors { get; init; }
-    public string? AccessControlAllowMethods { get; init; }
-    public string? AccessControlAllowOrigin { get; init; }
-    public string? AccessControlAllowCredentials { get; init; }
-    public string? AccessControlAllowHeaders { get; init; }
+    public PathString RoutePrefix { get; set; } = "/logotter/api";
+    public bool EnableCors { get; set; }
+    public string? AccessControlAllowMethods { get; set; }
+    public string? AccessControlAllowOrigin { get; set; }
+    public string? AccessControlAllowCredentials { get; set; }
+    public string? AccessControlAllowHeaders { get; set; }
 }

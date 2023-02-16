@@ -1,8 +1,8 @@
 ﻿using System.Net;
-using System.Text.RegularExpressions;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 using LogOtter.JsonHal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Options;
@@ -17,7 +17,7 @@ internal class GetEventsHandler : BaseHandler
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _eventStoreOptions;
 
-    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/streams/(?<StreamId>[^/]+)/events/$");
+    public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events";
 
     public GetEventsHandler(
         EventStoreCatalog eventStoreCatalog,
@@ -34,10 +34,10 @@ internal class GetEventsHandler : BaseHandler
         _eventStoreOptions = eventStoreOptions.Value;
     }
 
-    public override async Task Handle(HttpContext httpContext, Match match)
+    public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
-        var eventStreamName = Uri.UnescapeDataString(match.Groups["EventStreamName"].Value);
-        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString(match.Groups["StreamId"].Value));
+        var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
+        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
 
         var metaData = _eventStoreCatalog.GetMetadata(eventStreamName);
 
@@ -89,7 +89,7 @@ internal class GetEventsHandler : BaseHandler
             .ToList();
 
         var response = new EventsResponse(events);
-        var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.TrimEnd('/');
+        var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
 
         response.Links.AddPagedLinks(
             page,
@@ -97,6 +97,6 @@ internal class GetEventsHandler : BaseHandler
             p => $"{prefix}/{Uri.EscapeDataString(eventStreamName)}/{Uri.EscapeDataString(streamId)}/events?page={p}"
         );
 
-        await httpContext.Response.WriteJsonAsync(response, EventStreamsApiMiddleware.JsonSerializerOptions);
+        await WriteJson(httpContext.Response, response);
     }
 }

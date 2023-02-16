@@ -48,9 +48,9 @@ public static class ConfigureExtensions
 
     public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, EventStreamsApiOptions options)
     {
-        return app.UseMiddleware<EventStreamsApiMiddleware>(options);
+        return app.MapWhen(c => c.Request.Path.StartsWithSegments(options.RoutePrefix), a => a.UseMiddleware<EventStreamsApiMiddleware>(options));
     }
-    
+
     public static IApplicationBuilder UseEventStreamsUI(
         this IApplicationBuilder app,
         Action<EventStreamsUIOptions>? setupAction = null
@@ -65,7 +65,7 @@ public static class ConfigureExtensions
 
         return app.UseEventStreamsUI(options);
     }
-    
+
     public static IApplicationBuilder UseEventStreamsUI(this IApplicationBuilder app, EventStreamsUIOptions options)
     {
         return app.UseMiddleware<EventStreamsUIMiddleware>(options);

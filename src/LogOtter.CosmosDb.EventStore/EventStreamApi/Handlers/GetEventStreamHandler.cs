@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
@@ -13,12 +13,12 @@ internal class GetEventStreamHandler : BaseHandler
         _eventStoreCatalog = eventStoreCatalog;
     }
 
-    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/$");
+    public override string Template => "/event-streams/{EventStreamName}";
 
-    public override async Task Handle(HttpContext httpContext, Match match)
+    public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
-        var eventStreamName = Uri.UnescapeDataString(match.Groups["EventStreamName"].Value);
-        
+        var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
+
         var definition = _eventStoreCatalog.GetDefinition(eventStreamName);
 
         if (definition == null)
@@ -27,6 +27,6 @@ internal class GetEventStreamHandler : BaseHandler
             return;
         }
 
-        await httpContext.Response.WriteJsonAsync(definition, EventStreamsApiMiddleware.JsonSerializerOptions);
+        await WriteJson(httpContext.Response, definition);
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
+﻿using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 using LogOtter.JsonHal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
@@ -9,14 +9,14 @@ internal class GetEventStreamsHandler : BaseHandler
 {
     private readonly EventStoreCatalog _eventStoreCatalog;
 
-    protected override Regex PathRegex => new(@"^event-streams/$");
+    public override string Template => "/event-streams";
 
     public GetEventStreamsHandler(EventStoreCatalog eventStoreCatalog)
     {
         _eventStoreCatalog = eventStoreCatalog;
     }
 
-    public override async Task Handle(HttpContext httpContext, Match match)
+    public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
         var definitions = _eventStoreCatalog.GetDefinitions();
 
@@ -28,7 +28,7 @@ internal class GetEventStreamsHandler : BaseHandler
             .ToList()
         );
 
-        var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.TrimEnd('/');
+        var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
 
         response.Links.AddPagedLinks(
             page,
@@ -36,6 +36,6 @@ internal class GetEventStreamsHandler : BaseHandler
             p => $"{prefix}?page={p}"
         );
 
-        await httpContext.Response.WriteJsonAsync(response, EventStreamsApiMiddleware.JsonSerializerOptions);
+        await WriteJson(httpContext.Response, response);
     }
 }

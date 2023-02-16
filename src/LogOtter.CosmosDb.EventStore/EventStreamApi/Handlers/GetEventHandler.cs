@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using System.Text.RegularExpressions;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 
@@ -15,7 +15,7 @@ internal class GetEventHandler : BaseHandler
     private readonly ICosmosContainerFactory _containerFactory;
     private readonly EventStoreOptions _eventStoreOptions;
 
-    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/streams/(?<StreamId>[^/]+)/events/(?<EventId>[^/]+)/$");
+    public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}";
 
     public GetEventHandler(
         EventStoreCatalog eventStoreCatalog,
@@ -32,11 +32,11 @@ internal class GetEventHandler : BaseHandler
         _eventStoreOptions = eventStoreOptions.Value;
     }
 
-    public override async Task Handle(HttpContext httpContext, Match match)
+    public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
-        var eventStreamName = Uri.UnescapeDataString(match.Groups["EventStreamName"].Value);
-        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString(match.Groups["StreamId"].Value));
-        var eventId = Uri.UnescapeDataString(match.Groups["EventId"].Value);
+        var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
+        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
+        var eventId = Uri.UnescapeDataString((string)routeValues["EventId"]!);
 
         var metaData = _eventStoreCatalog.GetMetadata(eventStreamName);
 
@@ -64,9 +64,9 @@ internal class GetEventHandler : BaseHandler
             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
         var storageEvent = (CosmosDbStorageEventWithTimestamp?)null;
-        
+
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
-        
+
         while (feedIterator.HasMoreResults)
         {
             var items = await feedIterator.ReadNextAsync();
@@ -76,7 +76,7 @@ internal class GetEventHandler : BaseHandler
                 break;
             }
         }
-        
+
         if (storageEvent == null)
         {
             httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -95,6 +95,6 @@ internal class GetEventHandler : BaseHandler
             storageEvent.Timestamp
         );
 
-        await httpContext.Response.WriteJsonAsync(@event, EventStreamsApiMiddleware.JsonSerializerOptions);
+        await WriteJson(httpContext.Response, @event);
     }
 }
