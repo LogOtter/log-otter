@@ -2,6 +2,7 @@
 
 namespace LogOtter.CosmosDb;
 
+// ReSharper disable once UnusedTypeParameter
 public class CosmosContainer<TDocument>
 {
     public Container Container { get; }

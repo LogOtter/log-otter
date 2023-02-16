@@ -70,6 +70,7 @@ public class EventStore
                 batch.CreateItem(cosmosDbStorageEvent, batchRequestOptions);
             }
 
+            // ReSharper disable once UnusedVariable
             var batchResponse = firstEventNumber == 1
                 ? await CreateEvents(batch, cancellationToken)
                 : await CreateEventsOnlyIfPreviousEventExists(batch, streamId, firstEventNumber - 1, cancellationToken);

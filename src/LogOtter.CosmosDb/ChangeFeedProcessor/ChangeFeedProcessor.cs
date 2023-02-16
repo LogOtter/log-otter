@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb;
 
@@ -85,7 +84,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
         {
             return;
         }
-        
+
         await _changeFeedProcessor.StopAsync();
     }
 
@@ -108,7 +107,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
                 .Select(_feedChangeConverter.ConvertChange)
                 .ToList()
                 .AsReadOnly();
-            
+
             await _changeHandler.ProcessChanges(convertedChanges, cancellationToken);
 
             _logger.LogInformation(

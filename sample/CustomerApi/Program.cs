@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Configuration;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;

@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Text;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.SimpleHealthChecks.Tests;

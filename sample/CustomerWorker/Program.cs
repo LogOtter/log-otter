@@ -10,7 +10,7 @@ var host = Host
             .AddJsonFile("appsettings.json", optional: false)
             .AddEnvironmentVariables();
     })
-    .ConfigureServices((hostContext, services) =>
+    .ConfigureServices((_, services) =>
     {
         services
             .AddHealthChecks()

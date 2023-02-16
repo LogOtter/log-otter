@@ -190,10 +190,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
             requestOptions.PartitionKey = new PartitionKey(partitionKey);
         }
 
-        var query = (IQueryable<TSnapshot>)_snapshotContainer.GetItemLinqQueryable<TSnapshot>(
-            false,
-            requestOptions: requestOptions
-        );
+        var query = (IQueryable<TSnapshot>)_snapshotContainer.GetItemLinqQueryable<TSnapshot>(requestOptions: requestOptions);
 
         if (!includeDeleted)
         {

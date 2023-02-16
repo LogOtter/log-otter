@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LogOtter.SimpleHealthChecks;
 

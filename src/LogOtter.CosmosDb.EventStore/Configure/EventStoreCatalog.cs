@@ -1,5 +1,4 @@
-﻿using LogOtter.CosmosDb.EventStore.EventStreamApi;
-using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
+﻿using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 
 namespace LogOtter.CosmosDb.EventStore;
 

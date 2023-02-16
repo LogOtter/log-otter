@@ -19,47 +19,28 @@ public class RetryPolicy //: ICosmosRetryPolicy
 
     public async Task<T> CreateAndExecutePolicyAsync<T>(string actionName, Func<Task<T>> action)
     {
-        var policy = Polly.Policy
+        var policy = Policy
             .Handle<CosmosException>(
-                exception => exception.StatusCode == HttpStatusCode.ServiceUnavailable ||
-                             exception.StatusCode == HttpStatusCode.RequestTimeout
+                exception => exception.StatusCode is HttpStatusCode.ServiceUnavailable or HttpStatusCode.RequestTimeout
             )
-            .WaitAndRetryAsync(BackOffPolicy, (exception, timeSpan, retryCount, context) =>
+            .WaitAndRetryAsync(BackOffPolicy, (exception, _, retryCount, _) =>
             {
-                if (!(exception is CosmosException)) return;
+                if (exception is not CosmosException cosmosException)
+                {
+                    return;
+                }
 
-                var cosmosException = (CosmosException)exception;
                 _logger.LogWarning(
-                    "Failed to {actionName} on retry {retryCount} due to {exceptionType} {statusCode} - {exceptionMessage}. Attempting again.", actionName, retryCount, nameof(CosmosException), cosmosException.StatusCode, cosmosException.Message);
+                    "Failed to {ActionName} on retry {RetryCount} due to {ExceptionType} {StatusCode} - {ExceptionMessage}. Attempting again",
+                    actionName,
+                    retryCount,
+                    nameof(CosmosException),
+                    cosmosException.StatusCode,
+                    cosmosException.Message
+                );
             });
 
         var result = await policy.ExecuteAndCaptureAsync(action);
-
-        if (result.Outcome == OutcomeType.Successful)
-        {
-            return result.Result;
-        }
-
-        throw result.FinalException;
-    }
-
-    public T CreateAndExecutePolicy<T>(string actionName, Func<T> action)
-    {
-        var policy = Polly.Policy
-            .Handle<CosmosException>(
-                exception => exception.StatusCode == HttpStatusCode.ServiceUnavailable ||
-                             exception.StatusCode == HttpStatusCode.RequestTimeout
-            )
-            .WaitAndRetry(5, i => TimeSpan.FromSeconds(5), (exception, timeSpan, retryCount, context) =>
-            {
-                if (!(exception is CosmosException)) return;
-
-                var cosmosException = (CosmosException)exception;
-                _logger.LogWarning(
-                    "Failed to {actionName} on retry {retryCount} due to {exceptionType} {statusCode} - {exceptionMessage}. Attempting again.", actionName, retryCount, nameof(CosmosException), cosmosException.StatusCode, cosmosException.Message);
-            });
-
-        var result = policy.ExecuteAndCapture(action);
 
         if (result.Outcome == OutcomeType.Successful)
         {

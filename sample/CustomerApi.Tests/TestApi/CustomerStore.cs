@@ -4,13 +4,14 @@ using CustomerApi.Events.Customers;
 using CustomerApi.Uris;
 using FluentAssertions;
 using LogOtter.CosmosDb.EventStore;
+// ReSharper disable UnusedMethodReturnValue.Local
 
 namespace CustomerApi.Tests;
 
 public class CustomerStore
 {
     private static readonly Faker Faker = new("en_GB");
-    
+
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
     private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;
 
@@ -60,7 +61,7 @@ public class CustomerStore
             .GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);
 
         customerReadModel.Should().BeNull("The customer should not exist in the read store");
-        
+
         var customerQueryReadModel = (await _customerSnapshotRepository
             .QuerySnapshots(CustomerReadModel.StaticPartitionKey)
             .ToListAsync())
@@ -86,11 +87,11 @@ public class CustomerStore
         var customerWrite = await _customerEventRepository.Get(customerUri.Uri);
         customerWrite.Should().NotBeNull();
         customerWrite.Should().Match(matchFunc);
-        
+
         var customerRead = await _customerSnapshotRepository.GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);
         customerRead.Should().NotBeNull();
         customerRead.Should().Match(matchFunc);
-        
+
         var customerQueryRead = (await _customerSnapshotRepository.QuerySnapshots(CustomerReadModel.StaticPartitionKey).ToListAsync())
             .SingleOrDefault(c => c.CustomerUri == customerUri);
         customerQueryRead.Should().NotBeNull();
