@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +13,7 @@ internal class GetEventBodyHandler : BaseHandler
     private readonly ICosmosContainerFactory _containerFactory;
     private readonly EventStoreOptions _eventStoreOptions;
 
-    protected override Regex PathRegex => new(@"^event-streams/(?<EventStreamName>[^/]+)/streams/(?<StreamId>[^/]+)/events/(?<EventId>[^/]+)/body/$");
+    public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}/body";
 
     public GetEventBodyHandler(
         EventStoreCatalog eventStoreCatalog,
@@ -28,11 +28,11 @@ internal class GetEventBodyHandler : BaseHandler
         _eventStoreOptions = eventStoreOptions.Value;
     }
 
-    public override async Task Handle(HttpContext httpContext, Match match)
+    public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
-        var eventStreamName = Uri.UnescapeDataString(match.Groups["EventStreamName"].Value);
-        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString(match.Groups["StreamId"].Value));
-        var eventId = Uri.UnescapeDataString(match.Groups["EventId"].Value);
+        var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
+        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
+        var eventId = Uri.UnescapeDataString((string)routeValues["EventId"]!);
 
         var metaData = _eventStoreCatalog.GetMetadata(eventStreamName);
 
