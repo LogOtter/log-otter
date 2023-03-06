@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Azure.Identity;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +22,21 @@ public static class ConfigureExtensions
         serviceCollection.AddSingleton(sp =>
         {
             var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-            return new CosmosClient(options.ConnectionString, options.ClientOptions);
+
+            if (options.ManagedIdentityOptions == null)
+            {
+                return new CosmosClient(options.ConnectionString, options.ClientOptions);
+            }
+
+            var credentialOptions = new DefaultAzureCredentialOptions();
+            if (!string.IsNullOrWhiteSpace(options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId))
+            {
+                credentialOptions.ManagedIdentityClientId = options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId;
+            }
+
+            var tokenCredential = new DefaultAzureCredential(credentialOptions);
+            return new CosmosClient(options.ManagedIdentityOptions.AccountEndpoint, tokenCredential, options.ClientOptions);
+
         });
 
         serviceCollection.AddSingleton(sp =>
