@@ -10,7 +10,7 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 public class IntegrationTestsFixture : IAsyncLifetime
 {
     private readonly bool _useTestContainers;
-    private readonly CosmosDbTestcontainer _container;
+    private readonly CosmosDbTestcontainer? _container;
     private readonly string _cosmosConnectionString;
 
     public IntegrationTestsFixture()
@@ -18,16 +18,20 @@ public class IntegrationTestsFixture : IAsyncLifetime
         _cosmosConnectionString = Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING") ?? "";
         _useTestContainers = string.IsNullOrWhiteSpace(_cosmosConnectionString);
 
-        _container = new ContainerBuilder<CosmosDbTestcontainer>()
-            .WithDatabase(new CosmosDbTestcontainerConfiguration())
-            .Build();
+        if (_useTestContainers)
+        {
+            _container = new ContainerBuilder<CosmosDbTestcontainer>()
+                .WithDatabase(new CosmosDbTestcontainerConfiguration())
+                .Build();
+
+        }
     }
 
     public TestCosmos CreateTestCosmos()
     {
         var cosmosClient = !_useTestContainers
             ? new CosmosClient(_cosmosConnectionString)
-            : new CosmosClient(_container.ConnectionString, new CosmosClientOptions
+            : new CosmosClient(_container!.ConnectionString, new CosmosClientOptions
             {
                 ConnectionMode = ConnectionMode.Gateway,
                 HttpClientFactory = () => _container.HttpClient,
@@ -41,12 +45,15 @@ public class IntegrationTestsFixture : IAsyncLifetime
     {
         if (_useTestContainers)
         {
-            await _container.StartAsync();
+            await _container!.StartAsync();
         }
     }
 
     public async Task DisposeAsync()
     {
-        await _container.DisposeAsync();
+        if (_useTestContainers)
+        {
+            await _container!.DisposeAsync();
+        }
     }
 }

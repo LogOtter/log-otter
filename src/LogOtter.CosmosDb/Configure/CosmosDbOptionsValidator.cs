@@ -6,7 +6,14 @@ internal class CosmosDbOptionsValidator : IValidateOptions<CosmosDbOptions>
 {
     public ValidateOptionsResult Validate(string? name, CosmosDbOptions options)
     {
-        if (string.IsNullOrWhiteSpace(options.ConnectionString))
+        if (options.ManagedIdentityOptions != null)
+        {
+            if (string.IsNullOrWhiteSpace(options.ManagedIdentityOptions.AccountEndpoint))
+            {
+                return ValidateOptionsResult.Fail("ManagedIdentityOptions.AccountEndpoint not specified");
+            }
+        }
+        else if (string.IsNullOrWhiteSpace(options.ConnectionString))
         {
             return ValidateOptionsResult.Fail("ConnectionString not specified");
         }
