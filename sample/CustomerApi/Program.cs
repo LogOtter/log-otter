@@ -45,7 +45,14 @@ services
     .AddHealthChecks()
     .AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(c => c.WithOrigins("http://localhost:5173")));
+}
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
