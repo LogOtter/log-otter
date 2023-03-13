@@ -60,16 +60,6 @@ internal class EventStreamsUIMiddleware
             ApiBaseUrl = _apiOptions.RoutePrefix.Value
         };
 
-        if (_apiOptions.EnableCors)
-        {
-            var headers = response.Headers;
-
-            headers.AccessControlAllowMethods = _apiOptions.AccessControlAllowMethods;
-            headers.AccessControlAllowOrigin = _apiOptions.AccessControlAllowOrigin;
-            headers.AccessControlAllowCredentials = _apiOptions.AccessControlAllowCredentials;
-            headers.AccessControlAllowHeaders = _apiOptions.AccessControlAllowHeaders;
-        }
-
         response.WriteAsJsonAsync(config);
     }
 
