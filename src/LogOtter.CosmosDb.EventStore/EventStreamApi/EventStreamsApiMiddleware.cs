@@ -52,24 +52,11 @@ internal class EventStreamsApiMiddleware
 
             if (request.Method != map.Handler.RequestMethod)
             {
-                if (_options.EnableCors &&
-                    string.Equals(request.Method, "OPTIONS", StringComparison.InvariantCultureIgnoreCase) &&
-                    !string.Equals(map.Handler.RequestMethod, "GET", StringComparison.InvariantCultureIgnoreCase) &&
-                    map.Template.TryMatch(remaining, routeValues))
-                {
-                    SetCorsHeaders(httpContext.Response);
-                }
-
                 continue;
             }
 
             if (map.Template.TryMatch(remaining, routeValues))
             {
-                if (_options.EnableCors)
-                {
-                    SetCorsHeaders(httpContext.Response);
-                }
-
                 await map.Handler.HandleRequest(httpContext, routeValues);
 
                 return;
@@ -77,16 +64,6 @@ internal class EventStreamsApiMiddleware
         }
 
         await _next(httpContext);
-    }
-
-    private void SetCorsHeaders(HttpResponse response)
-    {
-        var headers = response.Headers;
-
-        headers.AccessControlAllowMethods = _options.AccessControlAllowMethods;
-        headers.AccessControlAllowOrigin = _options.AccessControlAllowOrigin;
-        headers.AccessControlAllowCredentials = _options.AccessControlAllowCredentials;
-        headers.AccessControlAllowHeaders = _options.AccessControlAllowHeaders;
     }
 
     private static TemplateMatcher BuildTemplateMatcher(string template)

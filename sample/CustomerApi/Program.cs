@@ -9,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var environment = builder.Environment;
 var services = builder.Services;
 var configuration = builder.Configuration;
 
@@ -45,16 +46,15 @@ services
     .AddHealthChecks()
     .AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 
-if (builder.Environment.IsDevelopment())
+if (environment.IsDevelopment())
 {
-    builder.Services.AddCors(options => options.AddDefaultPolicy(c => c.WithOrigins("http://localhost:5173")));
+    services.AddCors(options => options.AddDefaultPolicy(c => c.WithOrigins("http://localhost:5173")));
 }
 
 var app = builder.Build();
 
 app.UseCors();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
