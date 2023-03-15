@@ -30,7 +30,7 @@ export default {
       const events: Event[] = [];
 
       try {
-        const response = await this.eventStreamsService.getEvents(this.eventStreamName, this.streamId);
+        const response = await this.eventStreamsService.getEvents(this.serviceName, this.eventStreamName, this.streamId);
 
         for (const event of response.data) {
           events.push(event);
@@ -77,6 +77,10 @@ export default {
     },
   },
   props: {
+    serviceName: {
+      type: String,
+      required: false,
+    },
     eventStreamName: {
       type: String,
       required: true,
@@ -112,7 +116,14 @@ export default {
     <h1 class="display-5 fw-bold mb-4 sidebar-margin">{{ eventStreamName }}</h1>
     <stream-id-search-panel @search="search" :starting-stream-id="streamId"></stream-id-search-panel>
     <div>
-      <event-card :event-stream-name="eventStreamName" :stream-id="streamId" :event="event" v-for="event in events" :key="event.eventId"></event-card>
+      <event-card
+        :service-name="serviceName"
+        :event-stream-name="eventStreamName"
+        :stream-id="streamId"
+        :event="event"
+        v-for="event in events"
+        :key="event.eventId"
+      ></event-card>
 
       <div v-if="!loading && !events.length && !error">
         <div class="card mb-1 p-3 text-body-secondary">

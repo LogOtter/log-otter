@@ -1,4 +1,5 @@
 <script lang="ts">
+import eventStreamLinkResolver from "../helpers/EventStreamLinkResolver";
 import isVisible from "../helpers/IsVisible";
 import type { EventStream, EventStreamsService } from "../services/EventStreamsService";
 import { defineComponent, inject } from "vue";
@@ -68,6 +69,9 @@ export default defineComponent({
         this.fetchNextPage();
       }
     },
+    getHref(eventStream: EventStream) {
+      return eventStreamLinkResolver(eventStream);
+    },
   },
   mounted() {
     this.fetchData();
@@ -99,9 +103,12 @@ export default defineComponent({
     </div>
     <div class="card mb-2" v-for="eventStream in eventStreams" :key="eventStream.name">
       <div class="card-body">
-        <h5 class="card-title">{{ eventStream.name }}</h5>
+        <h5 class="card-title">
+          <span class="badge text-bg-secondary me-1" v-if="eventStream.serviceName">{{ eventStream.serviceName }}</span>
+          {{ eventStream.name }}
+        </h5>
         <div class="card-subtitle text-body-secondary">{{ eventStream.typeName }}</div>
-        <a :href="'#/' + eventStream.name" class="stretched-link"></a>
+        <a :href="getHref(eventStream)" class="stretched-link"></a>
       </div>
     </div>
     <span ref="loadMore"></span>

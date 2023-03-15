@@ -8,13 +8,23 @@ export default defineComponent({
   },
   methods: {
     search(streamId: string) {
-      window.location.hash = `#/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(streamId)}`;
+      if (this.serviceName) {
+        window.location.hash = `#/service/${encodeURIComponent(this.serviceName)}/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(
+          streamId
+        )}`;
+      } else {
+        window.location.hash = `#/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(streamId)}`;
+      }
     },
   },
   props: {
     eventStreamName: {
       type: String,
       required: true,
+    },
+    serviceName: {
+      type: String,
+      required: false,
     },
   },
 });

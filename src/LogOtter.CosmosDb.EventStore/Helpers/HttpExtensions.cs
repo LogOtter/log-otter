@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -29,6 +30,20 @@ internal static class HttpExtensions
         return 1;
     }
 
+    public static string? GetLogOtterHubPath(this HttpRequest request)
+    {
+        var scheme = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
+        var hostAndPort = request.Headers["X-Forwarded-Host"].FirstOrDefault();
+        var path = request.Headers["X-LogOtter-Hub-Path"].FirstOrDefault();
+
+        if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(hostAndPort) || string.IsNullOrEmpty(scheme))
+        {
+            return null;
+        }
+
+        return CreateUri(scheme, hostAndPort, path);
+    }
+
     public static bool EndsWithSlash(this PathString path)
     {
         return path.HasValue && path.Value.EndsWith("/", StringComparison.Ordinal);
@@ -42,5 +57,23 @@ internal static class HttpExtensions
         }
 
         return path;
+    }
+
+    private static string CreateUri(string scheme, string hostAndPort, string path)
+    {
+        var uriBuilder = new UriBuilder { Scheme = scheme, Path = path };
+
+        if (hostAndPort.Contains(':'))
+        {
+            var parts = hostAndPort.Split(':', 2);
+            uriBuilder.Host = parts[0];
+            uriBuilder.Port = int.Parse(parts[1]);
+        }
+        else
+        {
+            uriBuilder.Host = hostAndPort;
+        }
+
+        return uriBuilder.ToString();
     }
 }
