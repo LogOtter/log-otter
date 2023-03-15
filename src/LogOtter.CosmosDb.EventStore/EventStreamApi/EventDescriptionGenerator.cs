@@ -15,7 +15,7 @@ internal class EventDescriptionGenerator
 
     public string GetDescription(
         CosmosDbStorageEvent cosmosDbStorageEvent,
-        EventStoreMetadata eventStoreMetadata
+        IEventStoreMetadata eventStoreMetadata
     )
     {
         var storageEvent = cosmosDbStorageEvent.ToStorageEvent(

@@ -4,15 +4,13 @@ using Newtonsoft.Json;
 
 namespace CustomerApi.Events.Customers;
 
-public abstract class CustomerEvent : ISnapshottableEvent<CustomerReadModel>
+public abstract class CustomerEvent : IEvent<CustomerReadModel>
 {
-    public string SnapshotPartitionKey => CustomerReadModel.StaticPartitionKey;
-    
     public string EventStreamId => CustomerUri.Uri;
 
     [JsonProperty("ttl")]
     public int? Ttl => -1;
-    
+
     public CustomerUri CustomerUri { get; }
 
     public DateTimeOffset Timestamp { get; }
