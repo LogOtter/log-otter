@@ -1,8 +1,18 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onErrorCaptured, ref } from "vue";
 import App from "./App.vue";
 
 export default defineComponent({
+  setup() {
+    const error = ref();
+
+    onErrorCaptured((e) => {
+      error.value = e;
+      return true;
+    });
+
+    return { error };
+  },
   components: {
     App,
   },
@@ -10,10 +20,11 @@ export default defineComponent({
 </script>
 
 <template>
+  <div class="loading" v-if="error"><strong>Error</strong> - Could not connect to service</div>
   <Suspense>
     <app></app>
     <template #fallback>
-      <div class="loading">Loading...</div>
+      <div class="loading" v-if="!error">Loading...</div>
     </template>
   </Suspense>
 </template>

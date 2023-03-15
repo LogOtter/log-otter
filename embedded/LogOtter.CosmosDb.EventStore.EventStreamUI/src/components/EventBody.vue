@@ -14,6 +14,7 @@ export default {
     return {
       eventBody: {} as any,
       loading: false,
+      error: undefined as any,
     };
   },
   mounted() {
@@ -23,7 +24,11 @@ export default {
     async fetchEventBody() {
       this.loading = true;
 
-      this.eventBody = await this.eventStreamsService.getEventBody(this.eventStreamName, this.streamId, this.eventId);
+      try {
+        this.eventBody = await this.eventStreamsService.getEventBody(this.eventStreamName, this.streamId, this.eventId);
+      } catch (e) {
+        this.error = e;
+      }
 
       this.loading = false;
     },
@@ -44,8 +49,11 @@ export default {
       <span class="placeholder col-2 mb-2"></span>
       <span class="placeholder col-3"></span>
     </div>
-    <div v-if="!loading" class="card">
+    <div v-if="!loading && !error" class="card">
       <json-viewer :value="eventBody" :expand-depth="3" copyable></json-viewer>
+    </div>
+    <div v-if="!loading && error" class="card mb-1 p-3 text-bg-danger">
+      <span><i class="bi-exclamation-square me-2"></i> <strong>Error</strong> - Could not load event body</span>
     </div>
   </div>
 </template>

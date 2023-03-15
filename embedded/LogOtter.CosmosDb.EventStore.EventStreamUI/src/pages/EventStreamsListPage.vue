@@ -10,6 +10,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
+      error: undefined as any,
       eventStreams: [] as EventStream[],
       nextPageUrl: undefined as string | undefined,
     };
@@ -19,21 +20,26 @@ export default defineComponent({
       this.loading = true;
       this.eventStreams = [];
 
-      var response = await this.eventStreamsService.getEventStreams();
+      try {
+        var response = await this.eventStreamsService.getEventStreams();
 
-      const eventStreams = [];
+        const eventStreams = [];
 
-      for (const definition of response.data) {
-        eventStreams.push(definition);
-      }
+        for (const definition of response.data) {
+          eventStreams.push(definition);
+        }
 
-      this.nextPageUrl = response.nextPage;
+        this.nextPageUrl = response.nextPage;
 
-      this.eventStreams = eventStreams;
-      this.loading = false;
+        this.eventStreams = eventStreams;
+        this.loading = false;
 
-      if (isVisible(this.$refs.loadMore as HTMLElement)) {
-        this.fetchNextPage();
+        if (isVisible(this.$refs.loadMore as HTMLElement)) {
+          this.fetchNextPage();
+        }
+      } catch (e) {
+        this.error = e;
+        this.loading = false;
       }
     },
     async fetchNextPage() {
@@ -100,9 +106,14 @@ export default defineComponent({
     </div>
     <span ref="loadMore"></span>
   </div>
-  <div v-if="!loading && !eventStreams.length">
+  <div v-if="!loading && !eventStreams.length && !error">
     <div class="card m-3 p-3 text-muted">
       <span> <i class="bi-info-square me-2"></i> No event streams configured </span>
+    </div>
+  </div>
+  <div v-if="!loading && !eventStreams.length && error">
+    <div class="card m-3 p-3 text-bg-danger">
+      <span> <i class="bi-exclamation-square me-2"></i> <strong>Error</strong> - Could not load event streams </span>
     </div>
   </div>
 </template>

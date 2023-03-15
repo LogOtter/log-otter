@@ -22,21 +22,26 @@ export default defineComponent({
       this.loading = true;
       this.eventStreams = [];
 
-      const response = await this.eventStreamsService.getEventStreams();
+      try {
+        const response = await this.eventStreamsService.getEventStreams();
 
-      const eventStreams = [];
+        const eventStreams = [];
 
-      for (const definition of response.data) {
-        eventStreams.push(definition);
-      }
+        for (const definition of response.data) {
+          eventStreams.push(definition);
+        }
 
-      this.nextPageUrl = response.nextPage;
+        this.nextPageUrl = response.nextPage;
 
-      this.eventStreams = eventStreams;
-      this.loading = false;
+        this.eventStreams = eventStreams;
+        this.loading = false;
 
-      if (isVisible(this.$refs.loadMore as HTMLElement)) {
-        this.fetchNextPage();
+        if (isVisible(this.$refs.loadMore as HTMLElement)) {
+          this.fetchNextPage();
+        }
+      } catch {
+        // Ignore errors as sidebar error will be displayed on Event Stream list page
+        this.loading = false;
       }
     },
     async fetchNextPage() {
