@@ -12,20 +12,18 @@ public class DefaultSetupTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health");
+        serviceBuilder.Endpoints.AddEndpoint("/health");
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health");
+        var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
-            response.ContentType.Should().Be("text/plain");
-        });
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
+                response.ContentType.Should().Be("text/plain");
+            });
     }
 
     [Theory]
@@ -36,24 +34,20 @@ public class DefaultSetupTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .HealthCheckService
-            .ReturnsHealthStatus(status);
+        serviceBuilder.HealthCheckService.ReturnsHealthStatus(status);
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health");
+        serviceBuilder.Endpoints.AddEndpoint("/health");
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health");
+        var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(expectedStatusCode);
-        });
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
+                response.StatusCode.Should().Be(expectedStatusCode);
+            });
     }
 
     [Theory]
@@ -64,25 +58,21 @@ public class DefaultSetupTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .HealthCheckService
-            .ReturnsHealthStatus(status);
+        serviceBuilder.HealthCheckService.ReturnsHealthStatus(status);
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health");
+        serviceBuilder.Endpoints.AddEndpoint("/health");
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health");
+        var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
 
-            var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-            responseBody.Should().Be(expectedResponseBody);
-        });
+                var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
+                responseBody.Should().Be(expectedResponseBody);
+            });
     }
 }

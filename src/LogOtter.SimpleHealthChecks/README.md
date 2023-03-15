@@ -22,7 +22,7 @@ services
 
 ## Options
 
-By default, the health checks we be exposed on port 80 on all IP addresses. To configure, 
+By default, the health checks we be exposed on port 80 on all IP addresses. To configure,
 set the `SimpleHealthCheckHostOptions`
 
 ```c#
@@ -35,7 +35,7 @@ services
 
 ## Customize
 
-Healthcheck endpoints can be filter checks and customize their response in the same way as the 
+Healthcheck endpoints can be filter checks and customize their response in the same way as the
 `Microsoft.Extensions.Diagnostics.HealthChecks` can.
 
 ### Example: Filter checks for different endpoints

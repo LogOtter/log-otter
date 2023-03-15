@@ -21,15 +21,15 @@ internal static class JsonHelpers
             throw new ArgumentException($"Could not extract property key ({path}) from json. Only string or null values supported.");
         }
 
-        return jTokenProperty.Type == JTokenType.Null 
-            ? null 
+        return jTokenProperty.Type == JTokenType.Null
+            ? null
             : jTokenProperty.Value<string>();
     }
 
     public static string GetIdFromJson(string json)
     {
         var id = GetValueFromJson(json, "/id");
-        
+
         if (id == null)
         {
             throw new Exception("id is null");
@@ -50,10 +50,12 @@ internal static class JsonHelpers
             if (jTokenProperty.Type != JTokenType.Integer && jTokenProperty.Type != JTokenType.Null)
             {
                 //TODO: What does real Cosmos do in this situation?
-                throw new ArgumentException($"Could not extract ttl from json. Only int or null values supported.", nameof(json));
+                throw new ArgumentException("Could not extract ttl from json. Only int or null values supported.", nameof(json));
             }
 
-            ttl = jTokenProperty.Type == JTokenType.Null ? null : jTokenProperty.Value<int>();
+            ttl = jTokenProperty.Type == JTokenType.Null
+                ? null
+                : jTokenProperty.Value<int>();
         }
 
         return ttl ?? defaultDocumentTimeToLive;

@@ -9,10 +9,7 @@ namespace LogOtter.CosmosDb.EventStore;
 
 public static class ConfigureExtensions
 {
-    public static IEventStoreBuilder AddEventStore(
-        this ICosmosDbBuilder cosmosDbBuilder,
-        Action<EventStoreOptions>? setupAction = null
-    )
+    public static IEventStoreBuilder AddEventStore(this ICosmosDbBuilder cosmosDbBuilder, Action<EventStoreOptions>? setupAction = null)
     {
         var services = cosmosDbBuilder.Services;
 
@@ -35,10 +32,7 @@ public static class ConfigureExtensions
         return new EventStoreBuilder(cosmosDbBuilder);
     }
 
-    public static IApplicationBuilder UseEventStreamsApi(
-        this IApplicationBuilder app,
-        Action<EventStreamsApiOptions>? setupAction = null
-    )
+    public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, Action<EventStreamsApiOptions>? setupAction = null)
     {
         EventStreamsApiOptions options;
         using (var scope = app.ApplicationServices.CreateScope())
@@ -61,10 +55,7 @@ public static class ConfigureExtensions
         return app.MapWhen(c => c.Request.Path.StartsWithSegments(options.RoutePrefix), a => a.UseMiddleware<EventStreamsApiMiddleware>(options));
     }
 
-    public static IApplicationBuilder UseEventStreamsUI(
-        this IApplicationBuilder app,
-        Action<EventStreamsUIOptions>? setupAction = null
-    )
+    public static IApplicationBuilder UseEventStreamsUI(this IApplicationBuilder app, Action<EventStreamsUIOptions>? setupAction = null)
     {
         EventStreamsUIOptions options;
         using (var scope = app.ApplicationServices.CreateScope())

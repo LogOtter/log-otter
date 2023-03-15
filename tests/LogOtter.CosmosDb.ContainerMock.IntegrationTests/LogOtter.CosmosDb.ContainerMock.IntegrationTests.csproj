@@ -7,22 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentAssertions" />
-      <PackageReference Include="Microsoft.Extensions.Logging" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" />
-      <PackageReference Include="Polly" />
-      <PackageReference Include="Polly.Contrib.WaitAndRetry" />
-      <PackageReference Include="Testcontainers" />
-      <PackageReference Include="xunit" />
-      <PackageReference Include="xunit.runner.visualstudio">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Xunit.SkippableFact" />
+        <PackageReference Include="FluentAssertions"/>
+        <PackageReference Include="Microsoft.Extensions.Logging"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="Polly"/>
+        <PackageReference Include="Polly.Contrib.WaitAndRetry"/>
+        <PackageReference Include="Testcontainers"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.runner.visualstudio">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Xunit.SkippableFact"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj" />
+        <ProjectReference Include="..\..\src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj"/>
     </ItemGroup>
 
 </Project>

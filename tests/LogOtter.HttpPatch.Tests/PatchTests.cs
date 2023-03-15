@@ -10,7 +10,15 @@ namespace LogOtter.HttpPatch.Tests;
 
 public class PatchTests
 {
-    private static TestResource InitialState => new("12345", "Bob", "Bobertson family patriarch", 0, new Address("Alpha Tower", "B1 1TT"), ResourceState.Unpublished, ImmutableList<string>.Empty);
+    private static TestResource InitialState =>
+        new(
+            "12345",
+            "Bob",
+            "Bobertson family patriarch",
+            0,
+            new Address("Alpha Tower", "B1 1TT"),
+            ResourceState.Unpublished,
+            ImmutableList<string>.Empty);
 
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
@@ -60,7 +68,9 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } });
 
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
@@ -133,7 +143,9 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { address = new { line1 = (string?)null, postCode = (string?)null } });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { address = new { line1 = (string?)null, postCode = (string?)null } });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
@@ -152,7 +164,7 @@ public class PatchTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
-    
+
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     [InlineData(SerializationEngine.SystemText)]
@@ -167,7 +179,7 @@ public class PatchTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
-    
+
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     [InlineData(SerializationEngine.SystemText)]
@@ -185,7 +197,7 @@ public class PatchTests
         updatedResource.State.Should().Be(ResourceState.Published, "The patched value should be updated");
         updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
-    
+
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     [InlineData(SerializationEngine.SystemText)]

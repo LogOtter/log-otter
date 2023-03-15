@@ -16,7 +16,7 @@ public class SerializeTests
 
         json.Should().Be("""{"self":{"href":"/foo/self"}}""");
     }
-    
+
     [Fact]
     public void Serialize_NextOnly()
     {
@@ -27,7 +27,7 @@ public class SerializeTests
 
         json.Should().Be("""{"next":{"href":"/foo/next"}}""");
     }
-    
+
     [Fact]
     public void Serialize_SelfAndNext()
     {
@@ -39,13 +39,13 @@ public class SerializeTests
 
         json.Should().Be("""{"self":{"href":"/foo/self"},"next":{"href":"/foo/next"}}""");
     }
-    
+
     [Fact]
     public void Serialize_MultiLinkType()
     {
         var linkCollection = new JsonHalLinkCollection();
-        linkCollection.AddLink("related","/foo/related1");
-        linkCollection.AddLink("related","/foo/related2");
+        linkCollection.AddLink("related", "/foo/related1");
+        linkCollection.AddLink("related", "/foo/related2");
 
         var json = JsonSerializer.Serialize(linkCollection);
 

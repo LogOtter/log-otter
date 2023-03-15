@@ -7,25 +7,18 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
 
 internal class EventStreamsApiMiddleware
 {
+    public const int PageSize = 20;
+    private readonly IEnumerable<(IHandler Handler, TemplateMatcher Template)> _handlerMap;
     private readonly RequestDelegate _next;
     private readonly EventStreamsApiOptions _options;
-    private readonly IEnumerable<(IHandler Handler, TemplateMatcher Template)> _handlerMap;
-
-    public const int PageSize = 20;
 
     public PathString RoutePrefix { get; }
 
-    public EventStreamsApiMiddleware(
-        RequestDelegate next,
-        EventStreamsApiOptions options,
-        IEnumerable<IHandler> handlers
-    )
+    public EventStreamsApiMiddleware(RequestDelegate next, EventStreamsApiOptions options, IEnumerable<IHandler> handlers)
     {
         _next = next;
         _options = options;
-        _handlerMap = handlers
-            .Select(h => (h, BuildTemplateMatcher(h.Template)))
-            .ToList();
+        _handlerMap = handlers.Select(h => (h, BuildTemplateMatcher(h.Template))).ToList();
 
         RoutePrefix = _options.RoutePrefix;
 

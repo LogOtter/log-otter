@@ -15,10 +15,6 @@ public class Event<TBaseEvent>
 
     public static Event<TBaseEvent> FromStorageEvent(StorageEvent storageEvent)
     {
-        return new(
-            storageEvent.StreamId,
-            storageEvent.EventNumber,
-            (TBaseEvent)storageEvent.EventBody
-        );
+        return new Event<TBaseEvent>(storageEvent.StreamId, storageEvent.EventNumber, (TBaseEvent)storageEvent.EventBody);
     }
 }

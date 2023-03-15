@@ -2,8 +2,7 @@
 
 namespace LogOtter.CosmosDb.Testing;
 
-public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>
-    : IChangeFeedProcessor
+public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : IChangeFeedProcessor
 {
     private readonly IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> _changeConverter;
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
@@ -15,36 +14,12 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>
         ContainerMock.ContainerMock container,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> changeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        bool enabled
-    )
+        bool enabled)
     {
         container.DataChanged += OnChanges;
         _changeConverter = changeConverter;
         _changeHandler = changeHandler;
         _enabled = enabled;
-    }
-
-    private void OnChanges(object? sender, DataChangedEventArgs e)
-    {
-        if (!_enabled || !_started)
-        {
-            return;
-        }
-
-        var changes = new List<TRawDocument>
-        {
-            e.Deserialize<TRawDocument>()
-        };
-            
-        var convertedChanges = changes
-            .Select(_changeConverter.ConvertChange)
-            .ToList()
-            .AsReadOnly();
-        
-        _changeHandler
-            .ProcessChanges(convertedChanges, CancellationToken.None)
-            .GetAwaiter()
-            .GetResult();
     }
 
     public Task Start()
@@ -57,5 +32,19 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>
     {
         _started = false;
         return Task.CompletedTask;
+    }
+
+    private void OnChanges(object? sender, DataChangedEventArgs e)
+    {
+        if (!_enabled || !_started)
+        {
+            return;
+        }
+
+        var changes = new List<TRawDocument> { e.Deserialize<TRawDocument>() };
+
+        var convertedChanges = changes.Select(_changeConverter.ConvertChange).ToList().AsReadOnly();
+
+        _changeHandler.ProcessChanges(convertedChanges, CancellationToken.None).GetAwaiter().GetResult();
     }
 }

@@ -6,11 +6,6 @@ namespace CustomerApi.Events.Customers;
 
 public abstract class CustomerEvent : IEvent<CustomerReadModel>
 {
-    public string EventStreamId => CustomerUri.Uri;
-
-    [JsonProperty("ttl")]
-    public int? Ttl => -1;
-
     public CustomerUri CustomerUri { get; }
 
     public DateTimeOffset Timestamp { get; }
@@ -20,6 +15,11 @@ public abstract class CustomerEvent : IEvent<CustomerReadModel>
         CustomerUri = customerUri;
         Timestamp = timestamp ?? DateTimeOffset.UtcNow;
     }
+
+    public string EventStreamId => CustomerUri.Uri;
+
+    [JsonProperty("ttl")]
+    public int? Ttl => -1;
 
     public abstract void Apply(CustomerReadModel model);
 

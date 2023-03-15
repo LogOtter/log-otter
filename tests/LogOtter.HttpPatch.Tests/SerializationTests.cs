@@ -4,16 +4,13 @@ using LogOtter.HttpPatch.Tests.Api;
 using Newtonsoft.Json;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+
 // ReSharper disable NotAccessedPositionalProperty.Local
 
 namespace LogOtter.HttpPatch.Tests;
 
 public class SerializationTests
 {
-    private record Address(string Line1, string Postcode);
-
-    private record TestRequest(OptionallyPatched<string> Primitive = default, OptionallyPatched<Address> Address = default);
-
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     [InlineData(SerializationEngine.SystemText)]
@@ -40,7 +37,9 @@ public class SerializationTests
     [InlineData(SerializationEngine.SystemText)]
     public void DeserializesWithValue(SerializationEngine engine)
     {
-        var deserialized = DeserializeFromStringWith<TestRequest>(engine, "{ \"primitive\": \"hello world\", \"address\": { \"line1\": \"Alpha Tower\", \"postcode\": \"B1 1TT\" } }");
+        var deserialized = DeserializeFromStringWith<TestRequest>(
+            engine,
+            "{ \"primitive\": \"hello world\", \"address\": { \"line1\": \"Alpha Tower\", \"postcode\": \"B1 1TT\" } }");
 
         deserialized.Primitive.IsIncludedInPatch.Should().BeTrue();
         deserialized.Primitive.Value.Should().Be("hello world");
@@ -82,7 +81,8 @@ public class SerializationTests
                 return JsonConvert.DeserializeObject<T>(toDeserialize) ?? throw new InvalidOperationException("Got null from deserialize call");
             case SerializationEngine.SystemText:
                 // Turning on case insensitivity as that is true in the defaults in asp.net APIs
-                return JsonSerializer.Deserialize<T>(toDeserialize, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? throw new InvalidOperationException("Got null from deserialize call");
+                return JsonSerializer.Deserialize<T>(toDeserialize, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ??
+                    throw new InvalidOperationException("Got null from deserialize call");
             default:
                 throw new ArgumentOutOfRangeException(nameof(engine), engine, null);
         }
@@ -100,4 +100,8 @@ public class SerializationTests
                 throw new ArgumentOutOfRangeException(nameof(engine), engine, null);
         }
     }
+
+    private record Address(string Line1, string Postcode);
+
+    private record TestRequest(OptionallyPatched<string> Primitive = default, OptionallyPatched<Address> Address = default);
 }

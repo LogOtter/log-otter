@@ -26,8 +26,7 @@ public class PatchCustomerController : ControllerBase
     public async Task<ActionResult<CustomerResponse>> Patch(
         [FromRoute] string id,
         [FromBody] PatchCustomerRequest request,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         if (!Id.TryParse(id, out var customerId))
         {
@@ -36,11 +35,7 @@ public class PatchCustomerController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(
-            customerUri.Uri,
-            includeDeleted: true,
-            cancellationToken: cancellationToken
-        );
+        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, includeDeleted: true, cancellationToken: cancellationToken);
 
         if (customerReadModel == null)
         {
@@ -51,12 +46,12 @@ public class PatchCustomerController : ControllerBase
 
         if (request.EmailAddress.IsIncludedInPatch)
         {
-            events.Add(new CustomerEmailAddressChanged(
-                customerUri,
-                customerReadModel.EmailAddress,
-                request.EmailAddress.Value!,
-                DateTimeOffset.UtcNow
-            ));
+            events.Add(
+                new CustomerEmailAddressChanged(
+                    customerUri,
+                    customerReadModel.EmailAddress,
+                    request.EmailAddress.Value!,
+                    DateTimeOffset.UtcNow));
         }
 
         if (request.FirstName.IsIncludedInPatch || request.LastName.IsIncludedInPatch)
@@ -64,30 +59,31 @@ public class PatchCustomerController : ControllerBase
             var newFirstName = request.FirstName.GetValueIfIncludedOrDefault(customerReadModel.FirstName);
             var newLastName = request.LastName.GetValueIfIncludedOrDefault(customerReadModel.LastName);
 
-            events.Add(new CustomerNameChanged(
-                customerUri,
-                customerReadModel.FirstName,
-                newFirstName,
-                customerReadModel.LastName,
-                newLastName,
-                DateTimeOffset.UtcNow
-            ));
+            events.Add(
+                new CustomerNameChanged(
+                    customerUri,
+                    customerReadModel.FirstName,
+                    newFirstName,
+                    customerReadModel.LastName,
+                    newLastName,
+                    DateTimeOffset.UtcNow));
         }
 
         var updatedCustomer = await _customerEventRepository.ApplyEvents(
             customerUri.Uri,
             customerReadModel.Revision,
             cancellationToken,
-            events.ToArray()
-        );
+            events.ToArray());
 
         return Ok(new CustomerResponse(updatedCustomer));
     }
 }
 
 public record PatchCustomerRequest(
-    [RequiredIfPatched, EmailAddressIfPatched]
+    [RequiredIfPatched]
+    [EmailAddressIfPatched]
     OptionallyPatched<string> EmailAddress,
-    [RequiredIfPatched] OptionallyPatched<string> FirstName,
-    [RequiredIfPatched] OptionallyPatched<string> LastName
-) : BasePatchRequest;
+    [RequiredIfPatched]
+    OptionallyPatched<string> FirstName,
+    [RequiredIfPatched]
+    OptionallyPatched<string> LastName) : BasePatchRequest;

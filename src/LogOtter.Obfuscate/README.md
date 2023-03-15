@@ -18,6 +18,7 @@ Obfuscate.Phone("07770123456"); // 07****56
 ```
 
 ### Name
+
 ```c#
 Obfuscate.Name("Bob", "Bobertson"); // B**** Bo****
 ```

@@ -11,5 +11,5 @@ internal static class AsyncEnumerableExtensions
         }
 
         return result;
-    }  
+    }
 }

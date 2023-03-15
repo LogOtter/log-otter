@@ -10,25 +10,15 @@ public interface IEventStoreBuilder
         string eventContainerName,
         Func<TBaseEvent, string> snapshotPartitionKeyResolver,
         IReadOnlyCollection<Type>? eventTypes = null,
-        JsonSerializerSettings? jsonSerializerSettings = null
-    )
-        where TBaseEvent : class, IEvent<TSnapshot>
-        where TSnapshot : class, ISnapshot, new();
+        JsonSerializerSettings? jsonSerializerSettings = null) where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new();
 
-    IEventStoreBuilder AddSnapshotStoreProjection<TBaseEvent, TSnapshot>
-    (
+    IEventStoreBuilder AddSnapshotStoreProjection<TBaseEvent, TSnapshot>(
         string snapshotContainerName,
         string partitionKeyPath = "/partitionKey",
         string? projectorName = null,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes = null
-    )
-        where TBaseEvent : class, IEvent<TSnapshot>
-        where TSnapshot : class, ISnapshot, new();
+        IEnumerable<Collection<CompositePath>>? compositeIndexes = null)
+        where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new();
 
-    IEventStoreBuilder AddCatchupSubscription<
-        TBaseEvent,
-        TCatchupSubscriptionHandler
-    >(
-        string projectorName
-    ) where TCatchupSubscriptionHandler : class, ICatchupSubscription<TBaseEvent>;
+    IEventStoreBuilder AddCatchupSubscription<TBaseEvent, TCatchupSubscriptionHandler>(string projectorName)
+        where TCatchupSubscriptionHandler : class, ICatchupSubscription<TBaseEvent>;
 }

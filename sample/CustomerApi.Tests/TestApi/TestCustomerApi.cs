@@ -29,6 +29,11 @@ public class TestCustomerApi : IDisposable
         Then = _hostedApi.Services.GetRequiredService<ThenSteps>();
     }
 
+    public void Dispose()
+    {
+        _hostedApi.Dispose();
+    }
+
     private void ConfigureTestServices(IServiceCollection services)
     {
         services.AddTestCosmosDb();
@@ -41,20 +46,21 @@ public class TestCustomerApi : IDisposable
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
+        services.PostConfigure<JwtBearerOptions>(
+            JwtBearerDefaults.AuthenticationScheme,
+            options =>
             {
-                SignatureValidator = (token, _) => new JwtSecurityToken(token),
-                ValidateAudience = false,
-                ValidateIssuer = false
-            };
-        });
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    SignatureValidator = (token, _) => new JwtSecurityToken(token), ValidateAudience = false, ValidateIssuer = false
+                };
+            });
 
-        services.PostConfigure<PageOptions>(options =>
-        {
-            options.PageSize = 5;
-        });
+        services.PostConfigure<PageOptions>(
+            options =>
+            {
+                options.PageSize = 5;
+            });
     }
 
     public HttpClient CreateClient(AuthenticationHeaderValue? authenticationHeaderValue = null)
@@ -64,20 +70,12 @@ public class TestCustomerApi : IDisposable
         return client;
     }
 
-    public void Dispose()
-    {
-        _hostedApi.Dispose();
-    }
-
     private class TestApplicationFactory : WebApplicationFactory<Program>
     {
-        private readonly Action<IServiceCollection> _configureTestServices;
         private readonly Action<IServiceCollection> _configureServices;
+        private readonly Action<IServiceCollection> _configureTestServices;
 
-        public TestApplicationFactory(
-            Action<IServiceCollection> configureTestServices,
-            Action<IServiceCollection> configureServices
-        )
+        public TestApplicationFactory(Action<IServiceCollection> configureTestServices, Action<IServiceCollection> configureServices)
         {
             _configureTestServices = configureTestServices;
             _configureServices = configureServices;
@@ -85,15 +83,14 @@ public class TestCustomerApi : IDisposable
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder
-                .ConfigureTestServices(_configureTestServices)
-                .ConfigureServices(_configureServices)
-                .ConfigureLogging(options =>
-                {
-                    options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
-                    options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware",
-                        logLevel => logLevel >= LogLevel.Error);
-                });
+            builder.ConfigureTestServices(_configureTestServices)
+                   .ConfigureServices(_configureServices)
+                   .ConfigureLogging(
+                       options =>
+                       {
+                           options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                           options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
+                       });
         }
     }
 }

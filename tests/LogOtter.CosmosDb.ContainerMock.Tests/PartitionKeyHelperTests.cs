@@ -20,13 +20,13 @@ public class PartitionKeyHelperTests
         yield return new object[] { new PartitionKey(null) };
         yield return new object[] { new PartitionKey("Foo") };
     }
-    
+
     [Theory]
     [MemberData(nameof(PartitionKeys))]
     public void CorrectlyDeserializes(PartitionKey input)
     {
         var serializedPartitionKey = input.ToString();
-        
+
         var deserializedPartitionKey = PartitionKeyHelpers.FromJsonString(serializedPartitionKey);
 
         deserializedPartitionKey.Should().Be(input);

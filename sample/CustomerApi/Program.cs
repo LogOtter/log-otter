@@ -17,34 +17,28 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services
-    .AddAuthentication()
-    .AddJwtBearer();
+services.AddAuthentication().AddJwtBearer();
 
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
 services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStreamsApi"));
 
-services
-    .AddCosmosDb()
-    .AddEventStore(options => options.AutoEscapeIds = true)
-    .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent", _ => CustomerReadModel.StaticPartitionKey)
-    .AddSnapshotStoreProjection<CustomerEvent, CustomerReadModel>("Customers",
-        compositeIndexes: new[]
-        {
-            new Collection<CompositePath>
+services.AddCosmosDb()
+        .AddEventStore(options => options.AutoEscapeIds = true)
+        .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent", _ => CustomerReadModel.StaticPartitionKey)
+        .AddSnapshotStoreProjection<CustomerEvent, CustomerReadModel>(
+            "Customers",
+            compositeIndexes: new[]
             {
-                new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
-                new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
-            }
-        }
-    )
-    .AddCatchupSubscription<CustomerEvent,
-        TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+                new Collection<CompositePath>
+                {
+                    new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
+                    new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+                }
+            })
+        .AddCatchupSubscription<CustomerEvent, TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
 
-services
-    .AddHealthChecks()
-    .AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
+services.AddHealthChecks().AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 
 if (environment.IsDevelopment())
 {

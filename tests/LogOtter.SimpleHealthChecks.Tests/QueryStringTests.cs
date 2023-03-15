@@ -10,20 +10,18 @@ public class QueryStringTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health");
+        serviceBuilder.Endpoints.AddEndpoint("/health");
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health?q=foo");
+        var response = serviceBuilder.EnqueueGetRequest("/health?q=foo");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(404);
-        });
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
+                response.StatusCode.Should().Be(404);
+            });
     }
 
     [Fact]
@@ -31,19 +29,17 @@ public class QueryStringTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health?q=foo");
+        serviceBuilder.Endpoints.AddEndpoint("/health?q=foo");
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health?q=foo");
+        var response = serviceBuilder.EnqueueGetRequest("/health?q=foo");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(200);
-        });
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
+                response.StatusCode.Should().Be(200);
+            });
     }
 }

@@ -18,12 +18,12 @@ public class DeleteCustomerTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-    
+
     [Fact]
     public async Task Existing_ReturnsNoContent()
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
-        
+
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
@@ -33,12 +33,12 @@ public class DeleteCustomerTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
-    
+
     [Fact]
     public async Task ExistingDeleted_ReturnsNoContent()
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
-        
+
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
@@ -49,12 +49,12 @@ public class DeleteCustomerTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
-    
+
     [Fact]
     public async Task Existing_HasBeenRemoved()
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
-        
+
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
@@ -64,12 +64,12 @@ public class DeleteCustomerTests
 
         await customerApi.Then.TheCustomerShouldBeDeleted(customerUri);
     }
-    
+
     [Fact]
     public async Task ExistingDeleted_HasBeenRemoved()
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
-        
+
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
@@ -80,7 +80,7 @@ public class DeleteCustomerTests
 
         await customerApi.Then.TheCustomerShouldBeDeleted(customerUri);
     }
-    
+
     [Fact]
     public async Task Unauthorized()
     {
@@ -91,7 +91,7 @@ public class DeleteCustomerTests
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task Forbidden()
     {

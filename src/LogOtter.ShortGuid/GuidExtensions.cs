@@ -13,16 +13,16 @@ public static class GuidExtensions
     public static string ToShortString(this Guid inputGuid)
     {
         var guidBytes = inputGuid.ToByteArray();
-        
+
         var stringBuilder = new StringBuilder();
-        
+
         for (var guidSection = 0; guidSection < 2; guidSection++)
         {
             var section = new StringBuilder();
-            
+
             var startIndex = guidSection * 8;
             var numericRepresentation = BitConverter.ToUInt64(guidBytes, startIndex);
-            
+
             while (numericRepresentation > 0)
             {
                 var mod = (int)(numericRepresentation % (ulong)Alphabet.Length);
@@ -36,5 +36,8 @@ public static class GuidExtensions
         return stringBuilder.ToString();
     }
 
-    public static bool IsValidShortGuid(this string guidString) => ValidShortGuid.IsMatch(guidString);
+    public static bool IsValidShortGuid(this string guidString)
+    {
+        return ValidShortGuid.IsMatch(guidString);
+    }
 }

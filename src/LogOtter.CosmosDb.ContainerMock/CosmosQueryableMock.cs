@@ -23,7 +23,7 @@ public class CosmosQueryableMock<T> : IOrderedQueryable<T>, IQueryProvider
     {
         var expression = ValidateExpression(Expression);
         _underlying = new EnumerableQuery<T>(expression);
-        return((IEnumerable)_underlying).GetEnumerator();
+        return ((IEnumerable)_underlying).GetEnumerator();
     }
 
     public Type ElementType => ((IQueryable)_underlying).ElementType;
@@ -34,7 +34,7 @@ public class CosmosQueryableMock<T> : IOrderedQueryable<T>, IQueryProvider
 
     public IQueryable CreateQuery(Expression expression)
     {
-        return((IQueryProvider)_underlying).CreateQuery(expression);
+        return ((IQueryProvider)_underlying).CreateQuery(expression);
     }
 
     public IQueryable<TElement> CreateQuery<TElement>(Expression expression)

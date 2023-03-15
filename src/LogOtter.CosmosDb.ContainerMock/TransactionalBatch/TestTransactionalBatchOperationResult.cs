@@ -7,21 +7,21 @@ internal class TestTransactionalBatchOperationResult : TransactionalBatchOperati
 {
     private readonly ResponseMessage _responseMessage;
 
+    public override HttpStatusCode StatusCode => _responseMessage.StatusCode;
+    public override Stream ResourceStream => _responseMessage.Content;
+    public override string ETag => _responseMessage.Headers.ETag;
+
     public TestTransactionalBatchOperationResult(ResponseMessage responseMessage)
     {
         _responseMessage = responseMessage;
     }
-
-    public override HttpStatusCode StatusCode => _responseMessage.StatusCode;
-    public override Stream ResourceStream => _responseMessage.Content;
-    public override string ETag => _responseMessage.Headers.ETag;
 }
 
 internal class TestTransactionalBatchOperationResult<T> : TransactionalBatchOperationResult<T>
 {
-    private readonly HttpStatusCode _statusCode;
     private readonly string _eTag;
     private readonly Stream _resourceStream;
+    private readonly HttpStatusCode _statusCode;
 
     public sealed override T Resource { get; set; }
 

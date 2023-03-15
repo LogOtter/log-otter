@@ -11,12 +11,12 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
 {
     private readonly SerializationEngine _serializationEngine;
 
+    public TestDataStore DataStore => Services.GetRequiredService<TestDataStore>();
+
     public TestApi(SerializationEngine serializationEngine)
     {
         _serializationEngine = serializationEngine;
     }
-
-    public TestDataStore DataStore => Services.GetRequiredService<TestDataStore>();
 
     protected override IHostBuilder CreateHostBuilder()
     {
@@ -26,8 +26,8 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSolutionRelativeContentRoot(Path.Combine("tests", GetType().Assembly.GetName().Name!));
-        
-        switch(_serializationEngine)
+
+        switch (_serializationEngine)
         {
             case SerializationEngine.Newtonsoft:
                 builder.UseStartup<NewtonsoftStartup>();
@@ -38,17 +38,18 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
             default:
                 throw new ArgumentOutOfRangeException();
         }
-                
-        builder.ConfigureTestServices(sc =>
-        {
-            sc.AddSingleton<TestDataStore>();
-        });
 
-        builder.ConfigureLogging(options =>
-        {
-            options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
-            options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware",
-                logLevel => logLevel >= LogLevel.Error);
-        });
+        builder.ConfigureTestServices(
+            sc =>
+            {
+                sc.AddSingleton<TestDataStore>();
+            });
+
+        builder.ConfigureLogging(
+            options =>
+            {
+                options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
+            });
     }
 }

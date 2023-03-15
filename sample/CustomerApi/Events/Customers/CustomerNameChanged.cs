@@ -16,8 +16,7 @@ public class CustomerNameChanged : CustomerEvent
         string newFirstName,
         string oldLastName,
         string newLastName,
-        DateTimeOffset? timestamp = null
-    ) : base(customerUri, timestamp)
+        DateTimeOffset? timestamp = null) : base(customerUri, timestamp)
     {
         OldFirstName = oldFirstName;
         NewFirstName = newFirstName;

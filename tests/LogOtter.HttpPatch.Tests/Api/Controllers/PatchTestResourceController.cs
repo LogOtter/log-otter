@@ -31,22 +31,22 @@ public class PatchTestResourceController : ControllerBase
         {
             testResource = testResource with { Count = request.Count.Value };
         }
-        
+
         if (request.Address.IsIncludedInPatch)
         {
             testResource = testResource with { Address = request.Address.Value! };
         }
-        
+
         if (request.State.IsIncludedInPatch)
         {
             testResource = testResource with { State = request.State.Value };
         }
-        
+
         if (request.People.IsIncludedInPatch)
         {
             testResource = testResource with { People = request.People.Value! };
         }
-        
+
         _dataStore.UpsertResource(testResource);
         return Ok(testResource);
     }

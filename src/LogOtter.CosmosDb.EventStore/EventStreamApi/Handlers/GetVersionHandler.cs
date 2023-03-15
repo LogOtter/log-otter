@@ -11,10 +11,7 @@ internal class GetVersionHandler : BaseHandler
 
     public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
-        var packageVersion = Assembly
-            .GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
-            .InformationalVersion;
+        var packageVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
 
         var response = new VersionResponse(packageVersion, 1);
 

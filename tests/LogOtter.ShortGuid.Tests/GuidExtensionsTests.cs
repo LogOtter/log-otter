@@ -10,7 +10,7 @@ public class GuidExtensionsTests
     {
         var guid = Guid.Parse("0a3d2017-7581-4831-ba3c-a46556c87304");
         var shortGuid = guid.ToShortString();
-        
+
         shortGuid.Should().Be("sZCkPjP1rt2B8QVN4GhvctDB");
     }
 
@@ -24,10 +24,10 @@ public class GuidExtensionsTests
     public void TheAlgorithmShouldBeReversibleWithNoLossOfInformation(string guidString)
     {
         var guidValue = Guid.Parse(guidString);
-        
+
         var shortString = guidValue.ToShortString();
         var reversed = ToGuidFromShortString(shortString);
-        
+
         reversed.Should().Be(guidValue);
     }
 
@@ -45,7 +45,7 @@ public class GuidExtensionsTests
     {
         var guid = Guid.Parse("04030201-0605-0007-0000-000c0d0e0f10");
         var shortGuid = guid.ToShortString();
-        
+
         shortGuid.Should().NotBeNullOrEmpty();
         shortGuid.Should().HaveLength(24);
     }
@@ -55,7 +55,7 @@ public class GuidExtensionsTests
     {
         var guid = Guid.Parse("00000035-0000-0000-0000-00000d0e0f10");
         var shortGuid = guid.ToShortString();
-        
+
         shortGuid.Should().NotBeNullOrEmpty();
         shortGuid.Should().HaveLength(24);
     }
@@ -76,7 +76,7 @@ public class GuidExtensionsTests
 
         shortGuid1.Should().NotBe(shortGuid2);
     }
-    
+
     [Theory]
     [InlineData("sZCkPjP1rt2B8QVN4GhvctDB", true, "is valid")]
     [InlineData("sZCkPjP1rt2B8QVN4GhvctDBB", false, "too long")]
@@ -90,8 +90,8 @@ public class GuidExtensionsTests
     }
 
     /// <summary>
-    /// In order to be satisfied that no entropy is lost, if we can safely reverse the string then this is true.
-    /// This should not be put in the main code base as we don't want to encourage 2 way conversions from the short string
+    ///     In order to be satisfied that no entropy is lost, if we can safely reverse the string then this is true.
+    ///     This should not be put in the main code base as we don't want to encourage 2 way conversions from the short string
     /// </summary>
     private static Guid ToGuidFromShortString(string input)
     {
@@ -99,7 +99,7 @@ public class GuidExtensionsTests
 
         var part1 = new string(input[..12].Reverse().ToArray());
         var part2 = new string(input[12..].Reverse().ToArray());
-        
+
         static byte[] ParsePart(string part)
         {
             ulong accumulator = 0;

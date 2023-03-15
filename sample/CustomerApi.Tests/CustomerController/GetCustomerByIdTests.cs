@@ -13,16 +13,20 @@ public class GetCustomerByIdTests
     public async Task Valid_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
-        
+        await customerApi.Given.AnExistingCustomer(
+            CustomerUri.Parse("/customers/ExistingUser"),
+            "bob@bobertson.co.uk",
+            "Bob",
+            "Bobertson");
+
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
-        
+
         var client = customerApi.CreateClient(authHeader);
 
         var response = await client.GetAsync("/customers/ExistingUser");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var customer = await response.Content.ReadFromJsonAsync<CustomerResponse>();
 
         customer.Should().NotBeNull();
@@ -39,27 +43,27 @@ public class GetCustomerByIdTests
         using var customerApi = new TestCustomerApi();
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
-        
+
         var client = customerApi.CreateClient(authHeader);
 
         var response = await client.GetAsync("/customers/NonExistentUser");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-    
+
     [Fact]
     public async Task Unauthorized()
     {
         using var customerApi = new TestCustomerApi();
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"));
-        
+
         var client = customerApi.CreateClient();
 
         var response = await client.GetAsync("/customers/ExistingUser");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
-    
+
     [Fact]
     public async Task Forbidden()
     {
@@ -70,7 +74,7 @@ public class GetCustomerByIdTests
         var client = customerApi.CreateClient(authHeader);
 
         var response = await client.GetAsync("/customers/ExistingUser");
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 }

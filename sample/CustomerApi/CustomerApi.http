@@ -1,11 +1,11 @@
 ﻿### Healthcheck
 GET {{ host }}/healthcheck
 
-> {% 
-    client.test("Request executed successfully", function() {
-      client.assert(response.status === 200, "Response status is not 200");
-      client.assert(response.body === 'Healthy', "Response does not return 'Healthy'");
-    });
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 200, "Response status is not 200");
+    client.assert(response.body === 'Healthy', "Response does not return 'Healthy'");
+  });
 %}
 
 ### Get all customers

@@ -8,6 +8,12 @@ internal class MockHttpListenerResponse : IHttpListenerResponse
     private readonly MemoryStream _outputStream;
     private bool _responseClosed;
 
+    public MockHttpListenerResponse()
+    {
+        _outputStream = new MemoryStream();
+        Headers = new WebHeaderCollection();
+    }
+
     public int StatusCode { get; set; }
 
     public string? ContentType { get; set; }
@@ -19,12 +25,6 @@ internal class MockHttpListenerResponse : IHttpListenerResponse
     public WebHeaderCollection Headers { get; set; }
 
     public Stream OutputStream => _outputStream;
-
-    public MockHttpListenerResponse()
-    {
-        _outputStream = new MemoryStream();
-        Headers = new WebHeaderCollection();
-    }
 
     public void AddHeader(string name, string value)
     {
@@ -46,13 +46,15 @@ internal class MockHttpListenerResponse : IHttpListenerResponse
         var source = new CancellationTokenSource();
         source.CancelAfter(delay);
 
-        await Task.Run(async () =>
-        {
-            while (!_responseClosed)
+        await Task.Run(
+            async () =>
             {
-                await Task.Delay(100, source.Token);
-            }
-        }, source.Token);
+                while (!_responseClosed)
+                {
+                    await Task.Delay(100, source.Token);
+                }
+            },
+            source.Token);
     }
 
     public byte[] GetOutputStreamBytes()

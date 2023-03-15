@@ -5,8 +5,8 @@ namespace LogOtter.SimpleHealthChecks.Tests;
 internal class MockHealthCheckService : HealthCheckService
 {
     private readonly IDictionary<string, HealthReportEntry> _entries = new Dictionary<string, HealthReportEntry>();
-    private HealthStatus _status = HealthStatus.Healthy;
     private TimeSpan _duration = TimeSpan.FromMilliseconds(10);
+    private HealthStatus _status = HealthStatus.Healthy;
 
     public MockHealthCheckService ReturnsHealthStatus(HealthStatus status)
     {
@@ -28,11 +28,7 @@ internal class MockHealthCheckService : HealthCheckService
 
     public override Task<HealthReport> CheckHealthAsync(Func<HealthCheckRegistration, bool>? predicate, CancellationToken cancellationToken = default)
     {
-        var report = new HealthReport(
-            _entries.AsReadOnly(),
-            _status,
-            _duration
-        );
+        var report = new HealthReport(_entries.AsReadOnly(), _status, _duration);
 
         return Task.FromResult(report);
     }

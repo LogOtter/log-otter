@@ -8,16 +8,13 @@ public class ConsumerStore
 {
     public SecurityToken GivenAnExistingConsumer(string audience, params string[] roles)
     {
-        var claims = roles
-            .Select(r => new Claim(ClaimTypes.Role, r))
-            .ToList();
+        var claims = roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
 
         return new JwtSecurityToken(
             "TestGeneratedToken",
             audience,
             claims,
             DateTime.UtcNow,
-            DateTime.UtcNow.AddDays(1)
-        );
+            DateTime.UtcNow.AddDays(1));
     }
 }

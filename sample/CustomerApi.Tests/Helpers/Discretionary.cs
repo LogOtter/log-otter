@@ -13,11 +13,16 @@ public readonly struct Discretionary<T> : IEquatable<Discretionary<T>>
 
     public static Discretionary<T> NotSpecified => new();
 
-    public static implicit operator Discretionary<T>(T value) => new(value);
+    public static implicit operator Discretionary<T>(T value)
+    {
+        return new Discretionary<T>(value);
+    }
 
     public T GetValueOrDefault(T defaultValue)
     {
-        return IsSpecified ? Value : defaultValue;
+        return IsSpecified
+            ? Value
+            : defaultValue;
     }
 
     public bool Equals(Discretionary<T> other)
@@ -39,7 +44,7 @@ public readonly struct Discretionary<T> : IEquatable<Discretionary<T>>
     {
         return left.Equals(right);
     }
-    
+
     public static bool operator !=(Discretionary<T> left, Discretionary<T> right)
     {
         return !left.Equals(right);

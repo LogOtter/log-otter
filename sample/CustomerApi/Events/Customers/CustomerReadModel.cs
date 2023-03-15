@@ -10,14 +10,6 @@ public class CustomerReadModel : ISnapshot
 {
     public const string StaticPartitionKey = "customers";
 
-    [JsonProperty("id")]
-    public string Id { get; init; }
-
-    [JsonProperty("partitionKey")]
-    public string PartitionKey => StaticPartitionKey;
-
-    public DateTimeOffset? DeletedAt { get; set; }
-
     public CustomerUri CustomerUri { get; set; }
 
     public string EmailAddress { get; set; }
@@ -27,6 +19,14 @@ public class CustomerReadModel : ISnapshot
     public string LastName { get; set; }
 
     public DateTimeOffset CreatedOn { get; set; }
+
+    [JsonProperty("id")]
+    public string Id { get; init; }
+
+    [JsonProperty("partitionKey")]
+    public string PartitionKey => StaticPartitionKey;
+
+    public DateTimeOffset? DeletedAt { get; set; }
 
     //TODO: CreatedBy?
 

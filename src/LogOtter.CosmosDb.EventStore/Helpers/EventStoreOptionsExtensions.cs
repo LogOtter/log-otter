@@ -8,11 +8,7 @@ internal static class EventStoreOptionsExtensions
         {
             return rawId;
         }
-        
-        return rawId
-            .Replace("/", "|")
-            .Replace(@"\", "|")
-            .Replace("?", ":")
-            .Replace("#", ":");
+
+        return rawId.Replace("/", "|").Replace(@"\", "|").Replace("?", ":").Replace("#", ":");
     }
 }

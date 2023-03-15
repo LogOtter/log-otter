@@ -15,10 +15,7 @@ public class CustomerEventChangeFeedProcessor : IChangeFeedProcessorChangeHandle
     {
         foreach (var customerEvent in changes)
         {
-            _logger.LogInformation("Processing {EventType} for {CustomerUri}",
-                customerEvent.GetType().Name,
-                customerEvent.CustomerUri
-            );
+            _logger.LogInformation("Processing {EventType} for {CustomerUri}", customerEvent.GetType().Name, customerEvent.CustomerUri);
         }
 
         return Task.CompletedTask;

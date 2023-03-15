@@ -8,15 +8,10 @@ public class EventStore
 {
     private readonly Container _container;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly ISerializationTypeMap _typeMap;
     private readonly JsonSerializer _jsonSerializer;
+    private readonly ISerializationTypeMap _typeMap;
 
-    public EventStore(
-        Container container,
-        IFeedIteratorFactory feedIteratorFactory,
-        ISerializationTypeMap typeMap,
-        JsonSerializer jsonSerializer
-    )
+    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, ISerializationTypeMap typeMap, JsonSerializer jsonSerializer)
     {
         _container = container;
         _feedIteratorFactory = feedIteratorFactory;
@@ -26,15 +21,14 @@ public class EventStore
 
     public Task AppendToStream(string streamId, int expectedVersion, params EventData[] events)
     {
-        return AppendToStream(streamId, expectedVersion, default, events);
+        return AppendToStream(
+            streamId,
+            expectedVersion,
+            default,
+            events);
     }
 
-    public Task AppendToStream(
-        string streamId,
-        int expectedVersion,
-        CancellationToken cancellationToken,
-        params EventData[] events
-    )
+    public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData[] events)
     {
         var storageEvents = new List<StorageEvent>();
         var eventVersion = expectedVersion;
@@ -47,21 +41,14 @@ public class EventStore
         return AppendToStreamInternal(streamId, storageEvents, cancellationToken);
     }
 
-    private async Task AppendToStreamInternal(
-        string streamId,
-        IEnumerable<StorageEvent> events,
-        CancellationToken cancellationToken = default
-    )
+    private async Task AppendToStreamInternal(string streamId, IEnumerable<StorageEvent> events, CancellationToken cancellationToken = default)
     {
         var storageEvents = events.ToList();
         var firstEventNumber = storageEvents.First().EventNumber;
 
         try
         {
-            var batchRequestOptions = new TransactionalBatchItemRequestOptions
-            {
-                EnableContentResponseOnWrite = false
-            };
+            var batchRequestOptions = new TransactionalBatchItemRequestOptions { EnableContentResponseOnWrite = false };
 
             var batch = _container.CreateTransactionalBatch(new PartitionKey(streamId));
             foreach (var @event in storageEvents)
@@ -73,33 +60,34 @@ public class EventStore
             // ReSharper disable once UnusedVariable
             var batchResponse = firstEventNumber == 1
                 ? await CreateEvents(batch, cancellationToken)
-                : await CreateEventsOnlyIfPreviousEventExists(batch, streamId, firstEventNumber - 1, cancellationToken);
+                : await CreateEventsOnlyIfPreviousEventExists(
+                    batch,
+                    streamId,
+                    firstEventNumber - 1,
+                    cancellationToken);
 
             //_loggingOptions.OnSuccess(ResponseInformation.FromWriteResponse(nameof(AppendToStream), batchResponse));
         }
-        catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict ||
-                                         ex.Headers["x-ms-substatus"] == "409" || ex.SubStatusCode == 409)
+        catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict || ex.Headers["x-ms-substatus"] == "409" || ex.SubStatusCode == 409)
         {
-            throw new ConcurrencyException(
-                $"Concurrency conflict when appending to stream {streamId}. Expected revision {firstEventNumber - 1}",
-                ex);
+            throw new ConcurrencyException($"Concurrency conflict when appending to stream {streamId}. Expected revision {firstEventNumber - 1}", ex);
         }
     }
 
-    public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(
-        string streamId,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(string streamId, CancellationToken cancellationToken = default)
     {
-        return await ReadStreamForwards(streamId, 1, int.MaxValue, cancellationToken);
+        return await ReadStreamForwards(
+            streamId,
+            1,
+            int.MaxValue,
+            cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(
         string streamId,
         int startPosition,
         int numberOfEventsToRead,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         var endPosition = numberOfEventsToRead == int.MaxValue
             ? int.MaxValue
@@ -107,11 +95,10 @@ public class EventStore
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = _container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
-            .OrderBy(e => e.EventNumber)
-            .Take(numberOfEventsToRead);
+        var query = _container.GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+                              .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
+                              .OrderBy(e => e.EventNumber)
+                              .Take(numberOfEventsToRead);
 
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
 
@@ -136,10 +123,7 @@ public class EventStore
         return cosmosDbStorageEvent.ToStorageEvent(_typeMap, _jsonSerializer);
     }
 
-    private static async Task<TransactionalBatchResponse> CreateEvents(
-        TransactionalBatch batch,
-        CancellationToken cancellationToken
-    )
+    private static async Task<TransactionalBatchResponse> CreateEvents(TransactionalBatch batch, CancellationToken cancellationToken)
     {
         using var batchResponse = await batch.ExecuteAsync(cancellationToken);
 
@@ -150,8 +134,7 @@ public class EventStore
                 batchResponse.StatusCode,
                 0,
                 batchResponse.ActivityId,
-                batchResponse.RequestCharge
-            );
+                batchResponse.RequestCharge);
         }
 
         return batchResponse;
@@ -161,8 +144,7 @@ public class EventStore
         TransactionalBatch batch,
         string streamId,
         int previousEventNumber,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         var requestOptions = new TransactionalBatchItemRequestOptions { EnableContentResponseOnWrite = true };
 
@@ -179,15 +161,13 @@ public class EventStore
                     HttpStatusCode.Conflict,
                     0,
                     batchResponse.ActivityId,
-                    batchResponse.RequestCharge
-                ),
+                    batchResponse.RequestCharge),
                 _ => new CosmosException(
                     batchResponse.ErrorMessage,
                     batchResponse.StatusCode,
                     0,
                     batchResponse.ActivityId,
-                    batchResponse.RequestCharge
-                )
+                    batchResponse.RequestCharge)
             };
         }
 

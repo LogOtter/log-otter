@@ -5,22 +5,19 @@ namespace CustomerApi.HealthChecks;
 
 public class ResolveAllControllersHealthCheck : IHealthCheck
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IList<Type> _controllerTypes;
+    private readonly IServiceProvider _serviceProvider;
 
     public ResolveAllControllersHealthCheck(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
 
-        _controllerTypes = typeof(ResolveAllControllersHealthCheck)
-            .Assembly
-            .GetTypes()
-            .Where(t => typeof(ControllerBase).IsAssignableFrom(t))
-            .ToList();
+        _controllerTypes = typeof(ResolveAllControllersHealthCheck).Assembly.GetTypes()
+                                                                   .Where(t => typeof(ControllerBase).IsAssignableFrom(t))
+                                                                   .ToList();
     }
 
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
-        CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         var failures = new List<(Type Type, string ExceptionMessage)>();
         var successes = new List<(Type Type, List<Type> ParametersResolved)>();
@@ -42,16 +39,14 @@ public class ResolveAllControllersHealthCheck : IHealthCheck
         {
             var failureMessage = string.Join(
                 Environment.NewLine,
-                failures.Select(controller => $"Failed to resolve {controller.Type.Name}: {controller.ExceptionMessage}")
-            );
+                failures.Select(controller => $"Failed to resolve {controller.Type.Name}: {controller.ExceptionMessage}"));
 
             return Task.FromResult(new HealthCheckResult(HealthStatus.Unhealthy, failureMessage));
         }
 
         var successMessage = string.Join(
             Environment.NewLine,
-            successes.Select(controller => $"Resolved {controller.Type} with parameters: {string.Join(", ", controller.ParametersResolved)}")
-        );
+            successes.Select(controller => $"Resolved {controller.Type} with parameters: {string.Join(", ", controller.ParametersResolved)}"));
 
         return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy, successMessage));
     }
@@ -60,11 +55,7 @@ public class ResolveAllControllersHealthCheck : IHealthCheck
     {
         var parameterValues = new List<Type>();
 
-        var parameterTypes = controllerType
-            .GetConstructors()
-            .SelectMany(c => c.GetParameters())
-            .Select(p => p.ParameterType)
-            .Distinct();
+        var parameterTypes = controllerType.GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).Distinct();
 
         foreach (var parameterType in parameterTypes)
         {

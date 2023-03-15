@@ -14,31 +14,6 @@ public sealed class CosmosReadItemStreamTests : IAsyncLifetime, IDisposable
         _testCosmos = testFixture.CreateTestCosmos();
     }
 
-    [Fact]
-    public async Task ReadWithEmptyIdIsEquivalent()
-    {
-        var (realResponse, testResponse) = await _testCosmos.WhenReadItemStream(string.Empty);
-
-        realResponse.Should().NotBeNull();
-        testResponse.Should().NotBeNull();
-        realResponse.StatusCode.Should().Be(testResponse.StatusCode);
-    } 
-        
-    [Fact]
-    public async Task ReadWithNullIdIsEquivalent()
-    {
-        var (realException, testException) = await _testCosmos.WhenReadItemStreamProducesException(null);
-
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException.Should().BeOfType(testException!.GetType());
-            
-        if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
-        {
-            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
-        }
-    } 
-        
     public async Task InitializeAsync()
     {
         await _testCosmos.SetupAsync("/partitionKey");
@@ -52,5 +27,30 @@ public sealed class CosmosReadItemStreamTests : IAsyncLifetime, IDisposable
     public void Dispose()
     {
         _testCosmos.Dispose();
+    }
+
+    [Fact]
+    public async Task ReadWithEmptyIdIsEquivalent()
+    {
+        var (realResponse, testResponse) = await _testCosmos.WhenReadItemStream(string.Empty);
+
+        realResponse.Should().NotBeNull();
+        testResponse.Should().NotBeNull();
+        realResponse.StatusCode.Should().Be(testResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReadWithNullIdIsEquivalent()
+    {
+        var (realException, testException) = await _testCosmos.WhenReadItemStreamProducesException(null);
+
+        realException.Should().NotBeNull();
+        testException.Should().NotBeNull();
+        realException.Should().BeOfType(testException!.GetType());
+
+        if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
+        {
+            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
+        }
     }
 }

@@ -22,7 +22,7 @@ public class SnapshotTests
         var itemCount = await container.CountAsync<TestClass>("Bar", q => q);
         itemCount.Should().Be(0);
     }
-    
+
     [Fact]
     public async Task RestoringASnapshotDeletesData()
     {
@@ -30,9 +30,9 @@ public class SnapshotTests
 
         var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
-        
+
         var snapshot = container.CreateSnapshot();
-        
+
         var item2 = new TestClass { Id = "Foo2", PartitionKey = "Bar", MyValue = "FooBar2" };
         await container.CreateItemAsync(item2, new PartitionKey("Bar"));
 
@@ -49,7 +49,7 @@ public class SnapshotTests
 
         var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
-        
+
         var snapshot = container.CreateSnapshot();
 
         item1.MyValue = "NewValue";
