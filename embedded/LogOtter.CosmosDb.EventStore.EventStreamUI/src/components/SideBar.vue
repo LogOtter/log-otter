@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, inject } from "vue";
+import eventStreamLinkResolver from "@/helpers/EventStreamLinkResolver";
 import isVisible from "@/helpers/IsVisible";
 import type { EventStreamsService, EventStream } from "@/services/EventStreamsService";
 
@@ -73,6 +74,9 @@ export default defineComponent({
     isActive(eventStream: EventStream) {
       return this.currentPath === "/" + eventStream.name || this.currentPath.startsWith("/" + eventStream.name + "/");
     },
+    getHref(eventStream: EventStream) {
+      return eventStreamLinkResolver(eventStream);
+    },
   },
   computed: {
     currentPath() {
@@ -124,7 +128,7 @@ export default defineComponent({
         </a>
       </li>
       <li v-for="eventStream in eventStreams" :key="eventStream.name">
-        <a :href="'#/' + eventStream.name" class="nav-link text-white" :class="{ active: isActive(eventStream) }" @click="() => (isExpanded = false)">
+        <a :href="getHref(eventStream)" class="nav-link text-white" :class="{ active: isActive(eventStream) }" @click="() => (isExpanded = false)">
           <i class="bi-journals me-2"></i>
           {{ eventStream.name }}
         </a>

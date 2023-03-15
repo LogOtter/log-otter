@@ -21,6 +21,29 @@ export default defineComponent({
         };
       }
 
+      const remoteEventStreamRegex = /^\/service\/([^/]+)\/([^/]+)$/gm.exec(this.currentPath);
+      if (remoteEventStreamRegex !== null) {
+        return {
+          view: EventStreamPage,
+          properties: {
+            serviceName: decodeURIComponent(remoteEventStreamRegex[1]),
+            eventStreamName: decodeURIComponent(remoteEventStreamRegex[2]),
+          },
+        };
+      }
+
+      const remoteEventListRegex = /^\/service\/([^/]+)\/([^/]+)\/([^/]+)$/gm.exec(this.currentPath);
+      if (remoteEventListRegex !== null) {
+        return {
+          view: EventListPage,
+          properties: {
+            serviceName: decodeURIComponent(remoteEventListRegex[1]),
+            eventStreamName: decodeURIComponent(remoteEventListRegex[2]),
+            streamId: decodeURIComponent(remoteEventListRegex[3]),
+          },
+        };
+      }
+
       const eventStreamRegex = /^\/([^/]+)$/gm.exec(this.currentPath);
       if (eventStreamRegex !== null) {
         return {

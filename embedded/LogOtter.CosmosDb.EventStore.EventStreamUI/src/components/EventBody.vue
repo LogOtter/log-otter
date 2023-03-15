@@ -25,7 +25,7 @@ export default {
       this.loading = true;
 
       try {
-        this.eventBody = await this.eventStreamsService.getEventBody(this.eventStreamName, this.streamId, this.eventId);
+        this.eventBody = await this.eventStreamsService.getEventBody(this.serviceName, this.eventStreamName, this.streamId, this.eventId);
       } catch (e) {
         this.error = e;
       }
@@ -34,6 +34,7 @@ export default {
     },
   },
   props: {
+    serviceName: { type: String, required: false },
     eventStreamName: { type: String, required: true },
     streamId: { type: String, required: true },
     eventId: { type: String, required: true },

@@ -1,0 +1,9 @@
+{
+  "Services": [
+    {
+      "Name": "CustomerApi",
+      "Url": "https://localhost:7092/logotter/api"
+    }
+  ]
+}
+

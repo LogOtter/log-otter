@@ -1,6 +1,7 @@
 export interface EventStream {
   name: string;
   typeName: string;
+  serviceName: string | undefined;
 }
 
 export interface Event {
@@ -50,10 +51,14 @@ export class EventStreamsService {
     };
   }
 
-  async getEvents(eventStreamName: string, streamId: string): Promise<Page<Event>> {
-    return this.getEventsWithUrl(
-      `${this.baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`
-    );
+  async getEvents(serviceName: string | undefined, eventStreamName: string, streamId: string): Promise<Page<Event>> {
+    let baseUrl = this.baseUrl;
+
+    if (serviceName) {
+      baseUrl += `service/${serviceName}/`;
+    }
+
+    return this.getEventsWithUrl(`${baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`);
   }
 
   async getEventsWithUrl(url: string): Promise<Page<Event>> {
@@ -70,8 +75,14 @@ export class EventStreamsService {
     };
   }
 
-  async getEventBody(eventStreamName: string, streamId: string, eventId: string): Promise<any> {
-    const url = `${this.baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events/${eventId}/body`;
+  async getEventBody(serviceName: string | undefined, eventStreamName: string, streamId: string, eventId: string): Promise<any> {
+    let baseUrl = this.baseUrl;
+
+    if (serviceName) {
+      baseUrl += `service/${serviceName}/`;
+    }
+
+    const url = `${baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events/${eventId}/body`;
 
     const response = await fetch(url);
     return await response.json();

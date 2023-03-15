@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -27,6 +28,11 @@ internal static class HttpExtensions
         }
 
         return 1;
+    }
+
+    public static string? GetLogOtterHubPath(this HttpRequest request)
+    {
+        return request.Headers["X-LogOtter-Hub"];
     }
 
     public static bool EndsWithSlash(this PathString path)
