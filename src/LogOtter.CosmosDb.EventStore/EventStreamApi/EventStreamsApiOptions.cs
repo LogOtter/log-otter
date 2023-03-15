@@ -2,6 +2,7 @@
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
 
-public record EventStreamsApiOptions {
+public record EventStreamsApiOptions
+{
     public PathString RoutePrefix { get; set; } = "/logotter/api";
 }

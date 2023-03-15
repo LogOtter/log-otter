@@ -12,19 +12,13 @@ public class TestChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public IChangeFeedProcessor CreateChangeFeedProcessor<
-        TRawDocument,
-        TDocument,
-        TChangeFeedHandlerDocument,
-        TChangeFeedChangeConverter,
-        TChangeFeedProcessorHandler
-    >(
-        string processorName,
-        Container documentContainer,
-        Func<IServiceProvider, Task<bool>>? enabledFunc,
-        int batchSize,
-        DateTime? activationDate
-    )
+    public IChangeFeedProcessor
+        CreateChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
+            string processorName,
+            Container documentContainer,
+            Func<IServiceProvider, Task<bool>>? enabledFunc,
+            int batchSize,
+            DateTime? activationDate)
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
         where TChangeFeedProcessorHandler : IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
@@ -44,7 +38,6 @@ public class TestChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             (ContainerMock.ContainerMock)container.Container,
             changeConverter,
             changeHandler,
-            enabled
-        );
+            enabled);
     }
 }

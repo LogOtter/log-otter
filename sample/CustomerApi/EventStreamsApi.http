@@ -1,36 +1,36 @@
 ﻿### Get version
 GET {{ host }}/logotter/api
-    /version
+  /version
 Accept: application/json
 
 ### Get Event Streams
 GET {{ host }}/logotter/api
-    /event-streams
+  /event-streams
 Accept: application/json
 
 ### Get Event Stream
 GET {{ host }}/logotter/api
-    /event-streams/CustomerEvent
+  /event-streams/CustomerEvent
 Accept: application/json
 
 ### Get Events
 GET {{ host }}/logotter/api
-    /event-streams/CustomerEvent
-    /streams/%2Fcustomers%2F{{ test-customer-id }}
-    /events
+  /event-streams/CustomerEvent
+  /streams/%2Fcustomers%2F{{ test-customer-id }}
+  /events
 Accept: application/json
 
 ### Get Event
 GET {{ host }}/logotter/api
-    /event-streams/CustomerEvent
-    /streams/%2Fcustomers%2F{{ test-customer-id }}
-    /events/{{ test-event-id }}
+  /event-streams/CustomerEvent
+  /streams/%2Fcustomers%2F{{ test-customer-id }}
+  /events/{{ test-event-id }}
 Accept: application/json
 
 ### Get Event Body
 GET {{ host }}/logotter/api
-    /event-streams/CustomerEvent
-    /streams/%2Fcustomers%2F{{ test-customer-id }}
-    /events/{{ test-event-id }}
-    /body
+  /event-streams/CustomerEvent
+  /streams/%2Fcustomers%2F{{ test-customer-id }}
+  /events/{{ test-event-id }}
+  /body
 Accept: application/json

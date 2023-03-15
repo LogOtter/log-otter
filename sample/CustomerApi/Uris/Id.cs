@@ -4,7 +4,7 @@ namespace CustomerApi.Uris;
 
 public class Id : IEquatable<Id>
 {
-    private static readonly Regex IdRegex = new Regex("^[0-9A-Za-z]+$");
+    private static readonly Regex IdRegex = new("^[0-9A-Za-z]+$");
 
     private readonly string _id;
 
@@ -18,9 +18,30 @@ public class Id : IEquatable<Id>
         _id = id;
     }
 
-    public static implicit operator string(Id id) => id._id;
+    public bool Equals(Id? other)
+    {
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
 
-    public override string ToString() => _id;
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return _id == other._id;
+    }
+
+    public static implicit operator string(Id id)
+    {
+        return id._id;
+    }
+
+    public override string ToString()
+    {
+        return _id;
+    }
 
     public static Id Generate()
     {
@@ -40,21 +61,6 @@ public class Id : IEquatable<Id>
             result = null!;
             return false;
         }
-    }
-
-    public bool Equals(Id? other)
-    {
-        if (ReferenceEquals(null, other))
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return _id == other._id;
     }
 
     public override bool Equals(object? obj)

@@ -8,10 +8,10 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
 internal class GetEventBodyHandler : BaseHandler
 {
-    private readonly EventStoreCatalog _eventStoreCatalog;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly ICosmosContainerFactory _containerFactory;
+    private readonly EventStoreCatalog _eventStoreCatalog;
     private readonly EventStoreOptions _eventStoreOptions;
+    private readonly IFeedIteratorFactory _feedIteratorFactory;
 
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}/body";
 
@@ -19,8 +19,7 @@ internal class GetEventBodyHandler : BaseHandler
         EventStoreCatalog eventStoreCatalog,
         IFeedIteratorFactory feedIteratorFactory,
         ICosmosContainerFactory containerFactory,
-        IOptions<EventStoreOptions> eventStoreOptions
-    )
+        IOptions<EventStoreOptions> eventStoreOptions)
     {
         _eventStoreCatalog = eventStoreCatalog;
         _feedIteratorFactory = feedIteratorFactory;
@@ -50,14 +49,10 @@ internal class GetEventBodyHandler : BaseHandler
 
         var container = _containerFactory.GetContainer(metaData.EventContainerName);
 
-        var requestOptions = new QueryRequestOptions
-        {
-            PartitionKey = new PartitionKey(streamId)
-        };
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
+        var query = container.GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+                             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
         var storageEvent = (CosmosDbStorageEvent?)null;
 

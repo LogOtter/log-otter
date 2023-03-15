@@ -5,7 +5,10 @@ namespace LogOtter.Obfuscate;
 public static class Obfuscate
 {
     private const string ObfuscationString = "****";
-    private static readonly Regex EmailRegex = new(@"^(?<Username>[A-Z0-9._%+-]+)@(?<DomainName>[A-Z0-9.-]+\.[A-Z]{2,})$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex EmailRegex = new(
+        @"^(?<Username>[A-Z0-9._%+-]+)@(?<DomainName>[A-Z0-9.-]+\.[A-Z]{2,})$",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public static string? Email(string? email)
     {

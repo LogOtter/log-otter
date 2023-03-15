@@ -11,8 +11,7 @@ public static class HttpClientExtensions
         this HttpClient client,
         string? requestUri,
         JsonObject request,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         if (client == null)
         {

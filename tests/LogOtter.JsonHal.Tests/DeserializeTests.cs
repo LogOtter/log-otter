@@ -21,10 +21,10 @@ public class DeserializeTests
 
         linkCollection.Should().NotBeNull();
         linkCollection.Should().HaveCount(1);
-        
+
         linkCollection.Should().Contain(new JsonHalLink("next", "/foo/next"));
     }
-    
+
     [Fact]
     public void Deserialize_SelfOnly()
     {
@@ -43,7 +43,7 @@ public class DeserializeTests
 
         linkCollection.Should().Contain(new JsonHalLink("self", "/foo/self"));
     }
-    
+
     [Fact]
     public void Deserialize_SelfAndNext()
     {

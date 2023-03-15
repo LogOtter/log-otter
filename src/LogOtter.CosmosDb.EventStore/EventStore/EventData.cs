@@ -5,7 +5,7 @@ public class EventData
     public Guid EventId { get; }
 
     public object Body { get; }
-    
+
     public int TimeToLive { get; }
 
     public object? Metadata { get; }

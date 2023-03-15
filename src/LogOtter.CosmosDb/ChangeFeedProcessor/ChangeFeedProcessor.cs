@@ -5,19 +5,19 @@ namespace LogOtter.CosmosDb;
 
 internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : IChangeFeedProcessor
 {
-    private readonly string _name;
-    private readonly Container _documentContainer;
-    private readonly Container _leaseContainer;
-    private readonly bool _enabled;
-    private readonly int _batchSize;
     private readonly DateTime? _activationDate;
-    private IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> _feedChangeConverter;
+    private readonly int _batchSize;
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
-    private readonly ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> _logger;
+    private readonly Container _documentContainer;
+    private readonly bool _enabled;
+    private readonly TimeSpan _errorDelay;
+    private readonly IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> _feedChangeConverter;
 
     private readonly TimeSpan _fullBatchDelay;
-    private readonly TimeSpan _errorDelay;
     private readonly string _instanceName;
+    private readonly Container _leaseContainer;
+    private readonly ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> _logger;
+    private readonly string _name;
     private ChangeFeedProcessor? _changeFeedProcessor;
 
     public ChangeFeedProcessor(
@@ -30,8 +30,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
         ChangeFeedProcessorOptions options,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger
-    )
+        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger)
     {
         _name = name;
         _documentContainer = documentContainer;
@@ -55,27 +54,22 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
             _logger.LogInformation(
                 "Not starting change feed processor {Name} (Instance: {InstanceName}) because it is disabled",
                 _name,
-                _instanceName
-            );
+                _instanceName);
             return;
         }
 
-        _changeFeedProcessor = _documentContainer
-            .GetChangeFeedProcessorBuilder<TRawDocument>(_name, OnChanges)
-            .WithErrorNotification(OnError)
-            .WithInstanceName(_instanceName)
-            .WithLeaseContainer(_leaseContainer)
-            .WithLeaseConfiguration(acquireInterval: TimeSpan.FromMinutes(1))
-            .WithStartTime(_activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
-            .WithMaxItems(_batchSize)
-            .Build();
+        _changeFeedProcessor = _documentContainer.GetChangeFeedProcessorBuilder<TRawDocument>(_name, OnChanges)
+                                                 .WithErrorNotification(OnError)
+                                                 .WithInstanceName(_instanceName)
+                                                 .WithLeaseContainer(_leaseContainer)
+                                                 .WithLeaseConfiguration(TimeSpan.FromMinutes(1))
+                                                 .WithStartTime(_activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
+                                                 .WithMaxItems(_batchSize)
+                                                 .Build();
 
         await _changeFeedProcessor.StartAsync();
 
-        _logger.LogInformation(
-            "Started change feed processor {Name} (Instance: {InstanceName})", _name,
-            _instanceName
-        );
+        _logger.LogInformation("Started change feed processor {Name} (Instance: {InstanceName})", _name, _instanceName);
     }
 
     public async Task Stop()
@@ -92,9 +86,9 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
     {
         _logger.LogError(
             exception,
-            "Error for change feed processor {Name} (Instance: {InstanceName})", _name,
-            _instanceName
-        );
+            "Error for change feed processor {Name} (Instance: {InstanceName})",
+            _name,
+            _instanceName);
 
         return Task.CompletedTask;
     }
@@ -103,18 +97,15 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
     {
         try
         {
-            var convertedChanges = changes
-                .Select(_feedChangeConverter.ConvertChange)
-                .ToList()
-                .AsReadOnly();
+            var convertedChanges = changes.Select(_feedChangeConverter.ConvertChange).ToList().AsReadOnly();
 
             await _changeHandler.ProcessChanges(convertedChanges, cancellationToken);
 
             _logger.LogInformation(
                 "Processed batch of {BatchSize} changes for change feed processor {Name} (Instance: {InstanceName})",
-                changes.Count, _name,
-                _instanceName
-            );
+                changes.Count,
+                _name,
+                _instanceName);
 
             if (changes.Count == _batchSize)
             {

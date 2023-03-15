@@ -9,11 +9,11 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
 internal class GetEventHandler : BaseHandler
 {
-    private readonly EventStoreCatalog _eventStoreCatalog;
-    private readonly EventDescriptionGenerator _eventDescriptionGenerator;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly ICosmosContainerFactory _containerFactory;
+    private readonly EventDescriptionGenerator _eventDescriptionGenerator;
+    private readonly EventStoreCatalog _eventStoreCatalog;
     private readonly EventStoreOptions _eventStoreOptions;
+    private readonly IFeedIteratorFactory _feedIteratorFactory;
 
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}";
 
@@ -22,8 +22,7 @@ internal class GetEventHandler : BaseHandler
         EventDescriptionGenerator eventDescriptionGenerator,
         IFeedIteratorFactory feedIteratorFactory,
         ICosmosContainerFactory containerFactory,
-        IOptions<EventStoreOptions> eventStoreOptions
-    )
+        IOptions<EventStoreOptions> eventStoreOptions)
     {
         _eventStoreCatalog = eventStoreCatalog;
         _eventDescriptionGenerator = eventDescriptionGenerator;
@@ -54,14 +53,10 @@ internal class GetEventHandler : BaseHandler
 
         var container = _containerFactory.GetContainer(metaData.EventContainerName);
 
-        var requestOptions = new QueryRequestOptions
-        {
-            PartitionKey = new PartitionKey(streamId)
-        };
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
+        var query = container.GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
+                             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
         var storageEvent = (CosmosDbStorageEventWithTimestamp?)null;
 
@@ -92,8 +87,7 @@ internal class GetEventHandler : BaseHandler
             storageEvent.EventId,
             storageEvent.TimeToLive,
             _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
-            storageEvent.Timestamp
-        );
+            storageEvent.Timestamp);
 
         await WriteJson(httpContext.Response, @event);
     }

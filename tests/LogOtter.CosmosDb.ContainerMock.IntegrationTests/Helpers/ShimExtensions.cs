@@ -7,16 +7,22 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 internal static class ShimExtensions
 {
     private static readonly RetryPolicy RetryPolicy = new(new Logger<RetryPolicy>(new LoggerFactory()));
-    
-    public static Task<int> CountAsync(this Container container, string? partitionKey) => CountAsync<object>(container, partitionKey, q => q);
-    
-    public static async Task<int> CountAsync<TModel>(this Container container, string? partitionKey, Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery)
+
+    public static Task<int> CountAsync(this Container container, string? partitionKey)
+    {
+        return CountAsync<object>(container, partitionKey, q => q);
+    }
+
+    public static async Task<int> CountAsync<TModel>(
+        this Container container,
+        string? partitionKey,
+        Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery)
     {
         if (container is ContainerMock mock)
         {
             return await mock.CountAsync(partitionKey, applyQuery);
         }
-        
+
         var queryRequestOptions = new QueryRequestOptions();
         if (partitionKey != null)
         {
@@ -32,11 +38,23 @@ internal static class ShimExtensions
         return result;
     }
 
-    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(this Container container, string? partitionKey, Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery) => QueryAsync<TModel, TModel>(container, partitionKey, applyQuery);
+    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(
+        this Container container,
+        string? partitionKey,
+        Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery)
+    {
+        return QueryAsync<TModel, TModel>(container, partitionKey, applyQuery);
+    }
 
-    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(this Container container, string? partitionKey) => QueryAsync<TModel, TModel>(container, partitionKey, q => q);
+    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(this Container container, string? partitionKey)
+    {
+        return QueryAsync<TModel, TModel>(container, partitionKey, q => q);
+    }
 
-    public static async IAsyncEnumerable<TResult> QueryAsync<TModel, TResult>(this Container container, string? partitionKey, Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery)
+    public static async IAsyncEnumerable<TResult> QueryAsync<TModel, TResult>(
+        this Container container,
+        string? partitionKey,
+        Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery)
     {
         if (container is ContainerMock mock)
         {
@@ -48,7 +66,6 @@ internal static class ShimExtensions
         }
         else
         {
-
             var queryRequestOptions = new QueryRequestOptions();
             if (partitionKey != null)
             {
@@ -63,8 +80,7 @@ internal static class ShimExtensions
 
             while (feedIterator.HasMoreResults)
             {
-                var batch = await RetryPolicy.CreateAndExecutePolicyAsync(nameof(QueryAsync),
-                    async () => await feedIterator.ReadNextAsync());
+                var batch = await RetryPolicy.CreateAndExecutePolicyAsync(nameof(QueryAsync), async () => await feedIterator.ReadNextAsync());
 
                 foreach (var result in batch)
                 {

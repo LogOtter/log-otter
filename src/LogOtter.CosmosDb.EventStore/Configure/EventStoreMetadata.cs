@@ -4,13 +4,6 @@ namespace LogOtter.CosmosDb.EventStore;
 
 public class EventStoreMetadata<TBaseEvent, TSnapshot> : IEventStoreMetadata
 {
-    Type IEventStoreMetadata.EventBaseType => typeof(TBaseEvent);
-    Type IEventStoreMetadata.SnapshotType => typeof(TSnapshot);
-    public string EventContainerName { get; }
-    public IReadOnlyCollection<Type> EventTypes { get; }
-    public ISerializationTypeMap SerializationTypeMap { get; }
-    public JsonSerializerSettings? JsonSerializerSettings { get; }
-
     public Func<TBaseEvent, string> SnapshotPartitionKeyResolver { get; }
 
     public EventStoreMetadata(
@@ -26,4 +19,11 @@ public class EventStoreMetadata<TBaseEvent, TSnapshot> : IEventStoreMetadata
         JsonSerializerSettings = jsonSerializerSettings;
         SnapshotPartitionKeyResolver = snapshotPartitionKeyResolver;
     }
+
+    Type IEventStoreMetadata.EventBaseType => typeof(TBaseEvent);
+    Type IEventStoreMetadata.SnapshotType => typeof(TSnapshot);
+    public string EventContainerName { get; }
+    public IReadOnlyCollection<Type> EventTypes { get; }
+    public ISerializationTypeMap SerializationTypeMap { get; }
+    public JsonSerializerSettings? JsonSerializerSettings { get; }
 }

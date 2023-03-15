@@ -18,8 +18,7 @@ public class TestCustomerEventCatchupSubscription : ICatchupSubscription<Custome
             _logger.LogInformation(
                 "TestCustomerEventCatchupSubscription: {EventName} : {CustomerUri}",
                 @event.Body.GetType().Name,
-                @event.Body.CustomerUri
-            );
+                @event.Body.CustomerUri);
         }
 
         return Task.CompletedTask;

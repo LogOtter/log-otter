@@ -9,7 +9,7 @@ namespace LogOtter.CosmosDb.EventStore;
 public class CosmosDbStorageEvent
 {
     [JsonProperty("id")]
-    public string Id { get; set;  }
+    public string Id { get; set; }
 
     [JsonProperty("eventId")]
     public Guid EventId { get; set; }
@@ -47,13 +47,13 @@ public class CosmosDbStorageEvent
             EventNumber = storageEvent.EventNumber,
             TimeToLive = storageEvent.TimeToLive
         };
-        
+
         if (storageEvent.Metadata != null)
         {
             cosmosDbStorageEvent.Metadata = JObject.FromObject(storageEvent.Metadata, serializer);
             cosmosDbStorageEvent.MetadataType = typeMap.GetNameFromType(storageEvent.Metadata.GetType());
         }
-        
+
         return cosmosDbStorageEvent;
     }
 
@@ -67,7 +67,14 @@ public class CosmosDbStorageEvent
         var bodyType = typeMap.GetTypeFromName(BodyType);
         var body = Body.ToObject(bodyType, serializer);
         var metadata = Metadata?.ToObject(typeMap.GetTypeFromName(MetadataType), serializer);
-        
-        return new StorageEvent(StreamId, new EventData(EventId, body, TimeToLive, metadata), EventNumber);
+
+        return new StorageEvent(
+            StreamId,
+            new EventData(
+                EventId,
+                body,
+                TimeToLive,
+                metadata),
+            EventNumber);
     }
 }

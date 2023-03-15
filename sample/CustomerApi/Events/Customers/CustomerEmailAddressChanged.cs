@@ -12,8 +12,7 @@ public class CustomerEmailAddressChanged : CustomerEvent
         CustomerUri customerUri,
         string oldEmailAddress,
         string newEmailAddress,
-        DateTimeOffset? timestamp = null
-    ) : base(customerUri, timestamp)
+        DateTimeOffset? timestamp = null) : base(customerUri, timestamp)
     {
         OldEmailAddress = oldEmailAddress;
         NewEmailAddress = newEmailAddress;

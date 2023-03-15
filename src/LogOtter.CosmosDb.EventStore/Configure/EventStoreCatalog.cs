@@ -4,8 +4,8 @@ namespace LogOtter.CosmosDb.EventStore;
 
 internal class EventStoreCatalog
 {
-    private readonly IReadOnlyCollection<IEventStoreMetadata> _eventStoreMetaData;
     private readonly Lazy<IReadOnlyCollection<EventStreamDefinition>> _definitions;
+    private readonly IReadOnlyCollection<IEventStoreMetadata> _eventStoreMetaData;
 
     public EventStoreCatalog(IEnumerable<IEventStoreMetadata> eventStoreMetaData)
     {
@@ -20,23 +20,16 @@ internal class EventStoreCatalog
 
     public EventStreamDefinition? GetDefinition(string name)
     {
-        return _definitions.Value.FirstOrDefault(d =>
-            string.Equals(d.Name, name, StringComparison.InvariantCultureIgnoreCase)
-        );
+        return _definitions.Value.FirstOrDefault(d => string.Equals(d.Name, name, StringComparison.InvariantCultureIgnoreCase));
     }
 
     public IEventStoreMetadata? GetMetadata(string name)
     {
-        return _eventStoreMetaData.FirstOrDefault(e =>
-            string.Equals(e.EventBaseType.Name, name, StringComparison.InvariantCultureIgnoreCase)
-        );
+        return _eventStoreMetaData.FirstOrDefault(e => string.Equals(e.EventBaseType.Name, name, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private IReadOnlyCollection<EventStreamDefinition> GenerateDefinitions()
     {
-        return _eventStoreMetaData
-            .Select(e => new EventStreamDefinition(e.EventBaseType.Name, e.EventBaseType.FullName!))
-            .ToList()
-            .AsReadOnly();
+        return _eventStoreMetaData.Select(e => new EventStreamDefinition(e.EventBaseType.Name, e.EventBaseType.FullName!)).ToList().AsReadOnly();
     }
 }

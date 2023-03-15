@@ -12,10 +12,7 @@ internal static class ResponseWriter
 
     static ResponseWriter()
     {
-        JsonSerializerOptions = new JsonSerializerOptions
-        {
-            Converters = { new JsonStringEnumConverter() }
-        };
+        JsonSerializerOptions = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
     }
 
     public static async Task WriteDetailedJson(IHttpListenerContext context, HealthReport report)

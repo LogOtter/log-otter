@@ -7,8 +7,8 @@ namespace CustomerApi.Tests;
 
 public class GivenSteps
 {
-    private readonly CustomerStore _customerStore;
     private readonly ConsumerStore _consumerStore;
+    private readonly CustomerStore _customerStore;
 
     public GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore)
     {
@@ -19,7 +19,7 @@ public class GivenSteps
     public Task<AuthenticationHeaderValue> AnExistingConsumer(params string[] roles)
     {
         var token = new JwtSecurityTokenHandler().WriteToken(_consumerStore.GivenAnExistingConsumer("customer-api", roles));
-        
+
         return Task.FromResult(new AuthenticationHeaderValue("Bearer", token));
     }
 
@@ -27,15 +27,13 @@ public class GivenSteps
         CustomerUri customerUri,
         Discretionary<string> emailAddress = default,
         Discretionary<string> firstName = default,
-        Discretionary<string> lastName = default
-    )
+        Discretionary<string> lastName = default)
     {
         return await _customerStore.GivenAnExistingCustomer(
             customerUri,
             emailAddress,
             firstName,
-            lastName
-        );
+            lastName);
     }
 
     public async Task TheCustomerIsDeleted(CustomerUri customerUri)

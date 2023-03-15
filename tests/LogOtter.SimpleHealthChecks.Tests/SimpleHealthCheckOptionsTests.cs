@@ -25,14 +25,9 @@ public class SimpleHealthCheckOptionsTests
     [Fact]
     public void ThrowsExceptionWhenIncompleteDictionarySpecified()
     {
-        var invalidOptions = new Dictionary<HealthStatus, int> {
-            [HealthStatus.Degraded] = 230
-        };
+        var invalidOptions = new Dictionary<HealthStatus, int> { [HealthStatus.Degraded] = 230 };
 
-        var actions = () => new SimpleHealthCheckOptions
-        {
-            ResultStatusCodes = invalidOptions
-        };
+        var actions = () => new SimpleHealthCheckOptions { ResultStatusCodes = invalidOptions };
 
         actions.Should().Throw<InvalidOperationException>();
     }

@@ -28,39 +28,26 @@ public class GetAllCustomersController : ControllerBase
 
     [HttpGet(Name = "GetAllCustomers")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<CustomersResponse>> GetAll(
-        [FromQuery, Range(1, int.MaxValue)] int? page,
-        CancellationToken cancellationToken
-    )
+    public async Task<ActionResult<CustomersResponse>> GetAll([FromQuery] [Range(1, int.MaxValue)] int? page, CancellationToken cancellationToken)
     {
         var currentPage = page.GetValueOrDefault(1);
         var pageSize = _pageOptions.Value.PageSize;
 
         var totalCount = await _customerSnapshotRepository.CountSnapshotsAsync(
             CustomerReadModel.StaticPartitionKey,
-            cancellationToken: cancellationToken
-        );
+            cancellationToken: cancellationToken);
 
         var customerQuery = _customerSnapshotRepository.QuerySnapshots(
             CustomerReadModel.StaticPartitionKey,
-            query => query
-                .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
-                .Page(currentPage, pageSize),
-            cancellationToken: cancellationToken
-        );
+            query => query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).Page(currentPage, pageSize),
+            cancellationToken: cancellationToken);
 
         var customerReadModels = await customerQuery.ToListAsync();
 
-        var response = new CustomersResponse(customerReadModels
-            .Select(readModel => new CustomerResponse(readModel))
-            .ToList());
+        var response = new CustomersResponse(customerReadModels.Select(readModel => new CustomerResponse(readModel)).ToList());
 
         var totalPages = PageHelpers.CalculatePageCount(pageSize, totalCount);
-        response.Links.AddPagedLinks(currentPage, totalPages, p => Url.Link(
-            "GetAllCustomers",
-            new { page = p }
-        )!);
+        response.Links.AddPagedLinks(currentPage, totalPages, p => Url.Link("GetAllCustomers", new { page = p })!);
 
         return Ok(response);
     }

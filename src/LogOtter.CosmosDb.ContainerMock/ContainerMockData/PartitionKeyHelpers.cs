@@ -10,10 +10,9 @@ public static class PartitionKeyHelpers
     static PartitionKeyHelpers()
     {
         var partitionKeyType = typeof(PartitionKey);
-        TryParseJsonStringMethod = partitionKeyType
-            .GetMethod("TryParseJsonString", BindingFlags.Static | BindingFlags.NonPublic)!;
+        TryParseJsonStringMethod = partitionKeyType.GetMethod("TryParseJsonString", BindingFlags.Static | BindingFlags.NonPublic)!;
     }
-    
+
     public static PartitionKey FromJsonString(string partitionKeyAsJson)
     {
         var parameters = new object?[] { partitionKeyAsJson, null };

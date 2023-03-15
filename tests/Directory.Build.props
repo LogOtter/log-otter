@@ -1,9 +1,9 @@
 ﻿<Project>
-    <PropertyGroup>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-        <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
-        <VSTestResultsDirectory>$(MSBuildThisFileDirectory)..\.test-results\$(TargetFramework)</VSTestResultsDirectory>
-    </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    <VSTestResultsDirectory>$(MSBuildThisFileDirectory)..\.test-results\$(TargetFramework)</VSTestResultsDirectory>
+  </PropertyGroup>
 </Project>

@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
+
 namespace LogOtter.HttpPatch.Tests.Api.Controllers;
 
-[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter))]
+[Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
 public enum ResourceState
 {
     Unpublished,

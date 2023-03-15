@@ -18,19 +18,13 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public IChangeFeedProcessor CreateChangeFeedProcessor<
-        TRawDocument,
-        TDocument,
-        TChangeFeedHandlerDocument,
-        TChangeFeedChangeConverter,
-        TChangeFeedProcessorHandler
-    >(
-        string processorName,
-        Container documentContainer,
-        Func<IServiceProvider, Task<bool>>? enabledFunc,
-        int batchSize,
-        DateTime? activationDate
-    )
+    public IChangeFeedProcessor
+        CreateChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
+            string processorName,
+            Container documentContainer,
+            Func<IServiceProvider, Task<bool>>? enabledFunc,
+            int batchSize,
+            DateTime? activationDate)
         where TChangeFeedProcessorHandler : IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
     {
@@ -45,16 +39,10 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             enabled = enabledFunc(scope.ServiceProvider).GetAwaiter().GetResult();
         }
 
-        var leaseContainer = _database
-            .CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id")
-            .GetAwaiter()
-            .GetResult()
-            .Container;
+        var leaseContainer = _database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container;
 
-        var logger = scope
-            .ServiceProvider
-            .GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
-        
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
+
         return new ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
             processorName,
             documentContainer,
@@ -65,7 +53,6 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             _options,
             changeConverter,
             changeHandler,
-            logger
-        );
+            logger);
     }
 }

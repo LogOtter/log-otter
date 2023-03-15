@@ -4,16 +4,16 @@ using System.Text.Json.Serialization;
 namespace LogOtter.JsonHal;
 
 [JsonConverter(typeof(JsonHalLinkCollectionConverter))]
-public sealed class JsonHalLinkCollection: IReadOnlyCollection<JsonHalLink>
+public sealed class JsonHalLinkCollection : IReadOnlyCollection<JsonHalLink>
 {
     private readonly List<JsonHalLink> _links;
-
-    public int Count => _links.Count;
 
     public JsonHalLinkCollection()
     {
         _links = new List<JsonHalLink>();
     }
+
+    public int Count => _links.Count;
 
     public IEnumerator<JsonHalLink> GetEnumerator()
     {
@@ -24,22 +24,20 @@ public sealed class JsonHalLinkCollection: IReadOnlyCollection<JsonHalLink>
     {
         return ((IEnumerable)_links).GetEnumerator();
     }
-    
+
     public JsonHalLink? GetLink(string type)
     {
         return _links.SingleOrDefault(l => l.Type == type);
     }
-    
+
     public IReadOnlyCollection<JsonHalLink> GetLinks(string type)
     {
-        return _links
-            .Where(l => l.Type == type)
-            .ToList();
+        return _links.Where(l => l.Type == type).ToList();
     }
 
     public void AddLink(string type, string href)
     {
-        AddLink(new JsonHalLink(type,href));
+        AddLink(new JsonHalLink(type, href));
     }
 
     private void AddLink(JsonHalLink link)

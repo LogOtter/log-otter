@@ -11,11 +11,7 @@ internal static class HttpExtensions
 
         var length = request.Scheme.Length + 3 + host.Length;
 
-        return new StringBuilder(length)
-            .Append(request.Scheme)
-            .Append("://")
-            .Append(host)
-            .ToString();
+        return new StringBuilder(length).Append(request.Scheme).Append("://").Append(host).ToString();
     }
 
     public static int GetPage(this HttpRequest request)
@@ -44,7 +40,7 @@ internal static class HttpExtensions
         {
             return new PathString(path.Value!.TrimEnd('/'));
         }
+
         return path;
     }
-
 }

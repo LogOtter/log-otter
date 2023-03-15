@@ -9,14 +9,15 @@ public class SystemTextStartup
     {
         services.AddControllers();
     }
-        
+
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-            
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+
+        app.UseEndpoints(
+            endpoints =>
+            {
+                endpoints.MapControllers();
+            });
     }
 }

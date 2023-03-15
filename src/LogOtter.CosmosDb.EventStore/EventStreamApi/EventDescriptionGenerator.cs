@@ -13,15 +13,11 @@ internal class EventDescriptionGenerator
         _cache = new ConcurrentDictionary<Type, MethodInfo?>();
     }
 
-    public string GetDescription(
-        CosmosDbStorageEvent cosmosDbStorageEvent,
-        IEventStoreMetadata eventStoreMetadata
-    )
+    public string GetDescription(CosmosDbStorageEvent cosmosDbStorageEvent, IEventStoreMetadata eventStoreMetadata)
     {
         var storageEvent = cosmosDbStorageEvent.ToStorageEvent(
             eventStoreMetadata.SerializationTypeMap,
-            JsonSerializer.Create(eventStoreMetadata.JsonSerializerSettings)
-        );
+            JsonSerializer.Create(eventStoreMetadata.JsonSerializerSettings));
 
         var methodInfo = GetDescriptionMethod(storageEvent.EventBody);
         if (methodInfo == null)
@@ -44,9 +40,9 @@ internal class EventDescriptionGenerator
     {
         var eventType = eventBody.GetType();
 
-        return _cache.GetOrAdd(eventType, type => type
-            .GetMethods(BindingFlags.Instance | BindingFlags.Public)
-            .SingleOrDefault(m => m.GetCustomAttribute<EventDescriptionAttribute>() != null)
-        );
+        return _cache.GetOrAdd(
+            eventType,
+            type => type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                        .SingleOrDefault(m => m.GetCustomAttribute<EventDescriptionAttribute>() != null));
     }
 }

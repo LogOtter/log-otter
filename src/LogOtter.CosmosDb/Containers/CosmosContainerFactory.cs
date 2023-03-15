@@ -13,20 +13,14 @@ public class CosmosContainerFactory : ICosmosContainerFactory
     }
 
     public async Task<Container> CreateContainerIfNotExistsAsync(
-        string containerName, 
+        string containerName,
         string partitionKeyPath,
-        UniqueKeyPolicy? uniqueKeyPolicy = null, 
-        int? defaultTimeToLive = null, 
+        UniqueKeyPolicy? uniqueKeyPolicy = null,
+        int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
         ThroughputProperties? throughputProperties = null)
     {
-        var containerProperties = new ContainerProperties(
-            containerName,
-            partitionKeyPath
-        )
-        {
-            DefaultTimeToLive = defaultTimeToLive
-        };
+        var containerProperties = new ContainerProperties(containerName, partitionKeyPath) { DefaultTimeToLive = defaultTimeToLive };
 
         if (uniqueKeyPolicy != null)
         {
@@ -41,8 +35,7 @@ public class CosmosContainerFactory : ICosmosContainerFactory
             }
         }
 
-        var containerResponse = await _database
-            .CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
+        var containerResponse = await _database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
 
         return containerResponse.Container;
     }

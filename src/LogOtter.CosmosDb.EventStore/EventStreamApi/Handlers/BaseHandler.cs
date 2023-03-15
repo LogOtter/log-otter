@@ -8,8 +8,7 @@ internal abstract class BaseHandler : IHandler
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
     };
 
     protected EventStreamsApiOptions Options { get; private set; } = null!;

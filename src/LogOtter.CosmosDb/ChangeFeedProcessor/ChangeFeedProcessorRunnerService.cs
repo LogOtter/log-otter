@@ -5,17 +5,19 @@ namespace LogOtter.CosmosDb;
 
 public class ChangeFeedProcessorRunnerService : IHostedService, IDisposable
 {
-    private readonly IServiceScope _scope;
     private readonly IList<IChangeFeedProcessor> _changeFeedProcessors;
+    private readonly IServiceScope _scope;
 
     public ChangeFeedProcessorRunnerService(IServiceScopeFactory serviceScopeFactory)
     {
         _scope = serviceScopeFactory.CreateScope();
-        
-        _changeFeedProcessors = _scope
-            .ServiceProvider
-            .GetServices<IChangeFeedProcessor>()
-            .ToList();
+
+        _changeFeedProcessors = _scope.ServiceProvider.GetServices<IChangeFeedProcessor>().ToList();
+    }
+
+    public void Dispose()
+    {
+        _scope.Dispose();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -26,10 +28,5 @@ public class ChangeFeedProcessorRunnerService : IHostedService, IDisposable
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         await Task.WhenAll(_changeFeedProcessors.Select(cfp => cfp.Stop()));
-    }
-
-    public void Dispose()
-    {
-        _scope.Dispose();
     }
 }

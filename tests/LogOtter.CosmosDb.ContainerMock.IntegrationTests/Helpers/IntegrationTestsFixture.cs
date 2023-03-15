@@ -3,15 +3,16 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Azure.Cosmos;
 using Xunit;
+
 #pragma warning disable CS0618
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public class IntegrationTestsFixture : IAsyncLifetime
 {
-    private readonly bool _useTestContainers;
     private readonly CosmosDbTestcontainer? _container;
     private readonly string _cosmosConnectionString;
+    private readonly bool _useTestContainers;
 
     public IntegrationTestsFixture()
     {
@@ -20,25 +21,8 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
         if (_useTestContainers)
         {
-            _container = new ContainerBuilder<CosmosDbTestcontainer>()
-                .WithDatabase(new CosmosDbTestcontainerConfiguration())
-                .Build();
-
+            _container = new ContainerBuilder<CosmosDbTestcontainer>().WithDatabase(new CosmosDbTestcontainerConfiguration()).Build();
         }
-    }
-
-    public TestCosmos CreateTestCosmos()
-    {
-        var cosmosClient = !_useTestContainers
-            ? new CosmosClient(_cosmosConnectionString)
-            : new CosmosClient(_container!.ConnectionString, new CosmosClientOptions
-            {
-                ConnectionMode = ConnectionMode.Gateway,
-                HttpClientFactory = () => _container.HttpClient,
-                RequestTimeout = TimeSpan.FromMinutes(3)
-            });
-
-        return new TestCosmos(cosmosClient);
     }
 
     public async Task InitializeAsync()
@@ -55,5 +39,21 @@ public class IntegrationTestsFixture : IAsyncLifetime
         {
             await _container!.DisposeAsync();
         }
+    }
+
+    public TestCosmos CreateTestCosmos()
+    {
+        var cosmosClient = !_useTestContainers
+            ? new CosmosClient(_cosmosConnectionString)
+            : new CosmosClient(
+                _container!.ConnectionString,
+                new CosmosClientOptions
+                {
+                    ConnectionMode = ConnectionMode.Gateway,
+                    HttpClientFactory = () => _container.HttpClient,
+                    RequestTimeout = TimeSpan.FromMinutes(3)
+                });
+
+        return new TestCosmos(cosmosClient);
     }
 }

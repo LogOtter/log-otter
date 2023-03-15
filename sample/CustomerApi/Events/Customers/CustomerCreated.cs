@@ -11,13 +11,9 @@ public class CustomerCreated : CustomerEvent
 
     public string LastName { get; }
 
-    public CustomerCreated(
-        CustomerUri customerUri,
-        string emailAddress,
-        string firstName,
-        string lastName,
-        DateTimeOffset? timestamp = null
-    ) : base(customerUri, timestamp)
+    public CustomerCreated(CustomerUri customerUri, string emailAddress, string firstName, string lastName, DateTimeOffset? timestamp = null) : base(
+        customerUri,
+        timestamp)
     {
         EmailAddress = emailAddress;
         FirstName = firstName;

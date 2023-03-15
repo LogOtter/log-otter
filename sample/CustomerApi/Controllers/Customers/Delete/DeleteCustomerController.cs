@@ -48,8 +48,7 @@ public class DeleteCustomerController : ControllerBase
             customerUri.Uri,
             customerReadModel.Revision,
             cancellationToken,
-            customerDeleted
-        );
+            customerDeleted);
 
         return NoContent();
     }

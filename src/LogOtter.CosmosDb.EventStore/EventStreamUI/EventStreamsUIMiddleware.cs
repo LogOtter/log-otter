@@ -13,21 +13,24 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamUI;
 internal class EventStreamsUIMiddleware
 {
     private const string EmbeddedFileNamespace = "LogOtter.CosmosDb.EventStore.EventStreamUI.wwwroot";
+    private readonly EventStreamsApiOptions _apiOptions;
+    private readonly PathString _rootPath;
 
     private readonly StaticFileMiddleware _staticFileMiddleware;
-    private readonly PathString _rootPath;
-    private readonly EventStreamsApiOptions _apiOptions;
 
     public EventStreamsUIMiddleware(
         RequestDelegate next,
         IWebHostEnvironment hostEnvironment,
         ILoggerFactory loggerFactory,
         EventStreamsUIOptions options,
-        EventStreamsApiOptionsContainer apiOptionsContainer
-    )
+        EventStreamsApiOptionsContainer apiOptionsContainer)
     {
         _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
-        _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
+        _staticFileMiddleware = CreateStaticFileMiddleware(
+            next,
+            hostEnvironment,
+            loggerFactory,
+            options);
         _apiOptions = apiOptionsContainer.Options;
     }
 
@@ -55,10 +58,7 @@ internal class EventStreamsUIMiddleware
 
     private void WriteConfigJson(HttpResponse response)
     {
-        var config = new
-        {
-            ApiBaseUrl = _apiOptions.RoutePrefix.Value
-        };
+        var config = new { ApiBaseUrl = _apiOptions.RoutePrefix.Value };
 
         response.WriteAsJsonAsync(config);
     }
@@ -67,20 +67,20 @@ internal class EventStreamsUIMiddleware
         RequestDelegate next,
         IWebHostEnvironment hostingEnv,
         ILoggerFactory loggerFactory,
-        EventStreamsUIOptions options
-    )
+        EventStreamsUIOptions options)
     {
         var staticFileOptions = new StaticFileOptions
         {
             RequestPath = string.IsNullOrEmpty(options.RoutePrefix)
                 ? string.Empty
                 : $"/{options.RoutePrefix.Trim('/')}",
-            FileProvider = new EmbeddedFileProvider(
-                typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly,
-                EmbeddedFileNamespace
-            )
+            FileProvider = new EmbeddedFileProvider(typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace)
         };
 
-        return new StaticFileMiddleware(next, hostingEnv, Options.Create(staticFileOptions), loggerFactory);
+        return new StaticFileMiddleware(
+            next,
+            hostingEnv,
+            Options.Create(staticFileOptions),
+            loggerFactory);
     }
 }

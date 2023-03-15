@@ -1,7 +1,6 @@
 namespace LogOtter.CosmosDb.EventStore;
 
-public class CatchupSubscriptionChangeFeedProcessor<TBaseEvent, TCatchupSubscriptionHandler>
-    : IChangeFeedProcessorChangeHandler<Event<TBaseEvent>>
+public class CatchupSubscriptionChangeFeedProcessor<TBaseEvent, TCatchupSubscriptionHandler> : IChangeFeedProcessorChangeHandler<Event<TBaseEvent>>
     where TCatchupSubscriptionHandler : ICatchupSubscription<TBaseEvent>
 {
     private readonly ICatchupSubscription<TBaseEvent> _catchupSubscription;
@@ -11,8 +10,7 @@ public class CatchupSubscriptionChangeFeedProcessor<TBaseEvent, TCatchupSubscrip
         _catchupSubscription = catchupSubscription;
     }
 
-    public async Task ProcessChanges(IReadOnlyCollection<Event<TBaseEvent>> changes,
-        CancellationToken cancellationToken)
+    public async Task ProcessChanges(IReadOnlyCollection<Event<TBaseEvent>> changes, CancellationToken cancellationToken)
     {
         await _catchupSubscription.ProcessEvents(changes, cancellationToken);
     }

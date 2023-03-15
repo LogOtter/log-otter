@@ -29,7 +29,7 @@ public class TtlTests
         yield return new object?[] { -1, 19, false };
         yield return new object?[] { 19, null, false };
     }
-        
+
     public static IEnumerable<object?[]> ReplaceItemExtendExpiryTestCases()
     {
         yield return new object?[] { -1, 30, true };
@@ -41,7 +41,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_GetAllItems(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -49,11 +49,11 @@ public class TtlTests
 
         container.AdvanceTime(30);
 
-        var results = container
-            .GetAllItems<TestDocumentWithTtl>()
-            .ToList();
+        var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
-        var expectedResultsCount = expectedItemExists ? 1 : 0;
+        var expectedResultsCount = expectedItemExists
+            ? 1
+            : 0;
         results.Should().HaveCount(expectedResultsCount);
     }
 
@@ -61,7 +61,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_ReadItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -69,7 +69,10 @@ public class TtlTests
 
         container.AdvanceTime(30);
 
-        Func<Task> act = async () => { await container.ReadItemAsync<TestDocumentWithTtl>(document.Id, new PartitionKey(document.PartitionKey)); };
+        Func<Task> act = async () =>
+        {
+            await container.ReadItemAsync<TestDocumentWithTtl>(document.Id, new PartitionKey(document.PartitionKey));
+        };
 
         if (expectedItemExists)
         {
@@ -85,7 +88,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_ReadItemStreamAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -106,7 +109,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_GetItemLinqQueryable(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -114,12 +117,11 @@ public class TtlTests
 
         container.AdvanceTime(30);
 
-        var results = container
-            .GetItemLinqQueryable<TestDocumentWithTtl>()
-            .Where(d => d.Id == document.Id)
-            .ToList();
+        var results = container.GetItemLinqQueryable<TestDocumentWithTtl>().Where(d => d.Id == document.Id).ToList();
 
-        var expectedResultsCount = expectedItemExists ? 1 : 0;
+        var expectedResultsCount = expectedItemExists
+            ? 1
+            : 0;
 
         results.Should().HaveCount(expectedResultsCount);
     }
@@ -128,7 +130,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_CountAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -138,7 +140,9 @@ public class TtlTests
 
         var count = await container.CountAsync<TestDocumentWithTtl>(document.PartitionKey, query => query);
 
-        var expectedCount = expectedItemExists ? 1 : 0;
+        var expectedCount = expectedItemExists
+            ? 1
+            : 0;
 
         count.Should().Be(expectedCount);
     }
@@ -147,7 +151,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_QueryAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -158,7 +162,9 @@ public class TtlTests
         var results = container.QueryAsync<TestDocumentWithTtl, TestDocumentWithTtl>(document.PartitionKey, query => query);
         var items = await results.ToListAsync();
 
-        var expectedResultsCount = expectedItemExists ? 1 : 0;
+        var expectedResultsCount = expectedItemExists
+            ? 1
+            : 0;
 
         items.Should().HaveCount(expectedResultsCount);
     }
@@ -167,7 +173,7 @@ public class TtlTests
     [MemberData(nameof(UpdateItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_UpsertItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -192,7 +198,7 @@ public class TtlTests
     [MemberData(nameof(UpdateItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_UpsertItemStreamAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -219,7 +225,7 @@ public class TtlTests
     [MemberData(nameof(ReplaceItemExtendExpiryTestCases))]
     public async Task ItemExistsAfterItemUpdated_ReplaceItemAsync(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -244,7 +250,7 @@ public class TtlTests
     [MemberData(nameof(CreateAndRetrieveTestCases))]
     public async Task ItemRemovedAfterTtlExpires_CreateItemStreamAsync_GetAllItems(int containerTtl, int? itemTtl, bool expectedItemExists)
     {
-        var container = new ContainerMock(partitionKeyPath: "/partitionKey", defaultDocumentTimeToLive: containerTtl);
+        var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
         var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
 
@@ -254,20 +260,20 @@ public class TtlTests
 
         container.AdvanceTime(30);
 
-        var results = container
-            .GetAllItems<TestDocumentWithTtl>()
-            .ToList();
+        var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
-        var expectedResultsCount = expectedItemExists ? 1 : 0;
+        var expectedResultsCount = expectedItemExists
+            ? 1
+            : 0;
         results.Should().HaveCount(expectedResultsCount);
     }
 
     private class TestDocumentWithTtl
     {
-        [JsonProperty("id")] 
+        [JsonProperty("id")]
         public string Id { get; set; } = null!;
 
-        [JsonProperty("partitionKey")] 
+        [JsonProperty("partitionKey")]
         public string PartitionKey { get; set; } = null!;
 
         [JsonProperty("ttl", NullValueHandling = NullValueHandling.Ignore)]

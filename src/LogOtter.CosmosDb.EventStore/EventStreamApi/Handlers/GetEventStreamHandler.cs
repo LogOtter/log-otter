@@ -8,12 +8,12 @@ internal class GetEventStreamHandler : BaseHandler
 {
     private readonly EventStoreCatalog _eventStoreCatalog;
 
+    public override string Template => "/event-streams/{EventStreamName}";
+
     public GetEventStreamHandler(EventStoreCatalog eventStoreCatalog)
     {
         _eventStoreCatalog = eventStoreCatalog;
     }
-
-    public override string Template => "/event-streams/{EventStreamName}";
 
     public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {

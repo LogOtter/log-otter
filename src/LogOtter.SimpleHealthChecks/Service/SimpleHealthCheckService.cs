@@ -11,18 +11,17 @@ internal class SimpleHealthCheckService : BackgroundService
     private static readonly byte[] OkBytes = Encoding.UTF8.GetBytes("OK");
 
     private readonly HealthCheckService _healthCheckService;
-    private readonly IEnumerable<SimpleHealthCheckOptionsMap> _requestMaps;
-    private readonly ILogger<SimpleHealthCheckService> _logger;
     private readonly SimpleHealthCheckHostOptions _hostOptions;
     private readonly IHttpListener _listener;
+    private readonly ILogger<SimpleHealthCheckService> _logger;
+    private readonly IEnumerable<SimpleHealthCheckOptionsMap> _requestMaps;
 
     public SimpleHealthCheckService(
         HealthCheckService healthCheckService,
         IHttpListenerFactory httpListenerFactory,
         IEnumerable<SimpleHealthCheckOptionsMap> requestMaps,
         IOptions<SimpleHealthCheckHostOptions> options,
-        ILogger<SimpleHealthCheckService> logger
-    )
+        ILogger<SimpleHealthCheckService> logger)
     {
         _healthCheckService = healthCheckService;
         _requestMaps = requestMaps;
@@ -38,11 +37,11 @@ internal class SimpleHealthCheckService : BackgroundService
             _listener.Configure(_hostOptions.Scheme, _hostOptions.Hostname, _hostOptions.Port);
             _listener.Start();
 
-            _logger.LogInformation("SimpleHealthCheckService started on {Scheme}://{Host}:{Port}",
+            _logger.LogInformation(
+                "SimpleHealthCheckService started on {Scheme}://{Host}:{Port}",
                 _hostOptions.Scheme,
                 _hostOptions.Hostname,
-                _hostOptions.Port
-            );
+                _hostOptions.Port);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -73,8 +72,7 @@ internal class SimpleHealthCheckService : BackgroundService
         _logger.LogInformation(
             "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath}",
             request.RemoteEndPoint,
-            request.Url!.PathAndQuery
-        );
+            request.Url!.PathAndQuery);
 
         var response = context.Response;
 
@@ -94,10 +92,9 @@ internal class SimpleHealthCheckService : BackgroundService
             return;
         }
 
-        var options = _requestMaps
-            .Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
-            .Select(map => map.Options)
-            .FirstOrDefault();
+        var options = _requestMaps.Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
+                                  .Select(map => map.Options)
+                                  .FirstOrDefault();
 
         if (options == null)
         {
@@ -110,8 +107,8 @@ internal class SimpleHealthCheckService : BackgroundService
         if (!options.ResultStatusCodes.TryGetValue(result.Status, out var statusCode))
         {
             var message = $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}." +
-                          $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain" +
-                          $"an entry for {result.Status}.";
+                $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain" +
+                $"an entry for {result.Status}.";
 
             throw new InvalidOperationException(message);
         }

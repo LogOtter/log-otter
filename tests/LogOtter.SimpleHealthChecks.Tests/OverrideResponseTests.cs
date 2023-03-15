@@ -16,20 +16,15 @@ public class OverrideResponseTests
     {
         var serviceBuilder = new TestHealthCheckServiceBuilder();
 
-        serviceBuilder
-            .HealthCheckService
-            .ReturnsHealthStatus(status);
+        serviceBuilder.HealthCheckService.ReturnsHealthStatus(status);
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint("/health", new SimpleHealthCheckOptions
+        serviceBuilder.Endpoints.AddEndpoint(
+            "/health",
+            new SimpleHealthCheckOptions
             {
                 ResponseWriter = async (context, report) =>
                 {
-                    var json = JsonSerializer.Serialize(new
-                    {
-                        Status = report.Status.ToString()
-                    });
+                    var json = JsonSerializer.Serialize(new { Status = report.Status.ToString() });
 
                     var res = context.Response;
                     res.ContentType = "application/json";
@@ -39,19 +34,19 @@ public class OverrideResponseTests
                 }
             });
 
-        var response = serviceBuilder
-            .EnqueueGetRequest("/health");
+        var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(async () =>
-        {
-            await response.WaitForResponseClosed();
+        await service.Run(
+            async () =>
+            {
+                await response.WaitForResponseClosed();
 
-            response.Headers["X-PoweredBy"].Should().Be("LogOtter");
+                response.Headers["X-PoweredBy"].Should().Be("LogOtter");
 
-            var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-            responseBody.Should().Be(expectedBody);
-        });
+                var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
+                responseBody.Should().Be(expectedBody);
+            });
     }
 }

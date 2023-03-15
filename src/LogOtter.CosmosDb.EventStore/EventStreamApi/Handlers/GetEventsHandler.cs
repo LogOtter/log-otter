@@ -11,11 +11,11 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
 internal class GetEventsHandler : BaseHandler
 {
-    private readonly EventStoreCatalog _eventStoreCatalog;
-    private readonly EventDescriptionGenerator _eventDescriptionGenerator;
     private readonly ICosmosContainerFactory _containerFactory;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
+    private readonly EventDescriptionGenerator _eventDescriptionGenerator;
+    private readonly EventStoreCatalog _eventStoreCatalog;
     private readonly EventStoreOptions _eventStoreOptions;
+    private readonly IFeedIteratorFactory _feedIteratorFactory;
 
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events";
 
@@ -24,8 +24,7 @@ internal class GetEventsHandler : BaseHandler
         EventDescriptionGenerator eventDescriptionGenerator,
         ICosmosContainerFactory containerFactory,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> eventStoreOptions
-    )
+        IOptions<EventStoreOptions> eventStoreOptions)
     {
         _eventStoreCatalog = eventStoreCatalog;
         _eventDescriptionGenerator = eventDescriptionGenerator;
@@ -51,18 +50,12 @@ internal class GetEventsHandler : BaseHandler
 
         var container = _containerFactory.GetContainer(metaData.EventContainerName);
 
-        var requestOptions = new QueryRequestOptions
-        {
-            PartitionKey = new PartitionKey(streamId)
-        };
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId);
+        var query = container.GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
+                             .Where(e => e.StreamId == streamId);
 
-        var itemsQuery = query
-            .OrderByDescending(e => e.EventNumber)
-            .Page(page, EventStreamsApiMiddleware.PageSize);
+        var itemsQuery = query.OrderByDescending(e => e.EventNumber).Page(page, EventStreamsApiMiddleware.PageSize);
 
         var totalEvents = await query.CountAsync();
 
@@ -74,19 +67,18 @@ internal class GetEventsHandler : BaseHandler
             storageEvents.AddRange(items.Resource);
         }
 
-        var events = storageEvents
-            .Select(e => new Event(
-                e.Id,
-                e.StreamId,
-                e.BodyType,
-                e.MetadataType,
-                e.EventNumber,
-                e.EventId,
-                e.TimeToLive,
-                _eventDescriptionGenerator.GetDescription(e, metaData),
-                e.Timestamp
-            ))
-            .ToList();
+        var events = storageEvents.Select(
+                                      e => new Event(
+                                          e.Id,
+                                          e.StreamId,
+                                          e.BodyType,
+                                          e.MetadataType,
+                                          e.EventNumber,
+                                          e.EventId,
+                                          e.TimeToLive,
+                                          _eventDescriptionGenerator.GetDescription(e, metaData),
+                                          e.Timestamp))
+                                  .ToList();
 
         var response = new EventsResponse(events);
         var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
@@ -94,8 +86,7 @@ internal class GetEventsHandler : BaseHandler
         response.Links.AddPagedLinks(
             page,
             PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, totalEvents.Resource),
-            p => $"{prefix}/{Uri.EscapeDataString(eventStreamName)}/{Uri.EscapeDataString(streamId)}/events?page={p}"
-        );
+            p => $"{prefix}/{Uri.EscapeDataString(eventStreamName)}/{Uri.EscapeDataString(streamId)}/events?page={p}");
 
         await WriteJson(httpContext.Response, response);
     }

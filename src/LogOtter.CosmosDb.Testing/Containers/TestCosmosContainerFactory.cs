@@ -14,20 +14,22 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null
-    )
+        ThroughputProperties? throughputProperties = null)
     {
-        var existingContainer = _containers
-            .FirstOrDefault(c => string.Equals(c.Id, containerName, StringComparison.InvariantCulture));
+        var existingContainer = _containers.FirstOrDefault(c => string.Equals(c.Id, containerName, StringComparison.InvariantCulture));
 
         if (existingContainer != null)
         {
             return Task.FromResult<Container>(existingContainer);
         }
 
-        var container = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy, containerName, defaultTimeToLive ?? -1);
+        var container = new ContainerMock.ContainerMock(
+            partitionKeyPath,
+            uniqueKeyPolicy,
+            containerName,
+            defaultTimeToLive ?? -1);
         _containers.Add(container);
-        
+
         return Task.FromResult<Container>(container);
     }
 

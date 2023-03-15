@@ -3,16 +3,14 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class HybridRepository<TBaseEvent, TSnapshot>
-    where TBaseEvent : class, IEvent<TSnapshot>
-    where TSnapshot : class, ISnapshot, new()
+public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventStore _eventStore;
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
-    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
+    private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly EventStoreOptions _options;
     private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
+    private readonly EventStoreOptions _options;
+    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
@@ -34,8 +32,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
         string partitionKey,
         Func<IQueryable<TSnapshot>, IQueryable<TSnapshot>> applyQuery,
         bool includeDeleted = false,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default
-    )
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var query = _snapshotRepository.CreateSnapshotQuery(partitionKey, includeDeleted);
 
@@ -54,35 +51,39 @@ public class HybridRepository<TBaseEvent, TSnapshot>
                     result,
                     _options.EscapeIdIfRequired(result.Id),
                     includeDeleted,
-                    cancellationToken
-                );
+                    cancellationToken);
             }
         }
     }
 
     public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params TBaseEvent[] events)
     {
-        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
+        return await ApplyEvents(
+            id,
+            expectedRevision,
+            CancellationToken.None,
+            events);
     }
 
-    public async Task<TSnapshot> ApplyEvents(
-        string id,
-        int? expectedRevision,
-        CancellationToken cancellationToken,
-        params TBaseEvent[] events
-    )
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, params TBaseEvent[] events)
     {
-        var snapshot = await _eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
+        var snapshot = await _eventRepository.ApplyEvents(
+            id,
+            expectedRevision,
+            cancellationToken,
+            events);
 
         try
         {
             var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
-            var eventsToUpdate = events
-                .Select(e => new Event<TBaseEvent>(id, eventRevision++, e))
-                .ToList();
+            var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 
-            await _snapshotRepository.ApplyEventsToSnapshot(id, partitionKey, eventsToUpdate, cancellationToken);
+            await _snapshotRepository.ApplyEventsToSnapshot(
+                id,
+                partitionKey,
+                eventsToUpdate,
+                cancellationToken);
         }
         catch
         {
@@ -105,12 +106,9 @@ public class HybridRepository<TBaseEvent, TSnapshot>
             streamId,
             startPosition,
             int.MaxValue,
-            cancellationToken
-        );
+            cancellationToken);
 
-        var events = eventStoreEvents
-            .Select(e => (TBaseEvent)e.EventBody)
-            .ToList();
+        var events = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody).ToList();
 
         if (snapshot == null && !events.Any())
         {

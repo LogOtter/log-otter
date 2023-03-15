@@ -6,22 +6,22 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>79fdfe97-46a6-4803-84be-e9426f8866de</UserSecretsId>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <PackageReference Include="Swashbuckle.AspNetCore"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
-      <ProjectReference Include="..\..\src\LogOtter.HttpPatch\LogOtter.HttpPatch.csproj" />
-      <ProjectReference Include="..\..\src\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
-      <ProjectReference Include="..\..\src\LogOtter.Obfuscate\LogOtter.Obfuscate.csproj" />
-      <ProjectReference Include="..\..\src\LogOtter.ShortGuid\LogOtter.ShortGuid.csproj" />
+        <ProjectReference Include="..\..\src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj"/>
+        <ProjectReference Include="..\..\src\LogOtter.HttpPatch\LogOtter.HttpPatch.csproj"/>
+        <ProjectReference Include="..\..\src\LogOtter.JsonHal\LogOtter.JsonHal.csproj"/>
+        <ProjectReference Include="..\..\src\LogOtter.Obfuscate\LogOtter.Obfuscate.csproj"/>
+        <ProjectReference Include="..\..\src\LogOtter.ShortGuid\LogOtter.ShortGuid.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <InternalsVisibleTo Include="CustomerApi.Tests" />
+        <InternalsVisibleTo Include="CustomerApi.Tests"/>
     </ItemGroup>
 
 </Project>

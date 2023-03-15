@@ -6,6 +6,11 @@ internal class PathString : IEquatable<PathString>
 {
     public static PathString Root => new("/");
 
+    public string? Value { get; }
+
+    [MemberNotNullWhen(true, nameof(Value))]
+    public bool HasValue => !string.IsNullOrEmpty(Value);
+
     public PathString(string? value)
     {
         if (!string.IsNullOrEmpty(value) && value[0] != '/')
@@ -16,10 +21,15 @@ internal class PathString : IEquatable<PathString>
         Value = value;
     }
 
-    public string? Value { get; }
+    public bool Equals(PathString? other)
+    {
+        if (other == null)
+        {
+            return !HasValue;
+        }
 
-    [MemberNotNullWhen(true, nameof(Value))]
-    public bool HasValue => !string.IsNullOrEmpty(Value);
+        return Equals(other, StringComparison.OrdinalIgnoreCase);
+    }
 
     public bool StartsWithSegments(PathString other, out PathString remaining)
     {
@@ -34,18 +44,8 @@ internal class PathString : IEquatable<PathString>
             }
         }
 
-        remaining = new(string.Empty);
+        remaining = new PathString(string.Empty);
         return false;
-    }
-
-    public bool Equals(PathString? other)
-    {
-        if (other == null)
-        {
-            return !HasValue;
-        }
-
-        return Equals(other, StringComparison.OrdinalIgnoreCase);
     }
 
     public bool Equals(PathString other, StringComparison comparisonType)
@@ -70,6 +70,8 @@ internal class PathString : IEquatable<PathString>
 
     public override int GetHashCode()
     {
-        return HasValue ? StringComparer.OrdinalIgnoreCase.GetHashCode(Value) : 0;
+        return HasValue
+            ? StringComparer.OrdinalIgnoreCase.GetHashCode(Value)
+            : 0;
     }
 }

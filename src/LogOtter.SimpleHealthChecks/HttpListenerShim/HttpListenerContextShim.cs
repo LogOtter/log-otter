@@ -12,6 +12,6 @@ internal class HttpListenerContextShim : IHttpListenerContext
     }
 
     public IHttpListenerRequest Request => new HttpListenerRequestShim(_context.Request);
-    
+
     public IHttpListenerResponse Response => new HttpListenerResponseShim(_context.Response);
 }

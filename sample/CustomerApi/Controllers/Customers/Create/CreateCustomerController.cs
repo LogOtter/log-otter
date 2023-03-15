@@ -24,8 +24,7 @@ public class CreateCustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CustomerResponse>> CreateCustomer(
         [Required] CreateCustomerRequest customerData,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         var customerUri = CustomerUri.Generate();
 
@@ -33,15 +32,13 @@ public class CreateCustomerController : ControllerBase
             customerUri,
             customerData.EmailAddress,
             customerData.FirstName,
-            customerData.LastName
-        );
+            customerData.LastName);
 
         var customer = await _customerEventRepository.ApplyEvents(
             customerUri.Uri,
             0,
             cancellationToken,
-            customerCreated
-        );
+            customerCreated);
 
         return Created(customerUri.Uri, new CustomerResponse(customer));
     }

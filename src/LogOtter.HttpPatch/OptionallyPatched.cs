@@ -1,21 +1,34 @@
-﻿namespace LogOtter.HttpPatch;
+﻿using Newtonsoft.Json;
+
+namespace LogOtter.HttpPatch;
 
 public interface IOptionallyPatched
 {
     bool IsIncludedInPatch { get; }
-    
+
     internal object? Value { get; }
 }
 
-[Newtonsoft.Json.JsonConverter(typeof(OptionallyPatchedJsonSerializer.NewtonsoftJsonConverter))]
+[JsonConverter(typeof(OptionallyPatchedJsonSerializer.NewtonsoftJsonConverter))]
 [System.Text.Json.Serialization.JsonConverter(typeof(OptionallyPatchedJsonSerializer.SystemTextJsonFactory))]
 public readonly record struct OptionallyPatched<T>(bool IsIncludedInPatch, T? Value = default) : IOptionallyPatched
 {
-    public static implicit operator OptionallyPatched<T>(T val) => new(true, val);
-
     object? IOptionallyPatched.Value => Value;
 
-    public override string? ToString() => Value?.ToString();
+    public static implicit operator OptionallyPatched<T>(T val)
+    {
+        return new OptionallyPatched<T>(true, val);
+    }
 
-    public T GetValueIfIncludedOrDefault(T defaultValue) => IsIncludedInPatch ? Value! : defaultValue;
+    public override string? ToString()
+    {
+        return Value?.ToString();
+    }
+
+    public T GetValueIfIncludedOrDefault(T defaultValue)
+    {
+        return IsIncludedInPatch
+            ? Value!
+            : defaultValue;
+    }
 }

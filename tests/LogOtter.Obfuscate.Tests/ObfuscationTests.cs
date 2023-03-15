@@ -51,7 +51,7 @@ public class ObfuscationTests
 
         actualOutput.Should().Be(expectedOutput);
     }
-        
+
     [Theory]
     [InlineData(null, null)]
     [InlineData("", "")]

@@ -6,6 +6,8 @@ public class TestFeedIterator<T> : FeedIterator<T>
 {
     private readonly Queue<T> _results;
 
+    public override bool HasMoreResults => _results.Any();
+
     public TestFeedIterator(IQueryable<T> query)
     {
         _results = new Queue<T>();
@@ -22,6 +24,4 @@ public class TestFeedIterator<T> : FeedIterator<T>
 
         return Task.FromResult<FeedResponse<T>>(response);
     }
-
-    public override bool HasMoreResults => _results.Any();
 }

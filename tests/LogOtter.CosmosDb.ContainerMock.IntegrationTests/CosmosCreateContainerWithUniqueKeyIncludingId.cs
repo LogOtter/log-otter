@@ -14,25 +14,6 @@ public sealed class CosmosCreateContainerWithUniqueKeyIncludingId : IAsyncLifeti
         _testCosmos = testFixture.CreateTestCosmos();
     }
 
-    [Fact]
-    public async Task CreateUniqueKeyViolationIsEquivalent()
-    {
-        var uniqueKeyPolicy = new UniqueKeyPolicy
-        {
-            UniqueKeys = { new UniqueKey { Paths = { "/id", "/ItemId", "/Type" } } }
-        };
-        
-        var (realException, testException) = await _testCosmos.SetupAsyncProducesExceptions(
-            "/partitionKey", 
-            uniqueKeyPolicy
-        );
-
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
-    }
-
     public Task InitializeAsync()
     {
         return Task.CompletedTask;
@@ -46,5 +27,18 @@ public sealed class CosmosCreateContainerWithUniqueKeyIncludingId : IAsyncLifeti
     public void Dispose()
     {
         _testCosmos.Dispose();
+    }
+
+    [Fact]
+    public async Task CreateUniqueKeyViolationIsEquivalent()
+    {
+        var uniqueKeyPolicy = new UniqueKeyPolicy { UniqueKeys = { new UniqueKey { Paths = { "/id", "/ItemId", "/Type" } } } };
+
+        var (realException, testException) = await _testCosmos.SetupAsyncProducesExceptions("/partitionKey", uniqueKeyPolicy);
+
+        realException.Should().NotBeNull();
+        testException.Should().NotBeNull();
+        realException!.StatusCode.Should().Be(testException!.StatusCode);
+        realException.Should().BeOfType(testException.GetType());
     }
 }

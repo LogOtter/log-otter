@@ -9,16 +9,20 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
     private readonly List<TransactionalBatchOperationResult> _results;
     private HttpStatusCode _statusCode;
 
+    public override HttpStatusCode StatusCode => _statusCode;
+    public override int Count => _results.Count;
+    public override TransactionalBatchOperationResult this[int index] => _results[index];
+
     public TestTransactionalBatchResponse()
     {
         _statusCode = HttpStatusCode.OK;
         _results = new List<TransactionalBatchOperationResult>();
     }
 
-    public override HttpStatusCode StatusCode => _statusCode;
-    public override int Count => _results.Count;
-    public override TransactionalBatchOperationResult this[int index] => _results[index];
-    public override IEnumerator<TransactionalBatchOperationResult> GetEnumerator() => _results.GetEnumerator();
+    public override IEnumerator<TransactionalBatchOperationResult> GetEnumerator()
+    {
+        return _results.GetEnumerator();
+    }
 
     public override TransactionalBatchOperationResult<T> GetOperationResultAtIndex<T>(int index)
     {
@@ -27,10 +31,10 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
         {
             return typedResult;
         }
-        
+
         var streamReader = new StreamReader(result.ResourceStream);
         var json = streamReader.ReadToEnd();
-        
+
         var resource = JsonConvert.DeserializeObject<T>(json);
         return new TestTransactionalBatchOperationResult<T>(result, resource);
     }
@@ -41,7 +45,7 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
         {
             _statusCode = responseMessage.StatusCode;
         }
-        
+
         _results.Add(new TestTransactionalBatchOperationResult<T>(new TestTransactionalBatchOperationResult(responseMessage), item));
     }
 
@@ -51,7 +55,7 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
         {
             _statusCode = responseMessage.StatusCode;
         }
-        
+
         _results.Add(new TestTransactionalBatchOperationResult(responseMessage));
     }
 

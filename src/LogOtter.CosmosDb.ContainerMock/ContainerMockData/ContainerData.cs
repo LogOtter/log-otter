@@ -8,17 +8,15 @@ namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 internal class ContainerData
 {
-    private readonly UniqueKeyPolicy? _uniqueKeyPolicy;
-    private readonly int _defaultDocumentTimeToLive;
     private static readonly PartitionKey NonePartitionKey = new("###PartitionKeyNone###");
     private static readonly PartitionKey NullPartitionKey = new("###PartitionKeyNull###");
+    private readonly ConcurrentDictionary<PartitionKey, ConcurrentDictionary<string, ContainerItem>> _data;
+    private readonly int _defaultDocumentTimeToLive;
+    private readonly UniqueKeyPolicy? _uniqueKeyPolicy;
 
     private readonly SemaphoreSlim _updateSemaphore = new(1, 1);
-    private readonly ConcurrentDictionary<PartitionKey, ConcurrentDictionary<string, ContainerItem>> _data;
 
     private int _currentTimer;
-
-    public event EventHandler<DataChangedEventArgs>? DataChanged;
 
     public ContainerData(UniqueKeyPolicy? uniqueKeyPolicy, int defaultDocumentTimeToLive)
     {
@@ -30,6 +28,8 @@ internal class ContainerData
         _data = new ConcurrentDictionary<PartitionKey, ConcurrentDictionary<string, ContainerItem>>();
         _currentTimer = 0;
     }
+
+    public event EventHandler<DataChangedEventArgs>? DataChanged;
 
     public IEnumerable<ContainerItem> GetAllItems()
     {
@@ -48,11 +48,16 @@ internal class ContainerData
     {
         var partition = GetPartitionFromKey(partitionKey);
 
-        return partition.TryGetValue(id, out var containerItem) ? containerItem : null;
+        return partition.TryGetValue(id, out var containerItem)
+            ? containerItem
+            : null;
     }
 
-    public async Task<Response> AddItem(string json, PartitionKey partitionKey,
-        ItemRequestOptions? requestOptions = null, CancellationToken cancellationToken = default)
+    public async Task<Response> AddItem(
+        string json,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
     {
         var id = JsonHelpers.GetIdFromJson(json);
         var partition = GetPartitionFromKey(partitionKey);
@@ -65,7 +70,11 @@ internal class ContainerData
                 throw new ObjectAlreadyExistsException();
             }
 
-            return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
+            return await UpsertItem(
+                json,
+                partitionKey,
+                requestOptions,
+                cancellationToken);
         }
         finally
         {
@@ -73,8 +82,7 @@ internal class ContainerData
         }
     }
 
-    public Task<Response> UpsertItem(string json, PartitionKey partitionKey, ItemRequestOptions? requestOptions,
-        CancellationToken cancellationToken)
+    public Task<Response> UpsertItem(string json, PartitionKey partitionKey, ItemRequestOptions? requestOptions, CancellationToken cancellationToken)
     {
         var partition = GetPartitionFromKey(partitionKey);
         var id = JsonHelpers.GetIdFromJson(json);
@@ -90,8 +98,7 @@ internal class ContainerData
             {
                 if (string.IsNullOrWhiteSpace(requestOptions?.IfMatchEtag))
                 {
-                    throw new InvalidOperationException(
-                        "An eTag must be provided as a concurrency exception is queued");
+                    throw new InvalidOperationException("An eTag must be provided as a concurrency exception is queued");
                 }
             }
 
@@ -116,18 +123,27 @@ internal class ContainerData
             id,
             json,
             partitionKey,
-            GetExpiryTime(ttl, _currentTimer)
-        );
+            GetExpiryTime(ttl, _currentTimer));
 
         partition[id] = newItem;
 
-        DataChanged?.Invoke(this, new DataChangedEventArgs(isUpdate ? Operation.Updated : Operation.Created, newItem.Json));
+        DataChanged?.Invoke(
+            this,
+            new DataChangedEventArgs(
+                isUpdate
+                    ? Operation.Updated
+                    : Operation.Created,
+                newItem.Json));
 
         return Task.FromResult(new Response(newItem, isUpdate));
     }
 
-    public async Task<Response> ReplaceItem(string id, string json, PartitionKey partitionKey,
-        ItemRequestOptions? requestOptions, CancellationToken cancellationToken)
+    public async Task<Response> ReplaceItem(
+        string id,
+        string json,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions,
+        CancellationToken cancellationToken)
     {
         var partition = GetPartitionFromKey(partitionKey);
 
@@ -136,7 +152,11 @@ internal class ContainerData
             throw new NotFoundException();
         }
 
-        return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
+        return await UpsertItem(
+            json,
+            partitionKey,
+            requestOptions,
+            cancellationToken);
     }
 
     public ContainerItem RemoveItem(string id, PartitionKey partitionKey, ItemRequestOptions? requestOptions)
@@ -229,9 +249,7 @@ internal class ContainerData
             return;
         }
 
-        var uniqueKeyPaths = uniqueKeyPolicy.UniqueKeys
-            .SelectMany(i => i.Paths)
-            .Select(p => p.TrimStart('/'));
+        var uniqueKeyPaths = uniqueKeyPolicy.UniqueKeys.SelectMany(i => i.Paths).Select(p => p.TrimStart('/'));
 
         if (uniqueKeyPaths.Contains("id"))
         {
@@ -239,9 +257,8 @@ internal class ContainerData
                 "The unique key path cannot contain system properties. 'id' is a system property.",
                 HttpStatusCode.BadRequest,
                 0,
-                String.Empty,
-                0
-            );
+                string.Empty,
+                0);
         }
     }
 
@@ -294,7 +311,7 @@ internal class ContainerData
     {
         using var sw = new StringWriter();
         using var json = new JsonTextWriter(sw);
-        
+
         json.WriteStartObject();
         foreach (var (partitionKey, items) in _data)
         {
@@ -303,36 +320,36 @@ internal class ContainerData
             foreach (var (_, containerItem) in items)
             {
                 json.WriteStartObject();
-                
+
                 json.WritePropertyName("Id");
                 json.WriteValue(containerItem.Id);
-                
+
                 json.WritePropertyName("PartitionKey");
                 json.WriteValue(containerItem.PartitionKey.ToString());
-                
+
                 json.WritePropertyName("Json");
                 json.WriteValue(containerItem.Json);
-                
+
                 json.WritePropertyName("ETag");
                 json.WriteValue(containerItem.ETag);
-                
+
                 json.WritePropertyName("ExpiryType");
                 json.WriteValue(containerItem.ExpiryTime);
-                
+
                 json.WritePropertyName("HasScheduledETagMismatch");
                 json.WriteValue(containerItem.HasScheduledETagMismatch);
-                
+
                 json.WritePropertyName("RequireETagOnNextUpdate");
                 json.WriteValue(containerItem.RequireETagOnNextUpdate);
-                
+
                 json.WriteEndObject();
             }
 
             json.WriteEndArray();
         }
-        
+
         json.WriteEndObject();
-        
+
         return new ContainerDataSnapshot(sw.ToString());
     }
 
@@ -344,12 +361,12 @@ internal class ContainerData
         foreach (var property in data.Properties())
         {
             var partitionKey = PartitionKeyHelpers.FromJsonString(property.Name);
-            
+
             var partitionKeyDictionary = new ConcurrentDictionary<string, ContainerItem>();
             _data[partitionKey] = partitionKeyDictionary;
 
             var itemsArray = (JArray)property.Value;
-            
+
             foreach (var item in itemsArray.Children<JObject>())
             {
                 var containerItem = new ContainerItem(
@@ -359,12 +376,10 @@ internal class ContainerData
                     item.Value<int?>("ExpiryTime"),
                     item.Value<string>("ETag"),
                     item.Value<bool>("RequireETagOnNextUpdate"),
-                    item.Value<bool>("HasScheduledETagMismatch")
-                );
-                
+                    item.Value<bool>("HasScheduledETagMismatch"));
+
                 partitionKeyDictionary[containerItem.Id] = containerItem;
             }
         }
-        
     }
 }

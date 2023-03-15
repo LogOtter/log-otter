@@ -10,7 +10,7 @@ internal class HttpListenerShim : IHttpListener
     {
         _httpListener = new HttpListener();
     }
-    
+
     public void Configure(string scheme, string hostname, int port)
     {
         _httpListener.Prefixes.Add($"{scheme}://{hostname}:{port}/");

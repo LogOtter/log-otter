@@ -3,12 +3,11 @@ using Microsoft.Extensions.Logging;
 namespace LogOtter.CosmosDb.EventStore;
 
 internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : ICatchupSubscription<TBaseEvent>
-    where TBaseEvent : class, IEvent<TSnapshot>
-    where TSnapshot : class, ISnapshot, new()
+    where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
 {
-    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
     private readonly ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> _logger;
     private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
+    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
 
     public SnapshotProjectionCatchupSubscription(
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
@@ -36,18 +35,21 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
                     "Snapshot Projection: Error applying events to snapshot for stream ID {StreamId}. Starting revision was {StartRevision}. Attempting to update to {EndRevision}",
                     eventsForStream.Key,
                     eventsForStream.Min(e => e.EventNumber),
-                    eventsForStream.Max(e => e.EventNumber)
-                );
+                    eventsForStream.Max(e => e.EventNumber));
                 throw;
             }
         }
     }
 
-    private async Task ApplyEventsToSingleSnapshot(IGrouping<string,Event<TBaseEvent>> events, CancellationToken cancellationToken)
+    private async Task ApplyEventsToSingleSnapshot(IGrouping<string, Event<TBaseEvent>> events, CancellationToken cancellationToken)
     {
         var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First().Body);
         var streamId = events.Key;
 
-        await _snapshotRepository.ApplyEventsToSnapshot(streamId, partitionKey, events.ToList(), cancellationToken);
+        await _snapshotRepository.ApplyEventsToSnapshot(
+            streamId,
+            partitionKey,
+            events.ToList(),
+            cancellationToken);
     }
 }

@@ -8,13 +8,18 @@ public sealed class TestCosmos : IDisposable
 {
     private readonly CosmosClient _client;
 
-    private Container? _testContainer;
-
     private Container? _realContainer;
+
+    private Container? _testContainer;
 
     public TestCosmos(CosmosClient client)
     {
         _client = client;
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
     }
 
     public async Task SetupAsync(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy = null)
@@ -24,7 +29,9 @@ public sealed class TestCosmos : IDisposable
         _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy);
     }
 
-    public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy = null)
+    public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(
+        string partitionKeyPath,
+        UniqueKeyPolicy? uniqueKeyPolicy = null)
     {
         CosmosException? realException = null, testException = null;
 
@@ -56,7 +63,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realItem = await _realContainer.UpsertItemAsync(item);
         var testItem = await _testContainer.UpsertItemAsync(item);
 
@@ -64,13 +71,15 @@ public sealed class TestCosmos : IDisposable
     }
 
     [SuppressMessage("", "CA1031", Justification = "Need to catch exceptions")]
-    public async Task<(IList<T>? realResults, IList<T>? testResults)> WhenExecutingAQuery<T>(string? partitionKey, Func<IQueryable<T>, IQueryable<T>>? query = null)
+    public async Task<(IList<T>? realResults, IList<T>? testResults)> WhenExecutingAQuery<T>(
+        string? partitionKey,
+        Func<IQueryable<T>, IQueryable<T>>? query = null)
     {
         if (_realContainer == null || _testContainer == null)
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         Exception? realException = null, testException = null;
         IList<T>? realQuery = null, inMemoryQuery = null;
 
@@ -108,20 +117,26 @@ public sealed class TestCosmos : IDisposable
 
         if (realException != null || testException != null)
         {
-            throw new CosmosEquivalencyException(realException, testException, realQuery, inMemoryQuery);
+            throw new CosmosEquivalencyException(
+                realException,
+                testException,
+                realQuery,
+                inMemoryQuery);
         }
 
         return (realQuery, inMemoryQuery);
     }
 
     [SuppressMessage("", "CA1031", Justification = "Need to catch exceptions")]
-    public async Task<(int? realResults, int? testResults)> WhenCountingAQuery<T>(string? partitionKey, Func<IQueryable<T>, IQueryable<T>>? query = null)
+    public async Task<(int? realResults, int? testResults)> WhenCountingAQuery<T>(
+        string? partitionKey,
+        Func<IQueryable<T>, IQueryable<T>>? query = null)
     {
         if (_realContainer == null || _testContainer == null)
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         Exception? realException = null, testException = null;
         int? realQuery = null, inMemoryQuery = null;
 
@@ -159,7 +174,11 @@ public sealed class TestCosmos : IDisposable
 
         if (realException != null || testException != null)
         {
-            throw new CosmosEquivalencyException(realException, testException, realQuery, inMemoryQuery);
+            throw new CosmosEquivalencyException(
+                realException,
+                testException,
+                realQuery,
+                inMemoryQuery);
         }
 
         return (realQuery, inMemoryQuery);
@@ -172,7 +191,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         if (query == null)
         {
             throw new ArgumentNullException(nameof(query));
@@ -189,13 +208,14 @@ public sealed class TestCosmos : IDisposable
 
     [Obsolete("Testing old query method, until the CreateItemLinqQueryable method is removed")]
     [SuppressMessage("", "CA1031", Justification = "Need to know if any exception occurs")]
-    public (TResult? realResults, Exception? realException, TResult? testResults, Exception? testException) WhenExecutingAQuery<TIn, TResult>(Func<IQueryable<TIn>, TResult> query)
+    public (TResult? realResults, Exception? realException, TResult? testResults, Exception? testException) WhenExecutingAQuery<TIn, TResult>(
+        Func<IQueryable<TIn>, TResult> query)
     {
         if (_realContainer == null || _testContainer == null)
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         if (query == null)
         {
             throw new ArgumentNullException(nameof(query));
@@ -237,7 +257,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.CreateItemAsync(testModel, partitionKey, realRequestOptions);
         var testResult = await _testContainer.CreateItemAsync(testModel, partitionKey, testRequestOptions);
         return (realResult, testResult);
@@ -253,7 +273,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         CosmosException? real = null;
         CosmosException? test = null;
 
@@ -287,7 +307,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.UpsertItemAsync(testModel, requestOptions: realRequestOptions);
         var testResult = await _testContainer.UpsertItemAsync(testModel, requestOptions: testRequestOptions);
         return (realResult, testResult);
@@ -303,7 +323,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.ReplaceItemAsync(testModel, id, requestOptions: realRequestOptions);
         var testResult = await _testContainer.ReplaceItemAsync(testModel, id, requestOptions: testRequestOptions);
         return (realResult, testResult);
@@ -319,7 +339,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.DeleteItemAsync<T>(id, partitionKey, realRequestOptions);
         var testResult = await _testContainer.DeleteItemAsync<T>(id, partitionKey, testRequestOptions);
         return (realResult, testResult);
@@ -335,7 +355,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.UpsertItemStreamAsync(stream, partitionKey, realRequestOptions);
         var testResult = await _testContainer.UpsertItemStreamAsync(stream, partitionKey, testRequestOptions);
         return (realResult, testResult);
@@ -347,7 +367,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var realResult = await _realContainer.CreateItemStreamAsync(stream, partitionKey);
         var testResult = await _testContainer.CreateItemStreamAsync(stream, partitionKey);
         return (realResult, testResult);
@@ -362,7 +382,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         CosmosException? real = null;
         CosmosException? test = null;
 
@@ -397,7 +417,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         CosmosException? real = null;
         CosmosException? test = null;
 
@@ -432,7 +452,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         CosmosException? real = null;
         CosmosException? test = null;
 
@@ -464,7 +484,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         Exception? real = null;
         Exception? test = null;
 
@@ -488,7 +508,7 @@ public sealed class TestCosmos : IDisposable
 
         return (real, test);
     }
-        
+
     [SuppressMessage("", "CA1031", Justification = "I want to catch all exceptions.")]
     public async Task<(Exception? realException, Exception? testException)> WhenReadItemStreamProducesException(string? id)
     {
@@ -496,7 +516,7 @@ public sealed class TestCosmos : IDisposable
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         Exception? real = null;
         Exception? test = null;
 
@@ -520,31 +540,26 @@ public sealed class TestCosmos : IDisposable
 
         return (real, test);
     }
-        
+
     public async Task<(ResponseMessage realException, ResponseMessage testException)> WhenReadItemStream(string id)
     {
         if (_realContainer == null || _testContainer == null)
         {
             throw new Exception("Call SetupAsync() first");
         }
-        
+
         var real = await _realContainer.ReadItemStreamAsync(id, PartitionKey.None);
         var test = await _testContainer.ReadItemStreamAsync(id, PartitionKey.None);
 
         return (real, test);
     }
-        
+
     public async Task CleanupAsync()
     {
         if (_realContainer != null)
         {
             await _realContainer.DeleteContainerAsync();
         }
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
     }
 
     private async Task<ContainerResponse> CreateCosmosContainer(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy)
@@ -554,8 +569,7 @@ public sealed class TestCosmos : IDisposable
 
         var containerProperties = new ContainerProperties
         {
-            Id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
-            PartitionKeyPath = partitionKeyPath,
+            Id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture), PartitionKeyPath = partitionKeyPath
         };
 
         if (uniqueKeyPolicy != null)

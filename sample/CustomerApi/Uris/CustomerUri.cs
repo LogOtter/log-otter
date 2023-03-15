@@ -10,11 +10,29 @@ public class CustomerUri : IEquatable<CustomerUri>
 
     public string Uri => $"/customers/{CustomerId}";
 
-    public override string ToString() => Uri;
-
     public CustomerUri(string customerId)
     {
         CustomerId = new Id(customerId);
+    }
+
+    public bool Equals(CustomerUri? other)
+    {
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return CustomerId.Equals(other.CustomerId);
+    }
+
+    public override string ToString()
+    {
+        return Uri;
     }
 
     public static CustomerUri Parse(string customerUri)
@@ -32,21 +50,6 @@ public class CustomerUri : IEquatable<CustomerUri>
     public static CustomerUri Generate()
     {
         return new CustomerUri(Id.Generate());
-    }
-
-    public bool Equals(CustomerUri? other)
-    {
-        if (ReferenceEquals(null, other))
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return CustomerId.Equals(other.CustomerId);
     }
 
     public override bool Equals(object? obj)
@@ -73,7 +76,7 @@ public class CustomerUri : IEquatable<CustomerUri>
     {
         return left.Equals(right);
     }
-    
+
     public static bool operator !=(CustomerUri left, CustomerUri right)
     {
         return !left.Equals(right);
