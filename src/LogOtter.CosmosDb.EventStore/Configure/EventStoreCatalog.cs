@@ -4,10 +4,10 @@ namespace LogOtter.CosmosDb.EventStore;
 
 internal class EventStoreCatalog
 {
-    private readonly IReadOnlyCollection<EventStoreMetadata> _eventStoreMetaData;
+    private readonly IReadOnlyCollection<IEventStoreMetadata> _eventStoreMetaData;
     private readonly Lazy<IReadOnlyCollection<EventStreamDefinition>> _definitions;
 
-    public EventStoreCatalog(IEnumerable<EventStoreMetadata> eventStoreMetaData)
+    public EventStoreCatalog(IEnumerable<IEventStoreMetadata> eventStoreMetaData)
     {
         _eventStoreMetaData = eventStoreMetaData.ToList();
         _definitions = new Lazy<IReadOnlyCollection<EventStreamDefinition>>(GenerateDefinitions);
@@ -25,7 +25,7 @@ internal class EventStoreCatalog
         );
     }
 
-    public EventStoreMetadata? GetMetadata(string name)
+    public IEventStoreMetadata? GetMetadata(string name)
     {
         return _eventStoreMetaData.FirstOrDefault(e =>
             string.Equals(e.EventBaseType.Name, name, StringComparison.InvariantCultureIgnoreCase)

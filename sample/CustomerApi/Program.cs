@@ -28,7 +28,7 @@ services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStream
 services
     .AddCosmosDb()
     .AddEventStore(options => options.AutoEscapeIds = true)
-    .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent")
+    .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent", _ => CustomerReadModel.StaticPartitionKey)
     .AddSnapshotStoreProjection<CustomerEvent, CustomerReadModel>("Customers",
         compositeIndexes: new[]
         {

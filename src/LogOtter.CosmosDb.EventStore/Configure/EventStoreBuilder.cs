@@ -19,6 +19,7 @@ internal class EventStoreBuilder : IEventStoreBuilder
 
     public IEventStoreBuilder AddEventSource<TBaseEvent, TSnapshot>(
         string eventContainerName,
+        Func<TBaseEvent, string> snapshotPartitionKeyResolver,
         IReadOnlyCollection<Type>? eventTypes = null,
         JsonSerializerSettings? jsonSerializerSettings = null
     )
@@ -33,16 +34,16 @@ internal class EventStoreBuilder : IEventStoreBuilder
             defaultTimeToLive: -1
         );
 
-        var metadata = new EventStoreMetadata(
-            typeof(TBaseEvent),
-            typeof(TSnapshot),
+        var metadata = new EventStoreMetadata<TBaseEvent, TSnapshot>(
             eventContainerName,
             eventTypes,
             new SimpleSerializationTypeMap(eventTypes),
-            jsonSerializerSettings
+            jsonSerializerSettings,
+            snapshotPartitionKeyResolver
         );
-        
+
         Services.AddSingleton(metadata);
+        Services.AddSingleton<IEventStoreMetadata>(metadata);
 
         Services.AddSingleton(sp =>
         {
@@ -69,7 +70,7 @@ internal class EventStoreBuilder : IEventStoreBuilder
         string? projectorName = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null
     )
-        where TBaseEvent : class, ISnapshottableEvent<TSnapshot>
+        where TBaseEvent : class, IEvent<TSnapshot>
         where TSnapshot : class, ISnapshot, new()
     {
         _cosmosDbBuilder.AddContainer<TSnapshot>(

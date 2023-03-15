@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 namespace LogOtter.CosmosDb.EventStore;
 
 public class HybridRepository<TBaseEvent, TSnapshot>
-    where TBaseEvent : class, ISnapshottableEvent<TSnapshot>
+    where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventStore _eventStore;
@@ -12,19 +12,21 @@ public class HybridRepository<TBaseEvent, TSnapshot>
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _options;
+    private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
         EventRepository<TBaseEvent, TSnapshot> eventRepository,
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options
-    )
+        IOptions<EventStoreOptions> options,
+        EventStoreMetadata<TBaseEvent, TSnapshot> metadata)
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
         _snapshotRepository = snapshotRepository;
         _feedIteratorFactory = feedIteratorFactory;
+        _metadata = metadata;
         _options = options.Value;
     }
 
@@ -74,7 +76,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
 
         try
         {
-            var partitionKey = events.First().SnapshotPartitionKey;
+            var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events
                 .Select(e => new Event<TBaseEvent>(id, eventRevision++, e))

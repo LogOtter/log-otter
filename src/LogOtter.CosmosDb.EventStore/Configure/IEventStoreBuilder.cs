@@ -8,6 +8,7 @@ public interface IEventStoreBuilder
 {
     IEventStoreBuilder AddEventSource<TBaseEvent, TSnapshot>(
         string eventContainerName,
+        Func<TBaseEvent, string> snapshotPartitionKeyResolver,
         IReadOnlyCollection<Type>? eventTypes = null,
         JsonSerializerSettings? jsonSerializerSettings = null
     )
@@ -21,7 +22,7 @@ public interface IEventStoreBuilder
         string? projectorName = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null
     )
-        where TBaseEvent : class, ISnapshottableEvent<TSnapshot>
+        where TBaseEvent : class, IEvent<TSnapshot>
         where TSnapshot : class, ISnapshot, new();
 
     IEventStoreBuilder AddCatchupSubscription<
