@@ -16,6 +16,7 @@ export default {
   data() {
     return {
       loading: false,
+      error: undefined as any,
       events: [] as Event[],
       nextPageUrl: undefined as string | undefined,
     };
@@ -28,16 +29,21 @@ export default {
       this.loading = true;
       const events: Event[] = [];
 
-      const response = await this.eventStreamsService.getEvents(this.eventStreamName, this.streamId);
+      try {
+        const response = await this.eventStreamsService.getEvents(this.eventStreamName, this.streamId);
 
-      for (const event of response.data) {
-        events.push(event);
+        for (const event of response.data) {
+          events.push(event);
+        }
+
+        this.nextPageUrl = response.nextPage;
+
+        this.events = events;
+        this.loading = false;
+      } catch (e) {
+        this.error = e;
+        this.loading = false;
       }
-
-      this.nextPageUrl = response.nextPage;
-
-      this.events = events;
-      this.loading = false;
 
       if (isVisible(this.$refs.loadMore as HTMLElement)) {
         this.fetchNextPage();
@@ -108,9 +114,15 @@ export default {
     <div>
       <event-card :event-stream-name="eventStreamName" :stream-id="streamId" :event="event" v-for="event in events" :key="event.eventId"></event-card>
 
-      <div v-if="!loading && !events.length">
+      <div v-if="!loading && !events.length && !error">
         <div class="card mb-1 p-3 text-muted">
           <span><i class="bi-info-square me-2"></i> No events found </span>
+        </div>
+      </div>
+
+      <div v-if="!loading && !events.length && error">
+        <div class="card mb-1 p-3 text-bg-danger">
+          <span><i class="bi-exclamation-square me-2"></i> <strong>Error</strong> - Could not load events</span>
         </div>
       </div>
 
