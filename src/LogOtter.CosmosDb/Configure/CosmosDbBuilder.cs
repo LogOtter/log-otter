@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LogOtter.CosmosDb;
 
-internal class CosmosDbBuilder : ICosmosDbBuilder
+public class CosmosDbBuilder
 {
     private readonly IList<string> _changeFeedProcessors;
     private readonly IDictionary<Type, string> _containers;
@@ -19,7 +20,24 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
 
     public IServiceCollection Services { get; }
 
-    public ICosmosDbBuilder AddContainer<T>(
+    public CosmosDbBuilder AddContainer<T>(
+        string containerName,
+        string partitionKeyPath = "/partitionKey",
+        UniqueKeyPolicy? uniqueKeyPolicy = null,
+        int? defaultTimeToLive = null,
+        IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
+        ThroughputProperties? throughputProperties = null) =>
+        AddContainer(
+            typeof(T),
+            containerName,
+            partitionKeyPath,
+            uniqueKeyPolicy,
+            defaultTimeToLive,
+            compositeIndexes,
+            throughputProperties);
+
+    internal CosmosDbBuilder AddContainer(
+        Type documentType,
         string containerName,
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
@@ -27,59 +45,45 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
         ThroughputProperties? throughputProperties = null)
     {
-        RegisterContainer<T>(containerName);
+        RegisterContainer(documentType, containerName);
 
-        Services.AddSingleton(
-            sp =>
-            {
-                var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
-
-                var container = cosmosContainerFactory.CreateContainerIfNotExistsAsync(
-                                                          containerName,
-                                                          partitionKeyPath,
-                                                          uniqueKeyPolicy,
-                                                          defaultTimeToLive,
-                                                          compositeIndexes,
-                                                          throughputProperties)
-                                                      .GetAwaiter()
-                                                      .GetResult();
-
-                return new CosmosContainer<T>(container);
-            });
+        var cosmosContainer = typeof(CosmosContainer<>);
+        var registerCosmosContainer = typeof(CosmosDbBuilder).GetMethod(
+            nameof(RegisterCosmosContainer),
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        var genericMethod = registerCosmosContainer!.MakeGenericMethod(documentType);
+        genericMethod.Invoke(
+            this,
+            new object?[] {containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties});
 
         return this;
     }
 
-    public ICosmosDbBuilder AddChangeFeedProcessor<TDocument, TChangeFeedProcessorHandler>(
-        string processorName,
-        Func<IServiceProvider, Task<bool>>? enabledFunc = null,
-        int batchSize = 100,
-        DateTime? activationDate = null) where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TDocument>
-    {
-        return AddChangeFeedProcessor<TDocument, TDocument, TDocument, NoChangeFeedChangeConverter<TDocument>, TChangeFeedProcessorHandler>(
-            processorName,
-            enabledFunc,
-            batchSize,
-            activationDate);
-    }
-
-    public ICosmosDbBuilder AddChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
+    internal CosmosDbBuilder AddChangeFeedProcessor(
+        Type rawDocumentType,
+        Type documentType,
+        Type changeFeedHandlerDocumentType,
+        Type changeFeedChangeConverterType,
+        Type changeFeedProcessorHandlerType,
         string processorName,
         Func<IServiceProvider, Task<bool>>? enabledFunc = null,
         int batchSize = 100,
         DateTime? activationDate = null)
-        where TChangeFeedChangeConverter : class, IChangeFeedChangeConverter<TRawDocument, TDocument>
-        where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TDocument>
     {
-        return AddChangeFeedProcessor<TRawDocument, TDocument, TDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
-            processorName,
-            enabledFunc,
-            batchSize,
-            activationDate);
+        var addChangeFeedProcessor = typeof(CosmosDbBuilder).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                                                            .Single(m => m.Name == nameof(AddChangeFeedProcessorInternal));
+        var genericMethod = addChangeFeedProcessor.MakeGenericMethod(
+            rawDocumentType,
+            documentType,
+            changeFeedHandlerDocumentType,
+            changeFeedChangeConverterType,
+            changeFeedProcessorHandlerType);
+        genericMethod.Invoke(this, new object?[] {processorName, enabledFunc, batchSize, activationDate});
+        return this;
     }
 
-    public ICosmosDbBuilder
-        AddChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
+    private CosmosDbBuilder
+        AddChangeFeedProcessorInternal<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
             string processorName,
             Func<IServiceProvider, Task<bool>>? enabledFunc = null,
             int batchSize = 100,
@@ -129,9 +133,8 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
     }
 
 
-    private void RegisterContainer<T>(string containerName)
+    private void RegisterContainer(Type documentType, string containerName)
     {
-        var documentType = typeof(T);
         if (_containers.ContainsKey(documentType))
         {
             throw new InvalidOperationException($"Container for {documentType.Name} has already been registered");
@@ -148,5 +151,32 @@ internal class CosmosDbBuilder : ICosmosDbBuilder
         }
 
         _containers.Add(documentType, containerName);
+    }
+
+    private void RegisterCosmosContainer<T>(
+        string containerName,
+        string partitionKeyPath,
+        UniqueKeyPolicy? uniqueKeyPolicy,
+        int? defaultTimeToLive,
+        IEnumerable<Collection<CompositePath>>? compositeIndexes,
+        ThroughputProperties? throughputProperties)
+    {
+        Services.AddSingleton(
+            sp =>
+            {
+                var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
+
+                var container = cosmosContainerFactory.CreateContainerIfNotExistsAsync(
+                                                          containerName,
+                                                          partitionKeyPath,
+                                                          uniqueKeyPolicy,
+                                                          defaultTimeToLive,
+                                                          compositeIndexes,
+                                                          throughputProperties)
+                                                      .GetAwaiter()
+                                                      .GetResult();
+
+                return new CosmosContainer<T>(container);
+            });
     }
 }

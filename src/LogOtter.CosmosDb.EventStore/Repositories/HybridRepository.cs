@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -8,7 +9,7 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
     private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
+    private readonly IEventSourceMetadata _metadata;
     private readonly EventStoreOptions _options;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
 
@@ -18,7 +19,7 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         IFeedIteratorFactory feedIteratorFactory,
         IOptions<EventStoreOptions> options,
-        EventStoreMetadata<TBaseEvent, TSnapshot> metadata)
+        IEventSourceMetadata metadata)
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
@@ -75,7 +76,8 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
 
         try
         {
-            var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First());
+            var projection = _metadata.Projections.OfType<ProjectionMetadata<TBaseEvent, TSnapshot>>().Single();
+            var partitionKey = projection.SnapshotMetadata!.SnapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 

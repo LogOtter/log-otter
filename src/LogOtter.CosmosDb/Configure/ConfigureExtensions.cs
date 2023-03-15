@@ -7,7 +7,7 @@ namespace LogOtter.CosmosDb;
 
 public static class ConfigureExtensions
 {
-    public static ICosmosDbBuilder AddCosmosDb(this IServiceCollection serviceCollection, Action<CosmosDbOptions>? setupAction = null)
+    public static CosmosDbBuilder AddCosmosDb(this IServiceCollection serviceCollection, Action<CosmosDbOptions>? setupAction = null)
     {
         if (setupAction != null)
         {

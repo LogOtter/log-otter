@@ -11,14 +11,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj"/>
-        <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj"/>
+        <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj" />
+        <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions"/>
-        <PackageReference Include="Microsoft.AspNetCore.StaticFiles"/>
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded"/>
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
         <PackageReference Include="Microsoft.SourceLink.GitHub">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,14 +26,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="EventStreamUI/**/*"/>
+        <EmbeddedResource Include="EventStreamUI/**/*" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="EventStreamUI\wwwroot"/>
+        <Folder Include="EventStreamUI\wwwroot" />
     </ItemGroup>
 </Project>

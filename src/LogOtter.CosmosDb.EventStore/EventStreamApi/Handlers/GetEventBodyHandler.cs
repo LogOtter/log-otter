@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos;
