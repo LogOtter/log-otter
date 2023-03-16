@@ -23,6 +23,11 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Check formatting
+        run: |
+          dotnet tool restore
+          dotnet csharpier --check .
+
       - name: Restore dependencies
         run: dotnet restore
 
