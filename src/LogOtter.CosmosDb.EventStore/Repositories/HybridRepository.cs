@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -8,23 +9,23 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
     private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
     private readonly EventStoreOptions _options;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
+    private readonly Func<TBaseEvent,string> _snapshotPartitionKeyResolver;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
         EventRepository<TBaseEvent, TSnapshot> eventRepository,
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
+        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options,
-        EventStoreMetadata<TBaseEvent, TSnapshot> metadata)
+        IOptions<EventStoreOptions> options)
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
         _snapshotRepository = snapshotRepository;
+        _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();
         _feedIteratorFactory = feedIteratorFactory;
-        _metadata = metadata;
         _options = options.Value;
     }
 
@@ -75,7 +76,7 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
 
         try
         {
-            var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First());
+            var partitionKey = _snapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 

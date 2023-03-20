@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -13,11 +14,11 @@ internal class EventDescriptionGenerator
         _cache = new ConcurrentDictionary<Type, MethodInfo?>();
     }
 
-    public string GetDescription(CosmosDbStorageEvent cosmosDbStorageEvent, IEventStoreMetadata eventStoreMetadata)
+    public string GetDescription(CosmosDbStorageEvent cosmosDbStorageEvent, IEventSourceMetadata eventSourceMetadata)
     {
         var storageEvent = cosmosDbStorageEvent.ToStorageEvent(
-            eventStoreMetadata.SerializationTypeMap,
-            JsonSerializer.Create(eventStoreMetadata.JsonSerializerSettings));
+            eventSourceMetadata.SerializationTypeMap,
+            JsonSerializer.CreateDefault());
 
         var methodInfo = GetDescriptionMethod(storageEvent.EventBody);
         if (methodInfo == null)

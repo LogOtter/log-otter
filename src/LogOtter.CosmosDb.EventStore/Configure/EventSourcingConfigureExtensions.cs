@@ -1,15 +1,16 @@
 ﻿using LogOtter.CosmosDb.EventStore.EventStreamApi;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 using LogOtter.CosmosDb.EventStore.EventStreamUI;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public static class ConfigureExtensions
+public static class EventSourcingConfigureExtensions
 {
-    public static IEventStoreBuilder AddEventStore(this ICosmosDbBuilder cosmosDbBuilder, Action<EventStoreOptions>? setupAction = null)
+    public static EventSourcingBuilder AddEventSourcing(this CosmosDbBuilder cosmosDbBuilder, Action<EventStoreOptions>? setupAction = null)
     {
         var services = cosmosDbBuilder.Services;
 
@@ -20,6 +21,8 @@ public static class ConfigureExtensions
 
         services.AddSingleton<EventStoreCatalog>();
         services.AddSingleton<EventDescriptionGenerator>();
+        services.AddSingleton(sp => new SnapshotPartitionKeyResolverFactory(sp.GetServices<IEventSourceMetadata>()));
+
         services.AddSingleton<IHandler, GetEventStreamsHandler>();
         services.AddSingleton<IHandler, GetEventStreamHandler>();
         services.AddSingleton<IHandler, GetEventsHandler>();
@@ -29,7 +32,7 @@ public static class ConfigureExtensions
 
         services.AddSingleton<EventStreamsApiOptionsContainer>();
 
-        return new EventStoreBuilder(cosmosDbBuilder);
+        return new EventSourcingBuilder(cosmosDbBuilder);
     }
 
     public static IApplicationBuilder UseEventStreamsApi(this IApplicationBuilder app, Action<EventStreamsApiOptions>? setupAction = null)
