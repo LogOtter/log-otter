@@ -7,7 +7,8 @@ internal record EventSourceMetadata<TBaseEvent>(
     ImmutableList<Type> EventTypes,
     ISerializationTypeMap SerializationTypeMap,
     ImmutableList<IProjectionMetadata> Projections,
-    ImmutableList<ICatchUpSubscriptionMetadata> CatchUpSubscriptions) : IEventSourceMetadata
+    ImmutableList<ICatchUpSubscriptionMetadata> CatchUpSubscriptions
+) : IEventSourceMetadata
 {
     Type IEventSourceMetadata.EventBaseType => typeof(TBaseEvent);
 }

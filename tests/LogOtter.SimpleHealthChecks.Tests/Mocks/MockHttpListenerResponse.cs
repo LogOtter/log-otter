@@ -54,7 +54,8 @@ internal class MockHttpListenerResponse : IHttpListenerResponse
                     await Task.Delay(100, source.Token);
                 }
             },
-            source.Token);
+            source.Token
+        );
     }
 
     public byte[] GetOutputStreamBytes()

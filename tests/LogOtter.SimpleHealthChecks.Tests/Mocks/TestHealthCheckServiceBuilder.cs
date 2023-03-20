@@ -38,7 +38,12 @@ internal class TestHealthCheckServiceBuilder
 
     public MockHttpListenerResponse EnqueueGetRequest(string url)
     {
-        var request = new MockHttpListenerRequest { HttpMethod = "GET", Url = new Uri($"http://localhost:80{url}"), IsLocal = true };
+        var request = new MockHttpListenerRequest
+        {
+            HttpMethod = "GET",
+            Url = new Uri($"http://localhost:80{url}"),
+            IsLocal = true
+        };
 
         return EnqueueRequest(request);
     }
@@ -51,6 +56,7 @@ internal class TestHealthCheckServiceBuilder
             _httpListenerFactory,
             _endpoints.Maps,
             Options.Create(_options),
-            new NullLogger<SimpleHealthCheckService>());
+            new NullLogger<SimpleHealthCheckService>()
+        );
     }
 }

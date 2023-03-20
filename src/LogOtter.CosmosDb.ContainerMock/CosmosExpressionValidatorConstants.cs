@@ -69,7 +69,8 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
         {
             replacementExpression = Expression.Equal(
                 methodCallExpression.Arguments.SingleOrDefault() ?? Expression.Constant(null),
-                Expression.Constant(null));
+                Expression.Constant(null)
+            );
             return true;
         }
 
@@ -85,17 +86,21 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
     {
         BinaryExpression HandleNullableEnumEqualityInner(ExpressionType nodeType, Expression modelSide, Expression constantSide)
         {
-            if (modelSide.NodeType == ExpressionType.Convert &&
-                modelSide.Type == typeof(int?) &&
-                modelSide is UnaryExpression leftConvert &&
-                constantSide.NodeType == ExpressionType.Convert &&
-                constantSide is UnaryExpression rightConvert)
+            if (
+                modelSide.NodeType == ExpressionType.Convert
+                && modelSide.Type == typeof(int?)
+                && modelSide is UnaryExpression leftConvert
+                && constantSide.NodeType == ExpressionType.Convert
+                && constantSide is UnaryExpression rightConvert
+            )
             {
                 var enumType = Nullable.GetUnderlyingType(leftConvert.Operand.Type) ?? leftConvert.Operand.Type;
-                if (leftConvert.Operand.NodeType == ExpressionType.MemberAccess &&
-                    enumType.IsEnum &&
-                    leftConvert.Operand is MemberExpression leftMember &&
-                    leftMember.Member.Name == "Value")
+                if (
+                    leftConvert.Operand.NodeType == ExpressionType.MemberAccess
+                    && enumType.IsEnum
+                    && leftConvert.Operand is MemberExpression leftMember
+                    && leftMember.Member.Name == "Value"
+                )
                 {
                     var nullableEnumType = typeof(Nullable<>).MakeGenericType(enumType);
                     var convertedDefaultValueForNullableEnum = Expression.Convert(Expression.Constant(int.MinValue), nullableEnumType);
@@ -105,7 +110,8 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
 
                     var coalescedConstant = Expression.Convert(
                         Expression.Coalesce(rightConvert.Operand, convertedDefaultValueForNullableEnum),
-                        typeof(int?));
+                        typeof(int?)
+                    );
 
                     return nodeType == ExpressionType.Equal
                         ? Expression.Equal(coalescedConvert, coalescedConstant)
@@ -113,9 +119,7 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
                 }
             }
 
-            return nodeType == ExpressionType.Equal
-                ? Expression.Equal(modelSide, constantSide)
-                : Expression.NotEqual(modelSide, constantSide);
+            return nodeType == ExpressionType.Equal ? Expression.Equal(modelSide, constantSide) : Expression.NotEqual(modelSide, constantSide);
         }
 
         if (node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual)
@@ -147,7 +151,8 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
                 HttpStatusCode.BadRequest,
                 0,
                 string.Empty,
-                0);
+                0
+            );
         }
 
         var allowList = CosmosExpressionValidatorConstants.AllowList[node.Method.DeclaringType];
@@ -158,112 +163,124 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
                 HttpStatusCode.BadRequest,
                 0,
                 string.Empty,
-                0);
+                0
+            );
         }
     }
 }
 
 internal static class CosmosExpressionValidatorConstants
 {
-    public static readonly Dictionary<Type, List<string>> AllowList = new()
-    {
+    public static readonly Dictionary<Type, List<string>> AllowList =
+        new()
         {
-            typeof(string), new List<string>
             {
-                "Concat",
-                "Contains",
-                "Count",
-                "EndsWith",
-                "IndexOf",
-                "Replace",
-                "Reverse",
-                "StartsWith",
-                "SubString",
-                "ToLower",
-                "ToUpper",
-                "TrimEnd",
-                "TrimStart"
-            }
-        },
-        {
-            typeof(Math), new List<string>
+                typeof(string),
+                new List<string>
+                {
+                    "Concat",
+                    "Contains",
+                    "Count",
+                    "EndsWith",
+                    "IndexOf",
+                    "Replace",
+                    "Reverse",
+                    "StartsWith",
+                    "SubString",
+                    "ToLower",
+                    "ToUpper",
+                    "TrimEnd",
+                    "TrimStart"
+                }
+            },
             {
-                "Abs",
-                "Acos",
-                "Asin",
-                "Atan",
-                "Ceiling",
-                "Cos",
-                "Exp",
-                "Floor",
-                "Log",
-                "Log10",
-                "Pow",
-                "Round",
-                "Sign",
-                "Sin",
-                "Sqrt",
-                "Tan",
-                "Truncate"
-            }
-        },
-        { typeof(Array), new List<string> { "Concat", "Contains", "Count" } },
-        {
-            typeof(Queryable), new List<string>
+                typeof(Math),
+                new List<string>
+                {
+                    "Abs",
+                    "Acos",
+                    "Asin",
+                    "Atan",
+                    "Ceiling",
+                    "Cos",
+                    "Exp",
+                    "Floor",
+                    "Log",
+                    "Log10",
+                    "Pow",
+                    "Round",
+                    "Sign",
+                    "Sin",
+                    "Sqrt",
+                    "Tan",
+                    "Truncate"
+                }
+            },
             {
-                "Select",
-                "Contains",
-                "Where",
-                "Single",
-                "SelectMany",
-                "OrderBy",
-                "OrderByDescending",
-                "ThenBy",
-                "ThenByDescending",
-                "Count",
-                "Sum",
-                "Min",
-                "Max",
-                "Average",
-                "CountAsync",
-                "SumAsync",
-                "MinAsync",
-                "MaxAsync",
-                "AverageAsync",
-                "Skip",
-                "Take"
-            }
-        },
-        // Any is only on enumerable as it is supported as a sub-query but not as an aggregation
-        {
-            typeof(Enumerable), new List<string>
+                typeof(Array),
+                new List<string> { "Concat", "Contains", "Count" }
+            },
             {
-                "Select",
-                "Contains",
-                "Where",
-                "Single",
-                "SelectMany",
-                "OrderBy",
-                "OrderByDescending",
-                "ThenBy",
-                "ThenByDescending",
-                "Count",
-                "Sum",
-                "Min",
-                "Max",
-                "Average",
-                "CountAsync",
-                "SumAsync",
-                "MinAsync",
-                "MaxAsync",
-                "AverageAsync",
-                "Skip",
-                "Take",
-                "Any"
+                typeof(Queryable),
+                new List<string>
+                {
+                    "Select",
+                    "Contains",
+                    "Where",
+                    "Single",
+                    "SelectMany",
+                    "OrderBy",
+                    "OrderByDescending",
+                    "ThenBy",
+                    "ThenByDescending",
+                    "Count",
+                    "Sum",
+                    "Min",
+                    "Max",
+                    "Average",
+                    "CountAsync",
+                    "SumAsync",
+                    "MinAsync",
+                    "MaxAsync",
+                    "AverageAsync",
+                    "Skip",
+                    "Take"
+                }
+            },
+            // Any is only on enumerable as it is supported as a sub-query but not as an aggregation
+            {
+                typeof(Enumerable),
+                new List<string>
+                {
+                    "Select",
+                    "Contains",
+                    "Where",
+                    "Single",
+                    "SelectMany",
+                    "OrderBy",
+                    "OrderByDescending",
+                    "ThenBy",
+                    "ThenByDescending",
+                    "Count",
+                    "Sum",
+                    "Min",
+                    "Max",
+                    "Average",
+                    "CountAsync",
+                    "SumAsync",
+                    "MinAsync",
+                    "MaxAsync",
+                    "AverageAsync",
+                    "Skip",
+                    "Take",
+                    "Any"
+                }
+            },
+            {
+                typeof(object),
+                new List<string> { "ToString" }
             }
-        },
-        { typeof(object), new List<string> { "ToString" } }
-    };
+        };
 
     public static readonly MethodInfo IsNull = typeof(CosmosLinqExtensions).GetMethod(nameof(CosmosLinqExtensions.IsNull))!;
 

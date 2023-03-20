@@ -20,7 +20,8 @@ public class GetAllCustomersController : ControllerBase
 
     public GetAllCustomersController(
         SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository,
-        IOptions<PageOptions> pageOptions)
+        IOptions<PageOptions> pageOptions
+    )
     {
         _customerSnapshotRepository = customerSnapshotRepository;
         _pageOptions = pageOptions;
@@ -35,12 +36,14 @@ public class GetAllCustomersController : ControllerBase
 
         var totalCount = await _customerSnapshotRepository.CountSnapshotsAsync(
             CustomerReadModel.StaticPartitionKey,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
 
         var customerQuery = _customerSnapshotRepository.QuerySnapshots(
             CustomerReadModel.StaticPartitionKey,
             query => query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).Page(currentPage, pageSize),
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
 
         var customerReadModels = await customerQuery.ToListAsync();
 

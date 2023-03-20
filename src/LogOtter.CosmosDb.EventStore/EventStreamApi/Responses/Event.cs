@@ -21,7 +21,8 @@ internal class Event
         Guid eventId,
         int timeToLive,
         string description,
-        DateTimeOffset timestamp)
+        DateTimeOffset timestamp
+    )
     {
         Id = id;
         StreamId = streamId;

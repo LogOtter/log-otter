@@ -13,9 +13,24 @@ public class CreateItemTests
     {
         var containerMock = new ContainerMock();
 
-        var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1"))
-                                 .CreateItem(new TestClass { Id = "Foo1", PartitionKey = "Group1", MyValue = "Bar1" })
-                                 .CreateItem(new TestClass { Id = "Foo2", PartitionKey = "Group1", MyValue = "Bar2" });
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            );
 
         var response = await batch.ExecuteAsync();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -37,9 +52,24 @@ public class CreateItemTests
     {
         var containerMock = new ContainerMock();
 
-        var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1"))
-                                 .CreateItem(new TestClass { Id = "Foo1", PartitionKey = "Group1", MyValue = "Bar1" })
-                                 .CreateItem(new TestClass { Id = "Foo2", PartitionKey = "Group1", MyValue = "Bar2" });
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            );
 
         // Intentionally not calling: await batch.ExecuteAsync();
 
@@ -57,9 +87,24 @@ public class CreateItemTests
     {
         var containerMock = new ContainerMock();
 
-        var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1"))
-                                 .CreateItem(new TestClass { Id = "Foo1", PartitionKey = "Group1", MyValue = "Bar1" })
-                                 .CreateItem(new TestClass { Id = "INVALID#ID", PartitionKey = "Group1", MyValue = "Bar2" });
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "INVALID#ID",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            );
 
         var response = await batch.ExecuteAsync();
         response.StatusCode.Should().NotBe(HttpStatusCode.OK);

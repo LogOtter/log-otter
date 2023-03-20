@@ -28,7 +28,8 @@ public class ContainerMock : Container
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         string containerName = "TestContainer",
-        int defaultDocumentTimeToLive = -1)
+        int defaultDocumentTimeToLive = -1
+    )
     {
         _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive);
         _exceptionsToThrow = new ConcurrentQueue<(CosmosException, Func<InvocationInformation, bool> condition)>();
@@ -59,7 +60,8 @@ public class ContainerMock : Container
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(CreateItemStreamAsync)));
 
@@ -74,11 +76,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.AddItem(
-                json,
-                partitionKey,
-                requestOptions,
-                cancellationToken);
+            var response = await _containerData.AddItem(json, partitionKey, requestOptions, cancellationToken);
 
             return ToCosmosResponseMessage(response, streamPayload);
         }
@@ -92,7 +90,8 @@ public class ContainerMock : Container
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(CreateItemAsync)));
 
@@ -103,7 +102,8 @@ public class ContainerMock : Container
                 HttpStatusCode.BadRequest,
                 0,
                 string.Empty,
-                0);
+                0
+            );
         }
 
         var json = JsonConvert.SerializeObject(item);
@@ -115,16 +115,13 @@ public class ContainerMock : Container
                 HttpStatusCode.BadRequest,
                 400,
                 Guid.NewGuid().ToString(),
-                0);
+                0
+            );
         }
 
         try
         {
-            var response = await _containerData.AddItem(
-                json,
-                GetPartitionKey(json, partitionKey),
-                requestOptions,
-                cancellationToken);
+            var response = await _containerData.AddItem(json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
 
             return ToCosmosItemResponse<T>(response);
         }
@@ -143,7 +140,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(ReadItemStreamAsync)));
 
@@ -171,7 +169,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(ReadItemAsync)));
 
@@ -182,7 +181,8 @@ public class ContainerMock : Container
                 HttpStatusCode.BadRequest,
                 400,
                 Guid.NewGuid().ToString(),
-                0);
+                0
+            );
         }
 
         var item = _containerData.GetItem(id, partitionKey);
@@ -200,7 +200,8 @@ public class ContainerMock : Container
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(UpsertItemStreamAsync)));
 
@@ -210,11 +211,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.UpsertItem(
-                json,
-                partitionKey,
-                requestOptions,
-                cancellationToken);
+            var response = await _containerData.UpsertItem(json, partitionKey, requestOptions, cancellationToken);
             return ToCosmosResponseMessage(response, streamPayload);
         }
         catch (ContainerMockException ex)
@@ -227,7 +224,8 @@ public class ContainerMock : Container
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(UpsertItemAsync)));
 
@@ -235,11 +233,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.UpsertItem(
-                json,
-                GetPartitionKey(json, partitionKey),
-                requestOptions,
-                cancellationToken);
+            var response = await _containerData.UpsertItem(json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
             return ToCosmosItemResponse<T>(response);
         }
         catch (ContainerMockException ex)
@@ -253,7 +247,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(ReplaceItemAsync)));
 
@@ -261,12 +256,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.ReplaceItem(
-                id,
-                json,
-                GetPartitionKey(json, partitionKey),
-                requestOptions,
-                cancellationToken);
+            var response = await _containerData.ReplaceItem(id, json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
             return ToCosmosItemResponse<T>(response);
         }
         catch (ContainerMockException ex)
@@ -284,9 +274,7 @@ public class ContainerMock : Container
 
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(CountAsync)));
 
-        var partition = partitionKey == null
-            ? (PartitionKey?)null
-            : new PartitionKey(partitionKey);
+        var partition = partitionKey == null ? (PartitionKey?)null : new PartitionKey(partitionKey);
 
         var items = _containerData.GetItemsInPartition(partition);
 
@@ -300,7 +288,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(DeleteItemAsync)));
 
@@ -321,7 +310,8 @@ public class ContainerMock : Container
         bool allowSynchronousQueryExecution = false,
         string? continuationToken = null,
         QueryRequestOptions? requestOptions = null,
-        CosmosLinqSerializerOptions? linqSerializerOptions = null)
+        CosmosLinqSerializerOptions? linqSerializerOptions = null
+    )
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(GetItemLinqQueryable)));
 
@@ -341,9 +331,7 @@ public class ContainerMock : Container
 
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(QueryAsync)));
 
-        var partition = partitionKey == null
-            ? (PartitionKey?)null
-            : new PartitionKey(partitionKey);
+        var partition = partitionKey == null ? (PartitionKey?)null : new PartitionKey(partitionKey);
 
         var items = _containerData.GetItemsInPartition(partition);
 
@@ -402,9 +390,7 @@ public class ContainerMock : Container
 
     private static ResponseMessage ToCosmosResponseMessage(Response response, Stream streamPayload)
     {
-        var statusCode = response.IsUpdate
-            ? HttpStatusCode.OK
-            : HttpStatusCode.Created;
+        var statusCode = response.IsUpdate ? HttpStatusCode.OK : HttpStatusCode.Created;
 
         var responseMessage = new ResponseMessage(statusCode) { Content = streamPayload };
         responseMessage.Headers.Add("etag", response.Item.ETag);
@@ -416,10 +402,9 @@ public class ContainerMock : Container
     {
         return new MockItemResponse<T>(
             response.Item.Deserialize<T>(),
-            response.IsUpdate
-                ? HttpStatusCode.OK
-                : HttpStatusCode.Created,
-            response.Item.ETag);
+            response.IsUpdate ? HttpStatusCode.OK : HttpStatusCode.Created,
+            response.Item.ETag
+        );
     }
 
     private void ThrowNextExceptionIfPresent(InvocationInformation invocationInformation)
@@ -445,21 +430,24 @@ public class ContainerMock : Container
 
     public override ChangeFeedProcessorBuilder GetChangeFeedProcessorBuilderWithManualCheckpoint(
         string processorName,
-        ChangeFeedStreamHandlerWithManualCheckpoint onChangesDelegate)
+        ChangeFeedStreamHandlerWithManualCheckpoint onChangesDelegate
+    )
     {
         throw new NotImplementedException();
     }
 
     public override Task<ContainerResponse> ReadContainerAsync(
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
 
     public override Task<ResponseMessage> ReadContainerStreamAsync(
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -467,7 +455,8 @@ public class ContainerMock : Container
     public override Task<ContainerResponse> ReplaceContainerAsync(
         ContainerProperties containerProperties,
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -475,21 +464,24 @@ public class ContainerMock : Container
     public override Task<ResponseMessage> ReplaceContainerStreamAsync(
         ContainerProperties containerProperties,
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
 
     public override Task<ContainerResponse> DeleteContainerAsync(
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
 
     public override Task<ResponseMessage> DeleteContainerStreamAsync(
         ContainerRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -507,7 +499,8 @@ public class ContainerMock : Container
     public override Task<ThroughputResponse> ReplaceThroughputAsync(
         int throughput,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -515,7 +508,8 @@ public class ContainerMock : Container
     public override Task<ThroughputResponse> ReplaceThroughputAsync(
         ThroughputProperties throughputProperties,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -525,7 +519,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -533,7 +528,8 @@ public class ContainerMock : Container
     public override Task<ResponseMessage> ReadManyItemsStreamAsync(
         IReadOnlyList<(string id, PartitionKey partitionKey)> items,
         ReadManyRequestOptions? readManyRequestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -541,7 +537,8 @@ public class ContainerMock : Container
     public override Task<FeedResponse<T>> ReadManyItemsAsync<T>(
         IReadOnlyList<(string id, PartitionKey partitionKey)> items,
         ReadManyRequestOptions? readManyRequestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -551,7 +548,8 @@ public class ContainerMock : Container
         PartitionKey partitionKey,
         IReadOnlyList<PatchOperation> patchOperations,
         PatchItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -561,7 +559,8 @@ public class ContainerMock : Container
         PartitionKey partitionKey,
         IReadOnlyList<PatchOperation> patchOperations,
         PatchItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -570,7 +569,8 @@ public class ContainerMock : Container
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         throw new NotImplementedException();
     }
@@ -578,7 +578,8 @@ public class ContainerMock : Container
     public override FeedIterator GetItemQueryStreamIterator(
         QueryDefinition queryDefinition,
         string? continuationToken = null,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -586,7 +587,8 @@ public class ContainerMock : Container
     public override FeedIterator<T> GetItemQueryIterator<T>(
         QueryDefinition queryDefinition,
         string? continuationToken = null,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -594,7 +596,8 @@ public class ContainerMock : Container
     public override FeedIterator GetItemQueryStreamIterator(
         string? queryText = null,
         string? continuationToken = null,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -602,7 +605,8 @@ public class ContainerMock : Container
     public override FeedIterator<T> GetItemQueryIterator<T>(
         string? queryText = null,
         string? continuationToken = null,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -611,7 +615,8 @@ public class ContainerMock : Container
         FeedRange feedRange,
         QueryDefinition queryDefinition,
         string continuationToken,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -620,7 +625,8 @@ public class ContainerMock : Container
         FeedRange feedRange,
         QueryDefinition queryDefinition,
         string? continuationToken = null,
-        QueryRequestOptions? requestOptions = null)
+        QueryRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -633,7 +639,8 @@ public class ContainerMock : Container
     public override ChangeFeedProcessorBuilder GetChangeFeedEstimatorBuilder(
         string processorName,
         ChangesEstimationHandler estimationDelegate,
-        TimeSpan? estimationPeriod = null)
+        TimeSpan? estimationPeriod = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -651,7 +658,8 @@ public class ContainerMock : Container
     public override FeedIterator GetChangeFeedStreamIterator(
         ChangeFeedStartFrom changeFeedStartFrom,
         ChangeFeedMode changeFeedMode,
-        ChangeFeedRequestOptions? changeFeedRequestOptions = null)
+        ChangeFeedRequestOptions? changeFeedRequestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -659,7 +667,8 @@ public class ContainerMock : Container
     public override FeedIterator<T> GetChangeFeedIterator<T>(
         ChangeFeedStartFrom changeFeedStartFrom,
         ChangeFeedMode changeFeedMode,
-        ChangeFeedRequestOptions? changeFeedRequestOptions = null)
+        ChangeFeedRequestOptions? changeFeedRequestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -671,7 +680,8 @@ public class ContainerMock : Container
 
     public override ChangeFeedProcessorBuilder GetChangeFeedProcessorBuilderWithManualCheckpoint<T>(
         string processorName,
-        ChangeFeedHandlerWithManualCheckpoint<T> onChangesDelegate)
+        ChangeFeedHandlerWithManualCheckpoint<T> onChangesDelegate
+    )
     {
         throw new NotImplementedException();
     }

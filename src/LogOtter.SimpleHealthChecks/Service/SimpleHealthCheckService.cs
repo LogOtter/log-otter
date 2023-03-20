@@ -21,7 +21,8 @@ internal class SimpleHealthCheckService : BackgroundService
         IHttpListenerFactory httpListenerFactory,
         IEnumerable<SimpleHealthCheckOptionsMap> requestMaps,
         IOptions<SimpleHealthCheckHostOptions> options,
-        ILogger<SimpleHealthCheckService> logger)
+        ILogger<SimpleHealthCheckService> logger
+    )
     {
         _healthCheckService = healthCheckService;
         _requestMaps = requestMaps;
@@ -41,7 +42,8 @@ internal class SimpleHealthCheckService : BackgroundService
                 "SimpleHealthCheckService started on {Scheme}://{Host}:{Port}",
                 _hostOptions.Scheme,
                 _hostOptions.Hostname,
-                _hostOptions.Port);
+                _hostOptions.Port
+            );
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -72,7 +74,8 @@ internal class SimpleHealthCheckService : BackgroundService
         _logger.LogInformation(
             "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath}",
             request.RemoteEndPoint,
-            request.Url!.PathAndQuery);
+            request.Url!.PathAndQuery
+        );
 
         var response = context.Response;
 
@@ -92,9 +95,10 @@ internal class SimpleHealthCheckService : BackgroundService
             return;
         }
 
-        var options = _requestMaps.Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
-                                  .Select(map => map.Options)
-                                  .FirstOrDefault();
+        var options = _requestMaps
+            .Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
+            .Select(map => map.Options)
+            .FirstOrDefault();
 
         if (options == null)
         {
@@ -106,9 +110,10 @@ internal class SimpleHealthCheckService : BackgroundService
 
         if (!options.ResultStatusCodes.TryGetValue(result.Status, out var statusCode))
         {
-            var message = $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}." +
-                $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain" +
-                $"an entry for {result.Status}.";
+            var message =
+                $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}."
+                + $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain"
+                + $"an entry for {result.Status}.";
 
             throw new InvalidOperationException(message);
         }

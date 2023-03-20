@@ -14,16 +14,8 @@ public class GetAllCustomersTests
     public async Task Valid_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingCustomer(
-            CustomerUri.Parse("/customers/ExistingUser"),
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
-        await customerApi.Given.AnExistingCustomer(
-            CustomerUri.Parse("/customers/AnotherExistingUser"),
-            "bobetta@bobson.co.uk",
-            "Bobetta",
-            "Bobson");
+        await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
+        await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/AnotherExistingUser"), "bobetta@bobson.co.uk", "Bobetta", "Bobson");
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 

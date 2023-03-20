@@ -14,9 +14,10 @@ namespace LogOtter.HttpPatch;
 /// </summary>
 public record BasePatchRequest : IValidatableObject
 {
-    private static readonly
-        ConcurrentDictionary<Type, ImmutableList<(PropertyInfo PropertyInfo, ImmutableList<ValidationAttribute> ValidationAttributes)>>
-        PropertiesWithValidationAttributesCache = new();
+    private static readonly ConcurrentDictionary<
+        Type,
+        ImmutableList<(PropertyInfo PropertyInfo, ImmutableList<ValidationAttribute> ValidationAttributes)>
+    > PropertiesWithValidationAttributesCache = new();
 
     private static readonly ConcurrentDictionary<Type, ImmutableList<ParameterInfo>> ConstructorParamsCache = new();
 
@@ -36,11 +37,7 @@ public record BasePatchRequest : IValidatableObject
 
             var customValidationContext = new ValidationContext(value, validationContext.Items) { DisplayName = property.PropertyInfo.Name };
 
-            Validator.TryValidateValue(
-                value.Value!,
-                customValidationContext,
-                validationResults,
-                property.ValidationAttributes);
+            Validator.TryValidateValue(value.Value!, customValidationContext, validationResults, property.ValidationAttributes);
         }
 
         return validationResults;
@@ -50,8 +47,10 @@ public record BasePatchRequest : IValidatableObject
     ///     Gets all the properties on a type with any validation attributes either directly attached to the property or on the constructor with a parameter
     ///     of the same name
     /// </summary>
-    private static ImmutableList<(PropertyInfo PropertyInfo, ImmutableList<ValidationAttribute> ValidationAttributes)>
-        GetPropertiesWithValidationAttributes(Type type)
+    private static ImmutableList<(
+        PropertyInfo PropertyInfo,
+        ImmutableList<ValidationAttribute> ValidationAttributes
+    )> GetPropertiesWithValidationAttributes(Type type)
     {
         ImmutableList<ParameterInfo> GetConstructorParams(Type t)
         {
@@ -65,8 +64,10 @@ public record BasePatchRequest : IValidatableObject
             return constructors.Single().GetParameters().ToImmutableList();
         }
 
-        ImmutableList<(PropertyInfo PropertyInfo, ImmutableList<ValidationAttribute> ValidationAttributes)>
-            GetValidationAttributesFromPropertiesOrConstructorParams(Type t)
+        ImmutableList<(
+            PropertyInfo PropertyInfo,
+            ImmutableList<ValidationAttribute> ValidationAttributes
+        )> GetValidationAttributesFromPropertiesOrConstructorParams(Type t)
         {
             var constructorParameters = ConstructorParamsCache.GetOrAdd(type, GetConstructorParams);
             var properties = new List<(PropertyInfo PropertyInfo, ImmutableList<ValidationAttribute> ValidationAttributes)>();
@@ -78,16 +79,18 @@ public record BasePatchRequest : IValidatableObject
                     continue;
                 }
 
-                var validationAttributesFromProperty =
-                    property.GetCustomAttributes<OptionallyPatchedValidationAttribute>().Select(ve => ve.ValidationAttribute);
+                var validationAttributesFromProperty = property
+                    .GetCustomAttributes<OptionallyPatchedValidationAttribute>()
+                    .Select(ve => ve.ValidationAttribute);
 
                 var validationAttributesFromConstructor = constructorParameters
-                                                          .SingleOrDefault(cp => string.Equals(cp.Name, property.Name, StringComparison.Ordinal))
-                                                          ?.GetCustomAttributes<OptionallyPatchedValidationAttribute>()
-                                                          .Select(ve => ve.ValidationAttribute);
+                    .SingleOrDefault(cp => string.Equals(cp.Name, property.Name, StringComparison.Ordinal))
+                    ?.GetCustomAttributes<OptionallyPatchedValidationAttribute>()
+                    .Select(ve => ve.ValidationAttribute);
 
-                var validationAttributes =
-                    validationAttributesFromProperty.Union(validationAttributesFromConstructor ?? Enumerable.Empty<ValidationAttribute>());
+                var validationAttributes = validationAttributesFromProperty.Union(
+                    validationAttributesFromConstructor ?? Enumerable.Empty<ValidationAttribute>()
+                );
 
                 properties.Add((property, validationAttributes.ToImmutableList()));
             }

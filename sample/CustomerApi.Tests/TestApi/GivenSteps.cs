@@ -27,13 +27,10 @@ public class GivenSteps
         CustomerUri customerUri,
         Discretionary<string> emailAddress = default,
         Discretionary<string> firstName = default,
-        Discretionary<string> lastName = default)
+        Discretionary<string> lastName = default
+    )
     {
-        return await _customerStore.GivenAnExistingCustomer(
-            customerUri,
-            emailAddress,
-            firstName,
-            lastName);
+        return await _customerStore.GivenAnExistingCustomer(customerUri, emailAddress, firstName, lastName);
     }
 
     public async Task TheCustomerIsDeleted(CustomerUri customerUri)

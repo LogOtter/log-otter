@@ -23,7 +23,8 @@ internal class GetEventHandler : BaseHandler
         EventDescriptionGenerator eventDescriptionGenerator,
         IFeedIteratorFactory feedIteratorFactory,
         ICosmosContainerFactory containerFactory,
-        IOptions<EventStoreOptions> eventStoreOptions)
+        IOptions<EventStoreOptions> eventStoreOptions
+    )
     {
         _eventStoreCatalog = eventStoreCatalog;
         _eventDescriptionGenerator = eventDescriptionGenerator;
@@ -56,8 +57,9 @@ internal class GetEventHandler : BaseHandler
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container.GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
-                             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
+        var query = container
+            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
+            .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
         var storageEvent = (CosmosDbStorageEventWithTimestamp?)null;
 
@@ -88,7 +90,8 @@ internal class GetEventHandler : BaseHandler
             storageEvent.EventId,
             storageEvent.TimeToLive,
             _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
-            storageEvent.Timestamp);
+            storageEvent.Timestamp
+        );
 
         await WriteJson(httpContext.Response, @event);
     }

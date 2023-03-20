@@ -14,7 +14,8 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
         ContainerMock.ContainerMock container,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> changeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        bool enabled)
+        bool enabled
+    )
     {
         container.DataChanged += OnChanges;
         _changeConverter = changeConverter;

@@ -16,9 +16,7 @@ internal class EventDescriptionGenerator
 
     public string GetDescription(CosmosDbStorageEvent cosmosDbStorageEvent, IEventSourceMetadata eventSourceMetadata)
     {
-        var storageEvent = cosmosDbStorageEvent.ToStorageEvent(
-            eventSourceMetadata.SerializationTypeMap,
-            JsonSerializer.CreateDefault());
+        var storageEvent = cosmosDbStorageEvent.ToStorageEvent(eventSourceMetadata.SerializationTypeMap, JsonSerializer.CreateDefault());
 
         var methodInfo = GetDescriptionMethod(storageEvent.EventBody);
         if (methodInfo == null)
@@ -43,7 +41,9 @@ internal class EventDescriptionGenerator
 
         return _cache.GetOrAdd(
             eventType,
-            type => type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
-                        .SingleOrDefault(m => m.GetCustomAttribute<EventDescriptionAttribute>() != null));
+            type =>
+                type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                    .SingleOrDefault(m => m.GetCustomAttribute<EventDescriptionAttribute>() != null)
+        );
     }
 }

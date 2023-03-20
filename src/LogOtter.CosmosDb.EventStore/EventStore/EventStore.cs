@@ -21,11 +21,7 @@ public class EventStore
 
     public Task AppendToStream(string streamId, int expectedVersion, params EventData[] events)
     {
-        return AppendToStream(
-            streamId,
-            expectedVersion,
-            default,
-            events);
+        return AppendToStream(streamId, expectedVersion, default, events);
     }
 
     public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData[] events)
@@ -58,13 +54,10 @@ public class EventStore
             }
 
             // ReSharper disable once UnusedVariable
-            var batchResponse = firstEventNumber == 1
-                ? await CreateEvents(batch, cancellationToken)
-                : await CreateEventsOnlyIfPreviousEventExists(
-                    batch,
-                    streamId,
-                    firstEventNumber - 1,
-                    cancellationToken);
+            var batchResponse =
+                firstEventNumber == 1
+                    ? await CreateEvents(batch, cancellationToken)
+                    : await CreateEventsOnlyIfPreviousEventExists(batch, streamId, firstEventNumber - 1, cancellationToken);
 
             //_loggingOptions.OnSuccess(ResponseInformation.FromWriteResponse(nameof(AppendToStream), batchResponse));
         }
@@ -76,29 +69,25 @@ public class EventStore
 
     public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(string streamId, CancellationToken cancellationToken = default)
     {
-        return await ReadStreamForwards(
-            streamId,
-            1,
-            int.MaxValue,
-            cancellationToken);
+        return await ReadStreamForwards(streamId, 1, int.MaxValue, cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(
         string streamId,
         int startPosition,
         int numberOfEventsToRead,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var endPosition = numberOfEventsToRead == int.MaxValue
-            ? int.MaxValue
-            : startPosition + numberOfEventsToRead - 1;
+        var endPosition = numberOfEventsToRead == int.MaxValue ? int.MaxValue : startPosition + numberOfEventsToRead - 1;
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = _container.GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
-                              .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
-                              .OrderBy(e => e.EventNumber)
-                              .Take(numberOfEventsToRead);
+        var query = _container
+            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
+            .OrderBy(e => e.EventNumber)
+            .Take(numberOfEventsToRead);
 
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
 
@@ -129,12 +118,7 @@ public class EventStore
 
         if (!batchResponse.IsSuccessStatusCode)
         {
-            throw new CosmosException(
-                batchResponse.ErrorMessage,
-                batchResponse.StatusCode,
-                0,
-                batchResponse.ActivityId,
-                batchResponse.RequestCharge);
+            throw new CosmosException(batchResponse.ErrorMessage, batchResponse.StatusCode, 0, batchResponse.ActivityId, batchResponse.RequestCharge);
         }
 
         return batchResponse;
@@ -144,7 +128,8 @@ public class EventStore
         TransactionalBatch batch,
         string streamId,
         int previousEventNumber,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var requestOptions = new TransactionalBatchItemRequestOptions { EnableContentResponseOnWrite = true };
 
@@ -156,18 +141,22 @@ public class EventStore
         {
             throw batchResponse.StatusCode switch
             {
-                HttpStatusCode.NotFound => new CosmosException(
-                    $"Previous Event {previousEventNumber} not found for stream '{streamId}'",
-                    HttpStatusCode.Conflict,
-                    0,
-                    batchResponse.ActivityId,
-                    batchResponse.RequestCharge),
-                _ => new CosmosException(
-                    batchResponse.ErrorMessage,
-                    batchResponse.StatusCode,
-                    0,
-                    batchResponse.ActivityId,
-                    batchResponse.RequestCharge)
+                HttpStatusCode.NotFound
+                    => new CosmosException(
+                        $"Previous Event {previousEventNumber} not found for stream '{streamId}'",
+                        HttpStatusCode.Conflict,
+                        0,
+                        batchResponse.ActivityId,
+                        batchResponse.RequestCharge
+                    ),
+                _
+                    => new CosmosException(
+                        batchResponse.ErrorMessage,
+                        batchResponse.StatusCode,
+                        0,
+                        batchResponse.ActivityId,
+                        batchResponse.RequestCharge
+                    )
             };
         }
 

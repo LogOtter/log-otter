@@ -14,27 +14,23 @@ public class ContainerMockException : Exception
         StatusCode = statusCode;
     }
 
-    public ContainerMockException(HttpStatusCode statusCode, string message) : base(message)
+    public ContainerMockException(HttpStatusCode statusCode, string message)
+        : base(message)
     {
         StatusCode = statusCode;
     }
 
-    public ContainerMockException(HttpStatusCode statusCode, string message, Exception inner) : base(message, inner)
+    public ContainerMockException(HttpStatusCode statusCode, string message, Exception inner)
+        : base(message, inner)
     {
         StatusCode = statusCode;
     }
 
-    protected ContainerMockException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
+    protected ContainerMockException(SerializationInfo info, StreamingContext context)
+        : base(info, context) { }
 
     public CosmosException ToCosmosException()
     {
-        return new CosmosException(
-            Message,
-            StatusCode,
-            0,
-            string.Empty,
-            0);
+        return new CosmosException(Message, StatusCode, 0, string.Empty, 0);
     }
 }

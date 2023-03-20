@@ -16,36 +16,34 @@ public static class ConfigureExtensions
 
         serviceCollection.AddSingleton<IValidateOptions<CosmosDbOptions>, CosmosDbOptionsValidator>();
 
-        serviceCollection.AddSingleton(
-            sp =>
+        serviceCollection.AddSingleton(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
+
+            if (options.ManagedIdentityOptions == null)
             {
-                var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
+                return new CosmosClient(options.ConnectionString, options.ClientOptions);
+            }
 
-                if (options.ManagedIdentityOptions == null)
-                {
-                    return new CosmosClient(options.ConnectionString, options.ClientOptions);
-                }
-
-                var credentialOptions = new DefaultAzureCredentialOptions();
-                if (!string.IsNullOrWhiteSpace(options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId))
-                {
-                    credentialOptions.ManagedIdentityClientId = options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId;
-                }
-
-                var tokenCredential = new DefaultAzureCredential(credentialOptions);
-                return new CosmosClient(options.ManagedIdentityOptions.AccountEndpoint, tokenCredential, options.ClientOptions);
-            });
-
-        serviceCollection.AddSingleton(
-            sp =>
+            var credentialOptions = new DefaultAzureCredentialOptions();
+            if (!string.IsNullOrWhiteSpace(options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId))
             {
-                var cosmosDbOptions = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-                var client = sp.GetRequiredService<CosmosClient>();
+                credentialOptions.ManagedIdentityClientId = options.ManagedIdentityOptions.UserAssignedManagedIdentityClientId;
+            }
 
-                var response = client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId).GetAwaiter().GetResult();
+            var tokenCredential = new DefaultAzureCredential(credentialOptions);
+            return new CosmosClient(options.ManagedIdentityOptions.AccountEndpoint, tokenCredential, options.ClientOptions);
+        });
 
-                return response.Database;
-            });
+        serviceCollection.AddSingleton(sp =>
+        {
+            var cosmosDbOptions = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
+            var client = sp.GetRequiredService<CosmosClient>();
+
+            var response = client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId).GetAwaiter().GetResult();
+
+            return response.Database;
+        });
 
         serviceCollection.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
         serviceCollection.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();

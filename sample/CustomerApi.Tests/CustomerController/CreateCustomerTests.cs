@@ -40,7 +40,8 @@ public class CreateCustomerTests
 
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson");
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+        );
     }
 
     [Theory]

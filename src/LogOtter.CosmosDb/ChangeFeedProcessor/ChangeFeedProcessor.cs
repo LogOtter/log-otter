@@ -30,7 +30,8 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
         ChangeFeedProcessorOptions options,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger)
+        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger
+    )
     {
         _name = name;
         _documentContainer = documentContainer;
@@ -54,18 +55,20 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
             _logger.LogInformation(
                 "Not starting change feed processor {Name} (Instance: {InstanceName}) because it is disabled",
                 _name,
-                _instanceName);
+                _instanceName
+            );
             return;
         }
 
-        _changeFeedProcessor = _documentContainer.GetChangeFeedProcessorBuilder<TRawDocument>(_name, OnChanges)
-                                                 .WithErrorNotification(OnError)
-                                                 .WithInstanceName(_instanceName)
-                                                 .WithLeaseContainer(_leaseContainer)
-                                                 .WithLeaseConfiguration(TimeSpan.FromMinutes(1))
-                                                 .WithStartTime(_activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
-                                                 .WithMaxItems(_batchSize)
-                                                 .Build();
+        _changeFeedProcessor = _documentContainer
+            .GetChangeFeedProcessorBuilder<TRawDocument>(_name, OnChanges)
+            .WithErrorNotification(OnError)
+            .WithInstanceName(_instanceName)
+            .WithLeaseContainer(_leaseContainer)
+            .WithLeaseConfiguration(TimeSpan.FromMinutes(1))
+            .WithStartTime(_activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
+            .WithMaxItems(_batchSize)
+            .Build();
 
         await _changeFeedProcessor.StartAsync();
 
@@ -84,11 +87,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
 
     private Task OnError(string leaseToken, Exception exception)
     {
-        _logger.LogError(
-            exception,
-            "Error for change feed processor {Name} (Instance: {InstanceName})",
-            _name,
-            _instanceName);
+        _logger.LogError(exception, "Error for change feed processor {Name} (Instance: {InstanceName})", _name, _instanceName);
 
         return Task.CompletedTask;
     }
@@ -105,7 +104,8 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
                 "Processed batch of {BatchSize} changes for change feed processor {Name} (Instance: {InstanceName})",
                 changes.Count,
                 _name,
-                _instanceName);
+                _instanceName
+            );
 
             if (changes.Count == _batchSize)
             {

@@ -23,14 +23,11 @@ internal class EventStreamsUIMiddleware
         IWebHostEnvironment hostEnvironment,
         ILoggerFactory loggerFactory,
         EventStreamsUIOptions options,
-        EventStreamsApiOptionsContainer apiOptionsContainer)
+        EventStreamsApiOptionsContainer apiOptionsContainer
+    )
     {
         _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
-        _staticFileMiddleware = CreateStaticFileMiddleware(
-            next,
-            hostEnvironment,
-            loggerFactory,
-            options);
+        _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
         _apiOptions = apiOptionsContainer.Options;
     }
 
@@ -67,20 +64,15 @@ internal class EventStreamsUIMiddleware
         RequestDelegate next,
         IWebHostEnvironment hostingEnv,
         ILoggerFactory loggerFactory,
-        EventStreamsUIOptions options)
+        EventStreamsUIOptions options
+    )
     {
         var staticFileOptions = new StaticFileOptions
         {
-            RequestPath = string.IsNullOrEmpty(options.RoutePrefix)
-                ? string.Empty
-                : $"/{options.RoutePrefix.Trim('/')}",
+            RequestPath = string.IsNullOrEmpty(options.RoutePrefix) ? string.Empty : $"/{options.RoutePrefix.Trim('/')}",
             FileProvider = new EmbeddedFileProvider(typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace)
         };
 
-        return new StaticFileMiddleware(
-            next,
-            hostingEnv,
-            Options.Create(staticFileOptions),
-            loggerFactory);
+        return new StaticFileMiddleware(next, hostingEnv, Options.Create(staticFileOptions), loggerFactory);
     }
 }

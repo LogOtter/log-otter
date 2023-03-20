@@ -12,9 +12,10 @@ public class ResolveAllControllersHealthCheck : IHealthCheck
     {
         _serviceProvider = serviceProvider;
 
-        _controllerTypes = typeof(ResolveAllControllersHealthCheck).Assembly.GetTypes()
-                                                                   .Where(t => typeof(ControllerBase).IsAssignableFrom(t))
-                                                                   .ToList();
+        _controllerTypes = typeof(ResolveAllControllersHealthCheck).Assembly
+            .GetTypes()
+            .Where(t => typeof(ControllerBase).IsAssignableFrom(t))
+            .ToList();
     }
 
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -39,14 +40,16 @@ public class ResolveAllControllersHealthCheck : IHealthCheck
         {
             var failureMessage = string.Join(
                 Environment.NewLine,
-                failures.Select(controller => $"Failed to resolve {controller.Type.Name}: {controller.ExceptionMessage}"));
+                failures.Select(controller => $"Failed to resolve {controller.Type.Name}: {controller.ExceptionMessage}")
+            );
 
             return Task.FromResult(new HealthCheckResult(HealthStatus.Unhealthy, failureMessage));
         }
 
         var successMessage = string.Join(
             Environment.NewLine,
-            successes.Select(controller => $"Resolved {controller.Type} with parameters: {string.Join(", ", controller.ParametersResolved)}"));
+            successes.Select(controller => $"Resolved {controller.Type} with parameters: {string.Join(", ", controller.ParametersResolved)}")
+        );
 
         return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy, successMessage));
     }

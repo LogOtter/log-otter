@@ -44,11 +44,7 @@ public class DeleteCustomerController : ControllerBase
 
         var customerDeleted = new CustomerDeleted(customerUri);
 
-        await _customerEventRepository.ApplyEvents(
-            customerUri.Uri,
-            customerReadModel.Revision,
-            cancellationToken,
-            customerDeleted);
+        await _customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, cancellationToken, customerDeleted);
 
         return NoContent();
     }

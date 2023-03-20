@@ -20,7 +20,8 @@ internal class GetEventBodyHandler : BaseHandler
         EventStoreCatalog eventStoreCatalog,
         IFeedIteratorFactory feedIteratorFactory,
         ICosmosContainerFactory containerFactory,
-        IOptions<EventStoreOptions> eventStoreOptions)
+        IOptions<EventStoreOptions> eventStoreOptions
+    )
     {
         _eventStoreCatalog = eventStoreCatalog;
         _feedIteratorFactory = feedIteratorFactory;
@@ -52,8 +53,9 @@ internal class GetEventBodyHandler : BaseHandler
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container.GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
-                             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
+        var query = container
+            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
         var storageEvent = (CosmosDbStorageEvent?)null;
 
@@ -74,7 +76,6 @@ internal class GetEventBodyHandler : BaseHandler
             httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
             return;
         }
-
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
         await httpContext.Response.WriteAsync(storageEvent.Body.ToString());

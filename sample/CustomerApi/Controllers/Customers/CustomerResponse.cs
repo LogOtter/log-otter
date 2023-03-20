@@ -21,7 +21,5 @@ public class CustomerResponse
         CreatedOn = customer.CreatedOn;
     }
 
-    public CustomerResponse()
-    {
-    }
+    public CustomerResponse() { }
 }

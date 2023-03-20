@@ -10,11 +10,6 @@ public class ConsumerStore
     {
         var claims = roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
 
-        return new JwtSecurityToken(
-            "TestGeneratedToken",
-            audience,
-            claims,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddDays(1));
+        return new JwtSecurityToken("TestGeneratedToken", audience, claims, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
     }
 }

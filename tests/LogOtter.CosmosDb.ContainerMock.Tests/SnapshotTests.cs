@@ -14,7 +14,12 @@ public class SnapshotTests
 
         var snapshot = container.CreateSnapshot();
 
-        var item = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
+        var item = new TestClass
+        {
+            Id = "Foo",
+            PartitionKey = "Bar",
+            MyValue = "FooBar"
+        };
         await container.CreateItemAsync(item, new PartitionKey("Bar"));
 
         container.RestoreSnapshot(snapshot);
@@ -28,12 +33,22 @@ public class SnapshotTests
     {
         var container = new ContainerMock();
 
-        var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
+        var item1 = new TestClass
+        {
+            Id = "Foo",
+            PartitionKey = "Bar",
+            MyValue = "FooBar"
+        };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
 
         var snapshot = container.CreateSnapshot();
 
-        var item2 = new TestClass { Id = "Foo2", PartitionKey = "Bar", MyValue = "FooBar2" };
+        var item2 = new TestClass
+        {
+            Id = "Foo2",
+            PartitionKey = "Bar",
+            MyValue = "FooBar2"
+        };
         await container.CreateItemAsync(item2, new PartitionKey("Bar"));
 
         container.RestoreSnapshot(snapshot);
@@ -47,7 +62,12 @@ public class SnapshotTests
     {
         var container = new ContainerMock();
 
-        var item1 = new TestClass { Id = "Foo", PartitionKey = "Bar", MyValue = "FooBar" };
+        var item1 = new TestClass
+        {
+            Id = "Foo",
+            PartitionKey = "Bar",
+            MyValue = "FooBar"
+        };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
 
         var snapshot = container.CreateSnapshot();

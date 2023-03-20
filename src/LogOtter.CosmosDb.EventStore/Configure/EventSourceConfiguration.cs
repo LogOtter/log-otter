@@ -21,7 +21,8 @@ public class EventSourceConfiguration<TBaseEvent>
         _catchUpSubscriptions = new Dictionary<Type, ICatchUpSubscriptionMetadata>();
     }
 
-    public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>() where TProjection : class
+    public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>()
+        where TProjection : class
     {
         var projectionConfiguration = new ProjectionMetadata<TBaseEvent, TProjection>();
         _projections.Add(typeof(TProjection), projectionConfiguration);

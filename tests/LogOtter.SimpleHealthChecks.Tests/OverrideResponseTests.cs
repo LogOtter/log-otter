@@ -32,21 +32,21 @@ public class OverrideResponseTests
 
                     await res.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(json));
                 }
-            });
+            }
+        );
 
         var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
 
-                response.Headers["X-PoweredBy"].Should().Be("LogOtter");
+            response.Headers["X-PoweredBy"].Should().Be("LogOtter");
 
-                var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-                responseBody.Should().Be(expectedBody);
-            });
+            var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
+            responseBody.Should().Be(expectedBody);
+        });
     }
 }

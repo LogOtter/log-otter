@@ -52,7 +52,8 @@ public class IntegrationTestsFixture : IAsyncLifetime
                     ConnectionMode = ConnectionMode.Gateway,
                     HttpClientFactory = () => _container.HttpClient,
                     RequestTimeout = TimeSpan.FromMinutes(3)
-                });
+                }
+            );
 
         return new TestCosmos(cosmosClient);
     }

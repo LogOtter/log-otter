@@ -32,9 +32,23 @@ public sealed class CosmosPartitionTests : IAsyncLifetime, IDisposable
     [Fact]
     public async Task GivenDataInTwoPartitionsWhenReadingAPartitionDoesNotRetrieveTheOther()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", PartitionKey = "partition1" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                PartitionKey = "partition1"
+            }
+        );
 
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD2", Name = "Bobetta Bobertson", PartitionKey = "partition2" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD2",
+                Name = "Bobetta Bobertson",
+                PartitionKey = "partition2"
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition1", q => q);
 
@@ -47,9 +61,23 @@ public sealed class CosmosPartitionTests : IAsyncLifetime, IDisposable
     [Fact]
     public async Task GivenDataInTwoPartitionsWhenReadingAPartitionDoesNotCountTheOther()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", PartitionKey = "partition1" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                PartitionKey = "partition1"
+            }
+        );
 
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD2", Name = "Bobetta Bobertson", PartitionKey = "partition2" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD2",
+                Name = "Bobetta Bobertson",
+                PartitionKey = "partition2"
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenCountingAQuery<TestModel>("partition1", q => q);
 
@@ -60,7 +88,15 @@ public sealed class CosmosPartitionTests : IAsyncLifetime, IDisposable
     [Fact]
     public async Task GivenACrossPartitionQueryUsingEqualsWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false, PartitionKey = "partition" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false,
+                PartitionKey = "partition"
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(null, q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
@@ -72,7 +108,15 @@ public sealed class CosmosPartitionTests : IAsyncLifetime, IDisposable
     [Fact]
     public async Task GivenACrossPartitionCountUsingEqualsWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false, PartitionKey = "partition" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false,
+                PartitionKey = "partition"
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenCountingAQuery<TestModel>(null, q => q.Where(tm => tm.Name == "Bob Bobertson"));
 

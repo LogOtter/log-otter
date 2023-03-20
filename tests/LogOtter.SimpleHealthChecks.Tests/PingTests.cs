@@ -17,14 +17,13 @@ public class PingTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.ContentType.Should().Be("text/plain");
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.ContentType.Should().Be("text/plain");
 
-                var body = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-                body.Should().Be("OK");
-            });
+            var body = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
+            body.Should().Be("OK");
+        });
     }
 }

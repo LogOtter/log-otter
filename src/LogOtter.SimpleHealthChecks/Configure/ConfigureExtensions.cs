@@ -7,7 +7,8 @@ public static class ConfigureExtensions
 {
     public static ISimpleHealthChecksBuilder AddSimpleHealthChecks(
         this IServiceCollection services,
-        Action<SimpleHealthCheckHostOptions>? configure = null)
+        Action<SimpleHealthCheckHostOptions>? configure = null
+    )
     {
         if (configure != null)
         {

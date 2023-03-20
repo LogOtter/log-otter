@@ -43,11 +43,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et1",
                 NullableEnum = TestEnum.Value1
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et1",
-            q => q.Where(tm => tm.NullableEnum.Value != null && tm.NullableEnum == TestEnum.Value1));
+            q => q.Where(tm => tm.NullableEnum.Value != null && tm.NullableEnum == TestEnum.Value1)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -64,11 +66,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Name = "Bob Bobertson",
                 PartitionKey = "partition-et2",
                 OnlyChild = new SubModel { NullableEnum = TestEnum.Value1 }
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et2",
-            q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum.Value != null && tm.OnlyChild.NullableEnum == TestEnum.Value1));
+            q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum.Value != null && tm.OnlyChild.NullableEnum == TestEnum.Value1)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -86,11 +90,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et3",
                 NullableEnum = TestEnum.Value1
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et3",
-            q => q.Where(tm => null != tm.NullableEnum.Value && TestEnum.Value1 == tm.NullableEnum));
+            q => q.Where(tm => null != tm.NullableEnum.Value && TestEnum.Value1 == tm.NullableEnum)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -108,11 +114,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et4",
                 NullableEnum = null
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et4",
-            q => q.Where(tm => tm.NullableEnum.Value == null));
+            q => q.Where(tm => tm.NullableEnum.Value == null)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -130,11 +138,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et5",
                 OnlyChild = new SubModel { NullableEnum = null }
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et5",
-            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value == null));
+            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value == null)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -152,11 +162,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et6",
                 OnlyChild = new SubModel { NullableEnum = null }
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et6",
-            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value != null));
+            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value != null)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(0);
@@ -174,11 +186,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et7",
                 NullableEnum = null
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et7",
-            q => q.Where(tm => null == tm.NullableEnum.Value));
+            q => q.Where(tm => null == tm.NullableEnum.Value)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -196,11 +210,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et8",
                 NullableEnumNotString = TestEnum.Value1
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et8",
-            q => q.Where(tm => tm.NullableEnumNotString.Value != null && tm.NullableEnumNotString == TestEnum.Value1));
+            q => q.Where(tm => tm.NullableEnumNotString.Value != null && tm.NullableEnumNotString == TestEnum.Value1)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);
@@ -218,11 +234,13 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
                 Value = false,
                 PartitionKey = "partition-et9",
                 NullableEnumNotString = null
-            });
+            }
+        );
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et9",
-            q => q.Where(tm => tm.NullableEnumNotString.Value == null));
+            q => q.Where(tm => tm.NullableEnumNotString.Value == null)
+        );
 
         realResults.Should().NotBeNull();
         realResults!.Count.Should().Be(1);

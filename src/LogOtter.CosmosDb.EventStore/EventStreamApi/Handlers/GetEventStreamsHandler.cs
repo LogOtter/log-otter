@@ -24,14 +24,16 @@ internal class GetEventStreamsHandler : BaseHandler
         var page = httpContext.Request.GetPage();
 
         var response = new EventStreamsResponse(
-            definitions.Skip((page - 1) * EventStreamsApiMiddleware.PageSize).Take(EventStreamsApiMiddleware.PageSize).ToList());
+            definitions.Skip((page - 1) * EventStreamsApiMiddleware.PageSize).Take(EventStreamsApiMiddleware.PageSize).ToList()
+        );
 
         var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
 
         response.Links.AddPagedLinks(
             page,
             PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count),
-            p => $"{prefix}?page={p}");
+            p => $"{prefix}?page={p}"
+        );
 
         await WriteJson(httpContext.Response, response);
     }

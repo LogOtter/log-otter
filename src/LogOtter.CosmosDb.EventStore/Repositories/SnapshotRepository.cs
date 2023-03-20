@@ -6,7 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
+public class SnapshotRepository<TBaseEvent, TSnapshot>
+    where TBaseEvent : class, IEvent<TSnapshot>
+    where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
@@ -17,7 +19,8 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
         CosmosContainer<TSnapshot> snapshotContainer,
         EventStoreDependency<TBaseEvent> eventStoreDependency,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options)
+        IOptions<EventStoreOptions> options
+    )
     {
         _feedIteratorFactory = feedIteratorFactory;
         _snapshotContainer = snapshotContainer.Container;
@@ -29,7 +32,8 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
         string partitionKey,
         Func<IQueryable<TSnapshot>, IQueryable<TSnapshot>> applyQuery,
         bool includeDeleted = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var query = CreateSnapshotQuery(partitionKey, includeDeleted);
         return await applyQuery(query).CountAsync(cancellationToken);
@@ -37,42 +41,32 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
 
     public async Task<int> CountSnapshotsAsync(string partitionKey, bool includeDeleted = false, CancellationToken cancellationToken = default)
     {
-        return await CountSnapshotsAsync(
-            partitionKey,
-            q => q,
-            includeDeleted,
-            cancellationToken);
+        return await CountSnapshotsAsync(partitionKey, q => q, includeDeleted, cancellationToken);
     }
 
     public async Task<TSnapshot?> GetSnapshot(
         string id,
         string partitionKey,
         bool includeDeleted = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var streamId = _options.EscapeIdIfRequired(id);
-        var result = await GetSnapshotInternal(
-            streamId,
-            partitionKey,
-            includeDeleted,
-            cancellationToken);
+        var result = await GetSnapshotInternal(streamId, partitionKey, includeDeleted, cancellationToken);
         return result?.Snapshot;
     }
 
     public IAsyncEnumerable<TSnapshot> QuerySnapshots(string partitionKey, bool includeDeleted = false, CancellationToken cancellationToken = default)
     {
-        return QuerySnapshots(
-            partitionKey,
-            x => x,
-            includeDeleted,
-            cancellationToken);
+        return QuerySnapshots(partitionKey, x => x, includeDeleted, cancellationToken);
     }
 
     public async IAsyncEnumerable<TResult> QuerySnapshots<TResult>(
         string partitionKey,
         Func<IQueryable<TSnapshot>, IQueryable<TResult>> applyQuery,
         bool includeDeleted = false,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
     {
         var query = CreateSnapshotQuery(partitionKey, includeDeleted);
 
@@ -94,18 +88,13 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
         string id,
         string partitionKey,
         ICollection<Event<TBaseEvent>> events,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var streamId = _options.EscapeIdIfRequired(id);
 
-        var result = await GetSnapshotInternal(
-            streamId,
-            partitionKey,
-            true,
-            cancellationToken);
-        var snapshot = result.HasValue
-            ? result.Value.Snapshot
-            : new TSnapshot { Revision = 0, Id = streamId };
+        var result = await GetSnapshotInternal(streamId, partitionKey, true, cancellationToken);
+        var snapshot = result.HasValue ? result.Value.Snapshot : new TSnapshot { Revision = 0, Id = streamId };
         var eTag = result?.ETag;
 
         var orderedEvents = events.OrderBy(e => e.EventNumber).ToList();
@@ -115,11 +104,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
 
         if (orderedEvents.First().EventNumber != startingRevision || orderedEvents.Last().EventNumber != endRevision)
         {
-            var allEvents = await _eventStore.ReadStreamForwards(
-                streamId,
-                startingRevision,
-                int.MaxValue,
-                cancellationToken);
+            var allEvents = await _eventStore.ReadStreamForwards(streamId, startingRevision, int.MaxValue, cancellationToken);
 
             orderedEvents = allEvents.Select(Event<TBaseEvent>.FromStorageEvent).OrderBy(e => e.EventNumber).ToList();
         }
@@ -140,10 +125,9 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
         await _snapshotContainer.UpsertItemAsync(
             snapshot,
             new PartitionKey(partitionKey),
-            eTag == null
-                ? null
-                : new ItemRequestOptions { IfMatchEtag = eTag },
-            cancellationToken);
+            eTag == null ? null : new ItemRequestOptions { IfMatchEtag = eTag },
+            cancellationToken
+        );
 
         cancellationToken.ThrowIfCancellationRequested();
     }
@@ -152,14 +136,16 @@ public class SnapshotRepository<TBaseEvent, TSnapshot> where TBaseEvent : class,
         string streamId,
         string partitionKey,
         bool includeDeleted,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
             var response = await _snapshotContainer.ReadItemAsync<TSnapshot>(
                 streamId,
                 new PartitionKey(partitionKey),
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken
+            );
 
             if (response.Resource.DeletedAt.HasValue && !includeDeleted)
             {

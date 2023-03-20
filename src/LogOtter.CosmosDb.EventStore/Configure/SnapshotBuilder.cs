@@ -16,7 +16,8 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
     public SnapshotBuilder<TBaseEvent, TProjection> AutoProvision(IReadOnlyCollection<Collection<CompositePath>> compositeIndexes)
     {
         _mutateMetadata(
-            md => md with {SnapshotMetadata = md.SnapshotMetadata! with {AutoProvisionMetadata = new AutoProvisionMetadata(compositeIndexes)}});
+            md => md with { SnapshotMetadata = md.SnapshotMetadata! with { AutoProvisionMetadata = new AutoProvisionMetadata(compositeIndexes) } }
+        );
         return this;
     }
 }

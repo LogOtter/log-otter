@@ -15,7 +15,6 @@ public class DummyWorker : BackgroundService
         {
             _logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
-        }
-        while (!stoppingToken.IsCancellationRequested);
+        } while (!stoppingToken.IsCancellationRequested);
     }
 }

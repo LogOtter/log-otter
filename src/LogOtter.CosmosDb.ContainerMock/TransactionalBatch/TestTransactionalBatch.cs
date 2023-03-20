@@ -22,17 +22,16 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     {
         var itemRequestOptions = CreateItemRequestOptions(requestOptions);
 
-        _actions.Enqueue(
-            response =>
-            {
-                var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
+        _actions.Enqueue(response =>
+        {
+            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
 
-                using var ms = new MemoryStream(bytes);
+            using var ms = new MemoryStream(bytes);
 
-                var itemResponse = _containerMock.CreateItemStreamAsync(ms, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
+            var itemResponse = _containerMock.CreateItemStreamAsync(ms, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
 
-                response.AddResult(itemResponse, item);
-            });
+            response.AddResult(itemResponse, item);
+        });
 
         return this;
     }
@@ -41,13 +40,12 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     {
         var itemRequestOptions = CreateItemRequestOptions(requestOptions);
 
-        _actions.Enqueue(
-            response =>
-            {
-                var itemResponse = _containerMock.ReadItemStreamAsync(id, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
+        _actions.Enqueue(response =>
+        {
+            var itemResponse = _containerMock.ReadItemStreamAsync(id, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
 
-                response.AddResult(itemResponse);
-            });
+            response.AddResult(itemResponse);
+        });
 
         return this;
     }
@@ -59,7 +57,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
     public override Task<TransactionalBatchResponse> ExecuteAsync(
         TransactionalBatchRequestOptions? requestOptions,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var snapshot = _containerMock.CreateSnapshot();
 
@@ -111,7 +110,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch CreateItemStream(
         Stream streamPayload,
-        TransactionalBatchItemRequestOptions? requestOptions = null)
+        TransactionalBatchItemRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -123,7 +123,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch UpsertItemStream(
         Stream streamPayload,
-        TransactionalBatchItemRequestOptions? requestOptions = null)
+        TransactionalBatchItemRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -131,7 +132,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     public override Microsoft.Azure.Cosmos.TransactionalBatch ReplaceItem<T>(
         string id,
         T item,
-        TransactionalBatchItemRequestOptions? requestOptions = null)
+        TransactionalBatchItemRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -139,7 +141,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     public override Microsoft.Azure.Cosmos.TransactionalBatch ReplaceItemStream(
         string id,
         Stream streamPayload,
-        TransactionalBatchItemRequestOptions? requestOptions = null)
+        TransactionalBatchItemRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }
@@ -152,7 +155,8 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     public override Microsoft.Azure.Cosmos.TransactionalBatch PatchItem(
         string id,
         IReadOnlyList<PatchOperation> patchOperations,
-        TransactionalBatchPatchItemRequestOptions? requestOptions = null)
+        TransactionalBatchPatchItemRequestOptions? requestOptions = null
+    )
     {
         throw new NotImplementedException();
     }

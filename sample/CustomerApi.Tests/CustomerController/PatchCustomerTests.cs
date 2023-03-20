@@ -17,11 +17,7 @@ public class PatchCustomerTests
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
-        await customerApi.Given.AnExistingCustomer(
-            customerUri,
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };
@@ -37,11 +33,7 @@ public class PatchCustomerTests
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
-        await customerApi.Given.AnExistingCustomer(
-            customerUri,
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };
@@ -49,7 +41,8 @@ public class PatchCustomerTests
 
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bobby" && c.LastName == "Bobertson");
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bobby" && c.LastName == "Bobertson"
+        );
     }
 
     public static IEnumerable<object[]> InvalidData()
@@ -68,17 +61,14 @@ public class PatchCustomerTests
     public async Task Invalid_ReturnsBadRequest(
         OptionallyPatched<string> emailAddress,
         OptionallyPatched<string> firstName,
-        OptionallyPatched<string> lastName)
+        OptionallyPatched<string> lastName
+    )
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
-        await customerApi.Given.AnExistingCustomer(
-            customerUri,
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
         var client = customerApi.CreateClient(authHeader);
 
         var request = new JsonObject();
@@ -108,11 +98,7 @@ public class PatchCustomerTests
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingCustomer(
-            customerUri,
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient();
         var request = new { FirstName = "Bobby" };
@@ -128,11 +114,7 @@ public class PatchCustomerTests
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
-        await customerApi.Given.AnExistingCustomer(
-            customerUri,
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };

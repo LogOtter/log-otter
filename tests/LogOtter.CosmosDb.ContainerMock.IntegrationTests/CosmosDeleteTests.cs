@@ -36,13 +36,21 @@ public sealed class CosmosDeleteTests : IAsyncLifetime, IDisposable
     public async Task DeleteExistingWithWrongETagIsEquivalent()
     {
         await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test-dt1" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test-dt1"
+            }
+        );
 
         var (realException, testException) = await _testCosmos.WhenDeletingProducesException<TestModel>(
             "RECORD1",
             new PartitionKey("test-dt1"),
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() },
-            new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() });
+            new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
+        );
 
         realException.Should().NotBeNull();
         testException.Should().NotBeNull();
@@ -54,13 +62,21 @@ public sealed class CosmosDeleteTests : IAsyncLifetime, IDisposable
     public async Task DeleteExistingWithCorrectETagIsEquivalent()
     {
         var (testETag, realETag) = await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test-dt2" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test-dt2"
+            }
+        );
 
         var (realResult, testResult) = await _testCosmos.WhenDeleting<TestModel>(
             "RECORD1",
             new PartitionKey("test-dt2"),
             new ItemRequestOptions { IfMatchEtag = testETag },
-            new ItemRequestOptions { IfMatchEtag = realETag });
+            new ItemRequestOptions { IfMatchEtag = realETag }
+        );
 
         realResult.StatusCode.Should().Be(testResult.StatusCode);
         realResult.Resource.Should().BeEquivalentTo(testResult.Resource);

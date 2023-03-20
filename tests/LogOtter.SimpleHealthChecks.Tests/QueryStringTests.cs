@@ -16,12 +16,11 @@ public class QueryStringTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.StatusCode.Should().Be(404);
-            });
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.StatusCode.Should().Be(404);
+        });
     }
 
     [Fact]
@@ -35,11 +34,10 @@ public class QueryStringTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.StatusCode.Should().Be(200);
-            });
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.StatusCode.Should().Be(200);
+        });
     }
 }

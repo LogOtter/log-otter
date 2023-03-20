@@ -18,7 +18,8 @@ public class PatchTests
             0,
             new Address("Alpha Tower", "B1 1TT"),
             ResourceState.Unpublished,
-            ImmutableList<string>.Empty);
+            ImmutableList<string>.Empty
+        );
 
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
@@ -57,7 +58,6 @@ public class PatchTests
         updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 
-
     [Theory]
     [InlineData(SerializationEngine.Newtonsoft)]
     [InlineData(SerializationEngine.SystemText)]
@@ -70,7 +70,8 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync(
             "/test-resource/12345",
-            new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } });
+            new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } }
+        );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
@@ -145,7 +146,8 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync(
             "/test-resource/12345",
-            new { address = new { line1 = (string?)null, postCode = (string?)null } });
+            new { address = new { line1 = (string?)null, postCode = (string?)null } }
+        );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }

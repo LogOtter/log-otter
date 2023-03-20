@@ -18,7 +18,5 @@ public class CustomersResponse
         Links = new JsonHalLinkCollection();
     }
 
-    public CustomersResponse()
-    {
-    }
+    public CustomersResponse() { }
 }

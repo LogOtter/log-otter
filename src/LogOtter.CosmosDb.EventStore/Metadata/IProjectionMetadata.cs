@@ -7,6 +7,4 @@ internal interface IProjectionMetadata
     ISnapshotMetadata? SnapshotMetadata { get; }
 }
 
-internal interface IProjectionMetadata<TBaseEvent> : IProjectionMetadata
-{
-}
+internal interface IProjectionMetadata<TBaseEvent> : IProjectionMetadata { }
