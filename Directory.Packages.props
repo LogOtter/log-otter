@@ -14,7 +14,7 @@
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.3" />
-    <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
