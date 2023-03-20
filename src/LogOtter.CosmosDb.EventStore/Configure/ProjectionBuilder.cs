@@ -8,7 +8,7 @@ public class ProjectionBuilder<TBaseEvent, TProjection>
 
     private readonly Action<ICatchUpSubscriptionMetadata> _addCatchUpSubscription;
 
-    public ProjectionBuilder(Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> mutateMetadata, Action<ICatchUpSubscriptionMetadata> addCatchUpSubscription)
+    internal ProjectionBuilder(Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> mutateMetadata, Action<ICatchUpSubscriptionMetadata> addCatchUpSubscription)
     {
         _mutateMetadata = mutateMetadata;
         _addCatchUpSubscription = addCatchUpSubscription;

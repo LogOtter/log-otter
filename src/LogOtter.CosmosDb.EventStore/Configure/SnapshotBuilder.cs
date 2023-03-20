@@ -8,7 +8,7 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
 {
     private readonly Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> _mutateMetadata;
 
-    public SnapshotBuilder(Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> mutateMetadata)
+    internal SnapshotBuilder(Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> mutateMetadata)
     {
         _mutateMetadata = mutateMetadata;
     }

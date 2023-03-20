@@ -11,8 +11,3 @@ internal record EventSourceMetadata<TBaseEvent>(
 {
     Type IEventSourceMetadata.EventBaseType => typeof(TBaseEvent);
 }
-
-public interface IProjectionMetadata<TBaseEvent> : IProjectionMetadata
-{
-    Type ProjectionType { get; }
-}

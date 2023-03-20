@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb.EventStore.Metadata;
 
-public interface ISnapshotMetadata
+internal interface ISnapshotMetadata
 {
     string ContainerName { get; }
 

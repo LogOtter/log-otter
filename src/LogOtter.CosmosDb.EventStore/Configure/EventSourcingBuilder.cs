@@ -10,7 +10,7 @@ public class EventSourcingBuilder
 
     public IServiceCollection Services { get; }
 
-    public EventSourcingBuilder(CosmosDbBuilder cosmosDbBuilder)
+    internal EventSourcingBuilder(CosmosDbBuilder cosmosDbBuilder)
     {
         _cosmosDbBuilder = cosmosDbBuilder;
         Services = cosmosDbBuilder.Services;

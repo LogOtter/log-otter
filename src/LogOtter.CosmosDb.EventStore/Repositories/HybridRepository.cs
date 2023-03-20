@@ -9,23 +9,23 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
     private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly IEventSourceMetadata _metadata;
     private readonly EventStoreOptions _options;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
+    private readonly Func<TBaseEvent,string> _snapshotPartitionKeyResolver;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
         EventRepository<TBaseEvent, TSnapshot> eventRepository,
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
+        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options,
-        IEventSourceMetadata metadata)
+        IOptions<EventStoreOptions> options)
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
         _snapshotRepository = snapshotRepository;
+        _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();
         _feedIteratorFactory = feedIteratorFactory;
-        _metadata = metadata;
         _options = options.Value;
     }
 
@@ -76,8 +76,7 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
 
         try
         {
-            var projection = _metadata.Projections.OfType<ProjectionMetadata<TBaseEvent, TSnapshot>>().Single();
-            var partitionKey = projection.SnapshotMetadata!.SnapshotPartitionKeyResolver(events.First());
+            var partitionKey = _snapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 

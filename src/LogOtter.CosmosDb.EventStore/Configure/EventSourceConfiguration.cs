@@ -8,20 +8,20 @@ public class EventSourceConfiguration<TBaseEvent>
 
     private readonly Dictionary<Type, ICatchUpSubscriptionMetadata> _catchUpSubscriptions;
 
-    public IReadOnlyCollection<Type> EventTypes { get; private set; }
+    internal IReadOnlyCollection<Type> EventTypes { get; private set; }
 
-    public IReadOnlyCollection<IProjectionMetadata<TBaseEvent>> Projections => _projections.Values;
+    internal IReadOnlyCollection<IProjectionMetadata<TBaseEvent>> Projections => _projections.Values;
 
-    public IReadOnlyCollection<ICatchUpSubscriptionMetadata> CatchUpSubscriptions => _catchUpSubscriptions.Values;
+    internal IReadOnlyCollection<ICatchUpSubscriptionMetadata> CatchUpSubscriptions => _catchUpSubscriptions.Values;
 
-    public EventSourceConfiguration()
+    internal EventSourceConfiguration()
     {
         EventTypes = GetEventsOfTypeFromSameAssembly();
         _projections = new Dictionary<Type, IProjectionMetadata<TBaseEvent>>();
         _catchUpSubscriptions = new Dictionary<Type, ICatchUpSubscriptionMetadata>();
     }
 
-    public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>()
+    public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>() where TProjection : class
     {
         var projectionConfiguration = new ProjectionMetadata<TBaseEvent, TProjection>();
         _projections.Add(typeof(TProjection), projectionConfiguration);

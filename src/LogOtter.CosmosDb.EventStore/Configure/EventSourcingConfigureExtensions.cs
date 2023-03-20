@@ -21,6 +21,8 @@ public static class EventSourcingConfigureExtensions
 
         services.AddSingleton<EventStoreCatalog>();
         services.AddSingleton<EventDescriptionGenerator>();
+        services.AddSingleton(sp => new SnapshotPartitionKeyResolverFactory(sp.GetServices<IEventSourceMetadata>()));
+
         services.AddSingleton<IHandler, GetEventStreamsHandler>();
         services.AddSingleton<IHandler, GetEventStreamHandler>();
         services.AddSingleton<IHandler, GetEventsHandler>();

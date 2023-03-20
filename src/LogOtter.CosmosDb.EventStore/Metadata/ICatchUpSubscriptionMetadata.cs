@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb.EventStore.Metadata;
 
-public interface ICatchUpSubscriptionMetadata
+internal interface ICatchUpSubscriptionMetadata
 {
     string ProjectorName { get; }
 
