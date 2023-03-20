@@ -11,12 +11,12 @@ public class EventStore
     private readonly JsonSerializer _jsonSerializer;
     private readonly ISerializationTypeMap _typeMap;
 
-    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, ISerializationTypeMap typeMap, JsonSerializer jsonSerializer)
+    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, ISerializationTypeMap typeMap)
     {
         _container = container;
         _feedIteratorFactory = feedIteratorFactory;
         _typeMap = typeMap;
-        _jsonSerializer = jsonSerializer;
+        _jsonSerializer = JsonSerializer.CreateDefault();
     }
 
     public Task AppendToStream(string streamId, int expectedVersion, params EventData[] events)

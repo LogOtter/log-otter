@@ -24,19 +24,25 @@ services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
 services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStreamsApi"));
 
 services.AddCosmosDb()
-        .AddEventStore(options => options.AutoEscapeIds = true)
-        .AddEventSource<CustomerEvent, CustomerReadModel>("CustomerEvent", _ => CustomerReadModel.StaticPartitionKey)
-        .AddSnapshotStoreProjection<CustomerEvent, CustomerReadModel>(
-            "Customers",
-            compositeIndexes: new[]
+        .AddEventSourcing(options => options.AutoEscapeIds = true)
+        .AddEventSource<CustomerEvent>(
+            "CustomerEvents",
+            c =>
             {
-                new Collection<CompositePath>
-                {
-                    new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
-                    new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
-                }
-            })
-        .AddCatchupSubscription<CustomerEvent, TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+                c.AddProjection<CustomerReadModel>()
+                 .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey)
+                 .AutoProvision(
+                     compositeIndexes: new[]
+                     {
+                         new Collection<CompositePath>
+                         {
+                             new() {Path = "/LastName", Order = CompositePathSortOrder.Ascending},
+                             new() {Path = "/FirstName", Order = CompositePathSortOrder.Ascending}
+                         }
+                     });
+
+                c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+            });
 
 services.AddHealthChecks().AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 

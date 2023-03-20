@@ -1,3 +1,4 @@
+using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.Extensions.Logging;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -6,17 +7,17 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
     where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
 {
     private readonly ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> _logger;
-    private readonly EventStoreMetadata<TBaseEvent, TSnapshot> _metadata;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
+    private readonly Func<TBaseEvent,string> _snapshotPartitionKeyResolver;
 
     public SnapshotProjectionCatchupSubscription(
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> logger,
-        EventStoreMetadata<TBaseEvent, TSnapshot> metadata)
+        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory)
     {
         _snapshotRepository = snapshotRepository;
         _logger = logger;
-        _metadata = metadata;
+        _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();
     }
 
     public async Task ProcessEvents(IReadOnlyCollection<Event<TBaseEvent>> events, CancellationToken cancellationToken)
@@ -43,7 +44,7 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
 
     private async Task ApplyEventsToSingleSnapshot(IGrouping<string, Event<TBaseEvent>> events, CancellationToken cancellationToken)
     {
-        var partitionKey = _metadata.SnapshotPartitionKeyResolver(events.First().Body);
+        var partitionKey = _snapshotPartitionKeyResolver(events.First().Body);
         var streamId = events.Key;
 
         await _snapshotRepository.ApplyEventsToSnapshot(

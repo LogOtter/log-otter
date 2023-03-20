@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
+using LogOtter.CosmosDb.EventStore.Metadata;
 using LogOtter.JsonHal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
