@@ -30,7 +30,8 @@ internal class ContainerItem
         int? expiryTime,
         string eTag,
         bool requireETagOnNextUpdate,
-        bool hasScheduledETagMismatch)
+        bool hasScheduledETagMismatch
+    )
     {
         Id = id;
         ExpiryTime = expiryTime;

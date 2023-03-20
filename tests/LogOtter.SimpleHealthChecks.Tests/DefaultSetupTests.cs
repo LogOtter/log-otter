@@ -18,12 +18,11 @@ public class DefaultSetupTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.ContentType.Should().Be("text/plain");
-            });
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.ContentType.Should().Be("text/plain");
+        });
     }
 
     [Theory]
@@ -42,12 +41,11 @@ public class DefaultSetupTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.StatusCode.Should().Be(expectedStatusCode);
-            });
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.StatusCode.Should().Be(expectedStatusCode);
+        });
     }
 
     [Theory]
@@ -66,13 +64,12 @@ public class DefaultSetupTests
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
 
-                var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-                responseBody.Should().Be(expectedResponseBody);
-            });
+            var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
+            responseBody.Should().Be(expectedResponseBody);
+        });
     }
 }

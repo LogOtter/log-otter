@@ -4,16 +4,18 @@ using Microsoft.Extensions.Logging;
 namespace LogOtter.CosmosDb.EventStore;
 
 internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : ICatchupSubscription<TBaseEvent>
-    where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
+    where TBaseEvent : class, IEvent<TSnapshot>
+    where TSnapshot : class, ISnapshot, new()
 {
     private readonly ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> _logger;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
-    private readonly Func<TBaseEvent,string> _snapshotPartitionKeyResolver;
+    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver;
 
     public SnapshotProjectionCatchupSubscription(
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> logger,
-        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory)
+        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory
+    )
     {
         _snapshotRepository = snapshotRepository;
         _logger = logger;
@@ -36,7 +38,8 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
                     "Snapshot Projection: Error applying events to snapshot for stream ID {StreamId}. Starting revision was {StartRevision}. Attempting to update to {EndRevision}",
                     eventsForStream.Key,
                     eventsForStream.Min(e => e.EventNumber),
-                    eventsForStream.Max(e => e.EventNumber));
+                    eventsForStream.Max(e => e.EventNumber)
+                );
                 throw;
             }
         }
@@ -47,10 +50,6 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
         var partitionKey = _snapshotPartitionKeyResolver(events.First().Body);
         var streamId = events.Key;
 
-        await _snapshotRepository.ApplyEventsToSnapshot(
-            streamId,
-            partitionKey,
-            events.ToList(),
-            cancellationToken);
+        await _snapshotRepository.ApplyEventsToSnapshot(streamId, partitionKey, events.ToList(), cancellationToken);
     }
 }

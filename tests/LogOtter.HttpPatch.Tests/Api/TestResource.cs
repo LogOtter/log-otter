@@ -10,4 +10,5 @@ public record TestResource(
     int Count,
     Address Address,
     ResourceState State,
-    ImmutableList<string> People);
+    ImmutableList<string> People
+);

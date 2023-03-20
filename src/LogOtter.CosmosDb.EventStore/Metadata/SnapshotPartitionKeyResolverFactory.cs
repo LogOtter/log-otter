@@ -6,9 +6,10 @@ public class SnapshotPartitionKeyResolverFactory
 
     internal SnapshotPartitionKeyResolverFactory(IEnumerable<IEventSourceMetadata> eventSourceMetadata)
     {
-        _projections = eventSourceMetadata.SelectMany(e => e.Projections)
-                                          .Where(p => p.SnapshotMetadata != null)
-                                          .ToDictionary(p => (p.EventType, p.ProjectionType), p => p.SnapshotMetadata!);
+        _projections = eventSourceMetadata
+            .SelectMany(e => e.Projections)
+            .Where(p => p.SnapshotMetadata != null)
+            .ToDictionary(p => (p.EventType, p.ProjectionType), p => p.SnapshotMetadata!);
     }
 
     public Func<TBaseEvent, string> GetResolver<TBaseEvent, TProjection>()

@@ -4,14 +4,16 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
+public class HybridRepository<TBaseEvent, TSnapshot>
+    where TBaseEvent : class, IEvent<TSnapshot>
+    where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
     private readonly EventStore _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _options;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
-    private readonly Func<TBaseEvent,string> _snapshotPartitionKeyResolver;
+    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver;
 
     public HybridRepository(
         EventStoreDependency<TBaseEvent> eventStoreDependency,
@@ -19,7 +21,8 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options)
+        IOptions<EventStoreOptions> options
+    )
     {
         _eventStore = eventStoreDependency.EventStore;
         _eventRepository = eventRepository;
@@ -33,7 +36,8 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
         string partitionKey,
         Func<IQueryable<TSnapshot>, IQueryable<TSnapshot>> applyQuery,
         bool includeDeleted = false,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
     {
         var query = _snapshotRepository.CreateSnapshotQuery(partitionKey, includeDeleted);
 
@@ -48,31 +52,19 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                yield return await ApplyNewEvents(
-                    result,
-                    _options.EscapeIdIfRequired(result.Id),
-                    includeDeleted,
-                    cancellationToken);
+                yield return await ApplyNewEvents(result, _options.EscapeIdIfRequired(result.Id), includeDeleted, cancellationToken);
             }
         }
     }
 
     public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params TBaseEvent[] events)
     {
-        return await ApplyEvents(
-            id,
-            expectedRevision,
-            CancellationToken.None,
-            events);
+        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
     }
 
     public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, params TBaseEvent[] events)
     {
-        var snapshot = await _eventRepository.ApplyEvents(
-            id,
-            expectedRevision,
-            cancellationToken,
-            events);
+        var snapshot = await _eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
 
         try
         {
@@ -80,11 +72,7 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 
-            await _snapshotRepository.ApplyEventsToSnapshot(
-                id,
-                partitionKey,
-                eventsToUpdate,
-                cancellationToken);
+            await _snapshotRepository.ApplyEventsToSnapshot(id, partitionKey, eventsToUpdate, cancellationToken);
         }
         catch
         {
@@ -99,15 +87,12 @@ public class HybridRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, I
         TSnapshot? snapshot,
         string streamId,
         bool includeDeleted = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var startPosition = snapshot?.Revision + 1 ?? 1;
 
-        var eventStoreEvents = await _eventStore.ReadStreamForwards(
-            streamId,
-            startPosition,
-            int.MaxValue,
-            cancellationToken);
+        var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, startPosition, int.MaxValue, cancellationToken);
 
         var events = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody).ToList();
 

@@ -43,7 +43,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -51,9 +56,7 @@ public class TtlTests
 
         var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
-        var expectedResultsCount = expectedItemExists
-            ? 1
-            : 0;
+        var expectedResultsCount = expectedItemExists ? 1 : 0;
         results.Should().HaveCount(expectedResultsCount);
     }
 
@@ -63,7 +66,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -90,7 +98,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -98,9 +111,7 @@ public class TtlTests
 
         var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
 
-        var expectedStatusCode = expectedItemExists
-            ? HttpStatusCode.OK
-            : HttpStatusCode.NotFound;
+        var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
         response.StatusCode.Should().Be(expectedStatusCode);
     }
@@ -111,7 +122,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -119,9 +135,7 @@ public class TtlTests
 
         var results = container.GetItemLinqQueryable<TestDocumentWithTtl>().Where(d => d.Id == document.Id).ToList();
 
-        var expectedResultsCount = expectedItemExists
-            ? 1
-            : 0;
+        var expectedResultsCount = expectedItemExists ? 1 : 0;
 
         results.Should().HaveCount(expectedResultsCount);
     }
@@ -132,7 +146,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -140,9 +159,7 @@ public class TtlTests
 
         var count = await container.CountAsync<TestDocumentWithTtl>(document.PartitionKey, query => query);
 
-        var expectedCount = expectedItemExists
-            ? 1
-            : 0;
+        var expectedCount = expectedItemExists ? 1 : 0;
 
         count.Should().Be(expectedCount);
     }
@@ -153,7 +170,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -162,9 +184,7 @@ public class TtlTests
         var results = container.QueryAsync<TestDocumentWithTtl, TestDocumentWithTtl>(document.PartitionKey, query => query);
         var items = await results.ToListAsync();
 
-        var expectedResultsCount = expectedItemExists
-            ? 1
-            : 0;
+        var expectedResultsCount = expectedItemExists ? 1 : 0;
 
         items.Should().HaveCount(expectedResultsCount);
     }
@@ -175,7 +195,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -187,9 +212,7 @@ public class TtlTests
 
         var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
 
-        var expectedStatusCode = expectedItemExists
-            ? HttpStatusCode.OK
-            : HttpStatusCode.NotFound;
+        var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
         response.StatusCode.Should().Be(expectedStatusCode);
     }
@@ -200,7 +223,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -214,9 +242,7 @@ public class TtlTests
 
         var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
 
-        var expectedStatusCode = expectedItemExists
-            ? HttpStatusCode.OK
-            : HttpStatusCode.NotFound;
+        var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
         response.StatusCode.Should().Be(expectedStatusCode);
     }
@@ -227,7 +253,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         await container.CreateItemAsync(document);
 
@@ -239,9 +270,7 @@ public class TtlTests
 
         var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
 
-        var expectedStatusCode = expectedItemExists
-            ? HttpStatusCode.OK
-            : HttpStatusCode.NotFound;
+        var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
         response.StatusCode.Should().Be(expectedStatusCode);
     }
@@ -252,7 +281,12 @@ public class TtlTests
     {
         var container = new ContainerMock(defaultDocumentTimeToLive: containerTtl);
 
-        var document = new TestDocumentWithTtl { Id = "MyId", PartitionKey = "MyPartitionKey", TimeToLive = itemTtl };
+        var document = new TestDocumentWithTtl
+        {
+            Id = "MyId",
+            PartitionKey = "MyPartitionKey",
+            TimeToLive = itemTtl
+        };
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));
         await using var ms = new MemoryStream(bytes);
@@ -262,9 +296,7 @@ public class TtlTests
 
         var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
-        var expectedResultsCount = expectedItemExists
-            ? 1
-            : 0;
+        var expectedResultsCount = expectedItemExists ? 1 : 0;
         results.Should().HaveCount(expectedResultsCount);
     }
 

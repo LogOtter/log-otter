@@ -12,12 +12,8 @@ public sealed class CosmosEquivalencyException : Exception
 
     public object? TestValue { get; }
 
-    public CosmosEquivalencyException(Exception? realException, Exception? testException, object? realValue, object? testValue) : base(
-        FormatMessage(
-            realException,
-            testException,
-            realValue,
-            testValue))
+    public CosmosEquivalencyException(Exception? realException, Exception? testException, object? realValue, object? testValue)
+        : base(FormatMessage(realException, testException, realValue, testValue))
     {
         RealException = realException;
         TestException = testException;

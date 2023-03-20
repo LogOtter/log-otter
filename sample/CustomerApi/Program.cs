@@ -23,26 +23,29 @@ services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
 services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStreamsApi"));
 
-services.AddCosmosDb()
-        .AddEventSourcing(options => options.AutoEscapeIds = true)
-        .AddEventSource<CustomerEvent>(
-            "CustomerEvents",
-            c =>
-            {
-                c.AddProjection<CustomerReadModel>()
-                 .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey)
-                 .AutoProvision(
-                     compositeIndexes: new[]
-                     {
-                         new Collection<CompositePath>
-                         {
-                             new() {Path = "/LastName", Order = CompositePathSortOrder.Ascending},
-                             new() {Path = "/FirstName", Order = CompositePathSortOrder.Ascending}
-                         }
-                     });
+services
+    .AddCosmosDb()
+    .AddEventSourcing(options => options.AutoEscapeIds = true)
+    .AddEventSource<CustomerEvent>(
+        "CustomerEvents",
+        c =>
+        {
+            c.AddProjection<CustomerReadModel>()
+                .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey)
+                .AutoProvision(
+                    compositeIndexes: new[]
+                    {
+                        new Collection<CompositePath>
+                        {
+                            new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
+                            new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+                        }
+                    }
+                );
 
-                c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
-            });
+            c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+        }
+    );
 
 services.AddHealthChecks().AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 

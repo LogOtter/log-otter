@@ -13,11 +13,7 @@ public class GetCustomerByIdTests
     public async Task Valid_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingCustomer(
-            CustomerUri.Parse("/customers/ExistingUser"),
-            "bob@bobertson.co.uk",
-            "Bob",
-            "Bobertson");
+        await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 

@@ -37,7 +37,15 @@ public sealed class CosmosUpsertStreamTests : IAsyncLifetime, IDisposable
     [Fact]
     public async Task UpsertStreamNonExistingIsEquivalent()
     {
-        var bytes = GetItemBytes(new TestModel { Id = "RECORD2", Name = "Bob Bobertson", EnumValue = TestEnum.Value1, PartitionKey = "test" });
+        var bytes = GetItemBytes(
+            new TestModel
+            {
+                Id = "RECORD2",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value1,
+                PartitionKey = "test"
+            }
+        );
 
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));
@@ -49,9 +57,24 @@ public sealed class CosmosUpsertStreamTests : IAsyncLifetime, IDisposable
     public async Task UpsertStreamExistingIsEquivalent()
     {
         await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test"
+            }
+        );
 
-        var bytes = GetItemBytes(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value1, PartitionKey = "test" });
+        var bytes = GetItemBytes(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value1,
+                PartitionKey = "test"
+            }
+        );
 
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));
@@ -63,16 +86,32 @@ public sealed class CosmosUpsertStreamTests : IAsyncLifetime, IDisposable
     public async Task UpsertStreamExistingWithCorrectETagIsEquivalent()
     {
         var (testETag, realETag) = await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test"
+            }
+        );
 
-        var bytes = GetItemBytes(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value1, PartitionKey = "test" });
+        var bytes = GetItemBytes(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value1,
+                PartitionKey = "test"
+            }
+        );
 
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(
             ms,
             new PartitionKey("test"),
             new ItemRequestOptions { IfMatchEtag = testETag },
-            new ItemRequestOptions { IfMatchEtag = realETag });
+            new ItemRequestOptions { IfMatchEtag = realETag }
+        );
 
         real.StatusCode.Should().Be(test.StatusCode);
     }
@@ -81,16 +120,32 @@ public sealed class CosmosUpsertStreamTests : IAsyncLifetime, IDisposable
     public async Task UpsertStreamExistingWithWrongETagIsEquivalent()
     {
         await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test"
+            }
+        );
 
-        var bytes = GetItemBytes(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value1, PartitionKey = "test" });
+        var bytes = GetItemBytes(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value1,
+                PartitionKey = "test"
+            }
+        );
 
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(
             ms,
             new PartitionKey("test"),
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() },
-            new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() });
+            new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
+        );
 
         real.StatusCode.Should().Be(test.StatusCode);
     }
@@ -99,9 +154,24 @@ public sealed class CosmosUpsertStreamTests : IAsyncLifetime, IDisposable
     public async Task UpsertStreamUniqueKeyViolationIsEquivalent()
     {
         await _testCosmos.GivenAnExistingItem(
-            new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2, PartitionKey = "test" });
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2,
+                PartitionKey = "test"
+            }
+        );
 
-        var bytes = GetItemBytes(new TestModel { Id = "RECORD2", Name = "Bob Bobertson", EnumValue = TestEnum.Value1, PartitionKey = "test" });
+        var bytes = GetItemBytes(
+            new TestModel
+            {
+                Id = "RECORD2",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value1,
+                PartitionKey = "test"
+            }
+        );
 
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));

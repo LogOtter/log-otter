@@ -26,15 +26,8 @@ public class CosmosDbBuilder
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null) =>
-        AddContainer(
-            typeof(T),
-            containerName,
-            partitionKeyPath,
-            uniqueKeyPolicy,
-            defaultTimeToLive,
-            compositeIndexes,
-            throughputProperties);
+        ThroughputProperties? throughputProperties = null
+    ) => AddContainer(typeof(T), containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties);
 
     internal CosmosDbBuilder AddContainer(
         Type documentType,
@@ -43,18 +36,21 @@ public class CosmosDbBuilder
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null)
+        ThroughputProperties? throughputProperties = null
+    )
     {
         RegisterContainer(documentType, containerName);
 
         var cosmosContainer = typeof(CosmosContainer<>);
         var registerCosmosContainer = typeof(CosmosDbBuilder).GetMethod(
             nameof(RegisterCosmosContainer),
-            BindingFlags.Instance | BindingFlags.NonPublic);
+            BindingFlags.Instance | BindingFlags.NonPublic
+        );
         var genericMethod = registerCosmosContainer!.MakeGenericMethod(documentType);
         genericMethod.Invoke(
             this,
-            new object?[] {containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties});
+            new object?[] { containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties }
+        );
 
         return this;
     }
@@ -68,26 +64,30 @@ public class CosmosDbBuilder
         string processorName,
         Func<IServiceProvider, Task<bool>>? enabledFunc = null,
         int batchSize = 100,
-        DateTime? activationDate = null)
+        DateTime? activationDate = null
+    )
     {
-        var addChangeFeedProcessor = typeof(CosmosDbBuilder).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                                                            .Single(m => m.Name == nameof(AddChangeFeedProcessorInternal));
+        var addChangeFeedProcessor = typeof(CosmosDbBuilder)
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Single(m => m.Name == nameof(AddChangeFeedProcessorInternal));
         var genericMethod = addChangeFeedProcessor.MakeGenericMethod(
             rawDocumentType,
             documentType,
             changeFeedHandlerDocumentType,
             changeFeedChangeConverterType,
-            changeFeedProcessorHandlerType);
-        genericMethod.Invoke(this, new object?[] {processorName, enabledFunc, batchSize, activationDate});
+            changeFeedProcessorHandlerType
+        );
+        genericMethod.Invoke(this, new object?[] { processorName, enabledFunc, batchSize, activationDate });
         return this;
     }
 
-    private CosmosDbBuilder
-        AddChangeFeedProcessorInternal<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
-            string processorName,
-            Func<IServiceProvider, Task<bool>>? enabledFunc = null,
-            int batchSize = 100,
-            DateTime? activationDate = null)
+    private CosmosDbBuilder AddChangeFeedProcessorInternal<
+        TRawDocument,
+        TDocument,
+        TChangeFeedHandlerDocument,
+        TChangeFeedChangeConverter,
+        TChangeFeedProcessorHandler
+    >(string processorName, Func<IServiceProvider, Task<bool>>? enabledFunc = null, int batchSize = 100, DateTime? activationDate = null)
         where TChangeFeedChangeConverter : class, IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
         where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
@@ -103,21 +103,19 @@ public class CosmosDbBuilder
         Services.AddSingleton<TChangeFeedChangeConverter>();
         Services.AddSingleton<TChangeFeedProcessorHandler>();
 
-        Services.AddTransient(
-            sp =>
-            {
-                var container = sp.GetRequiredService<CosmosContainer<TDocument>>();
-                var changeFeedProcessorFactory = sp.GetRequiredService<IChangeFeedProcessorFactory>();
+        Services.AddTransient(sp =>
+        {
+            var container = sp.GetRequiredService<CosmosContainer<TDocument>>();
+            var changeFeedProcessorFactory = sp.GetRequiredService<IChangeFeedProcessorFactory>();
 
-                return changeFeedProcessorFactory
-                    .CreateChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter,
-                        TChangeFeedProcessorHandler>(
-                        processorName,
-                        container.Container,
-                        enabledFunc,
-                        batchSize,
-                        activationDate);
-            });
+            return changeFeedProcessorFactory.CreateChangeFeedProcessor<
+                TRawDocument,
+                TDocument,
+                TChangeFeedHandlerDocument,
+                TChangeFeedChangeConverter,
+                TChangeFeedProcessorHandler
+            >(processorName, container.Container, enabledFunc, batchSize, activationDate);
+        });
 
         return this;
     }
@@ -131,7 +129,6 @@ public class CosmosDbBuilder
 
         _changeFeedProcessors.Add(processorName);
     }
-
 
     private void RegisterContainer(Type documentType, string containerName)
     {
@@ -159,24 +156,26 @@ public class CosmosDbBuilder
         UniqueKeyPolicy? uniqueKeyPolicy,
         int? defaultTimeToLive,
         IEnumerable<Collection<CompositePath>>? compositeIndexes,
-        ThroughputProperties? throughputProperties)
+        ThroughputProperties? throughputProperties
+    )
     {
-        Services.AddSingleton(
-            sp =>
-            {
-                var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
+        Services.AddSingleton(sp =>
+        {
+            var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
 
-                var container = cosmosContainerFactory.CreateContainerIfNotExistsAsync(
-                                                          containerName,
-                                                          partitionKeyPath,
-                                                          uniqueKeyPolicy,
-                                                          defaultTimeToLive,
-                                                          compositeIndexes,
-                                                          throughputProperties)
-                                                      .GetAwaiter()
-                                                      .GetResult();
+            var container = cosmosContainerFactory
+                .CreateContainerIfNotExistsAsync(
+                    containerName,
+                    partitionKeyPath,
+                    uniqueKeyPolicy,
+                    defaultTimeToLive,
+                    compositeIndexes,
+                    throughputProperties
+                )
+                .GetAwaiter()
+                .GetResult();
 
-                return new CosmosContainer<T>(container);
-            });
+            return new CosmosContainer<T>(container);
+        });
     }
 }

@@ -87,9 +87,7 @@ public class JsonHalLinkCollectionConverter : JsonConverter<JsonHalLinkCollectio
         {
             var href = ReadLinkHref(ref reader);
 
-            return href == null
-                ? new List<string>()
-                : new List<string> { href };
+            return href == null ? new List<string>() : new List<string> { href };
         }
 
         throw new JsonException();

@@ -20,18 +20,23 @@ public class OverrideStatusTests
             "/health",
             new SimpleHealthCheckOptions
             {
-                ResultStatusCodes = { [HealthStatus.Healthy] = 230, [HealthStatus.Degraded] = 231, [HealthStatus.Unhealthy] = 520 }
-            });
+                ResultStatusCodes =
+                {
+                    [HealthStatus.Healthy] = 230,
+                    [HealthStatus.Degraded] = 231,
+                    [HealthStatus.Unhealthy] = 520
+                }
+            }
+        );
 
         var response = serviceBuilder.EnqueueGetRequest("/health");
 
         var service = serviceBuilder.Build();
 
-        await service.Run(
-            async () =>
-            {
-                await response.WaitForResponseClosed();
-                response.StatusCode.Should().Be(expectedStatusCode);
-            });
+        await service.Run(async () =>
+        {
+            await response.WaitForResponseClosed();
+            response.StatusCode.Should().Be(expectedStatusCode);
+        });
     }
 }

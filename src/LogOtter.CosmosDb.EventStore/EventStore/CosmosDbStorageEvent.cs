@@ -68,13 +68,6 @@ public class CosmosDbStorageEvent
         var body = Body.ToObject(bodyType, serializer);
         var metadata = Metadata?.ToObject(typeMap.GetTypeFromName(MetadataType), serializer);
 
-        return new StorageEvent(
-            StreamId,
-            new EventData(
-                EventId,
-                body,
-                TimeToLive,
-                metadata),
-            EventNumber);
+        return new StorageEvent(StreamId, new EventData(EventId, body, TimeToLive, metadata), EventNumber);
     }
 }

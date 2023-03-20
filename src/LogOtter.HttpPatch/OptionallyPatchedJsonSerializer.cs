@@ -27,7 +27,8 @@ internal static class OptionallyPatchedJsonSerializer
             Type objectType,
             IOptionallyPatched? existingValue,
             bool hasExistingValue,
-            JsonSerializer serializer)
+            JsonSerializer serializer
+        )
         {
             var underlyingType = objectType.GetGenericArguments().Single();
 

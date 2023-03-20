@@ -17,7 +17,8 @@ public sealed class MinLengthIfPatchedAttribute : OptionallyPatchedValidationAtt
 {
     public int MinLength { get; }
 
-    public MinLengthIfPatchedAttribute(int minLength) : base(new MinLengthAttribute(minLength))
+    public MinLengthIfPatchedAttribute(int minLength)
+        : base(new MinLengthAttribute(minLength))
     {
         MinLength = minLength;
     }
@@ -27,7 +28,8 @@ public sealed class MaxLengthIfPatchedAttribute : OptionallyPatchedValidationAtt
 {
     public int MaxLength { get; }
 
-    public MaxLengthIfPatchedAttribute(int maxLength) : base(new MaxLengthAttribute(maxLength))
+    public MaxLengthIfPatchedAttribute(int maxLength)
+        : base(new MaxLengthAttribute(maxLength))
     {
         MaxLength = maxLength;
     }
@@ -35,9 +37,8 @@ public sealed class MaxLengthIfPatchedAttribute : OptionallyPatchedValidationAtt
 
 public sealed class RequiredIfPatchedAttribute : OptionallyPatchedValidationAttribute
 {
-    public RequiredIfPatchedAttribute() : base(new RequiredAttribute())
-    {
-    }
+    public RequiredIfPatchedAttribute()
+        : base(new RequiredAttribute()) { }
 }
 
 public sealed class RangeIfPatchedAttribute : OptionallyPatchedValidationAttribute
@@ -46,7 +47,8 @@ public sealed class RangeIfPatchedAttribute : OptionallyPatchedValidationAttribu
 
     public double Maximum { get; }
 
-    public RangeIfPatchedAttribute(double minimum, double maximum) : base(new RangeAttribute(minimum, maximum))
+    public RangeIfPatchedAttribute(double minimum, double maximum)
+        : base(new RangeAttribute(minimum, maximum))
     {
         Minimum = minimum;
         Maximum = maximum;
@@ -55,16 +57,16 @@ public sealed class RangeIfPatchedAttribute : OptionallyPatchedValidationAttribu
 
 public sealed class EmailAddressIfPatchedAttribute : OptionallyPatchedValidationAttribute
 {
-    public EmailAddressIfPatchedAttribute() : base(new EmailAddressAttribute())
-    {
-    }
+    public EmailAddressIfPatchedAttribute()
+        : base(new EmailAddressAttribute()) { }
 }
 
 public sealed class StringLengthIfPatchedAttribute : OptionallyPatchedValidationAttribute
 {
     public int MaximumLength { get; }
 
-    public StringLengthIfPatchedAttribute(int maximumLength) : base(new StringLengthAttribute(maximumLength))
+    public StringLengthIfPatchedAttribute(int maximumLength)
+        : base(new StringLengthAttribute(maximumLength))
     {
         MaximumLength = maximumLength;
     }
@@ -74,7 +76,8 @@ public sealed class RegularExpressionIfPatchedAttribute : OptionallyPatchedValid
 {
     public string Pattern { get; }
 
-    public RegularExpressionIfPatchedAttribute(string pattern) : base(new RegularExpressionAttribute(pattern))
+    public RegularExpressionIfPatchedAttribute(string pattern)
+        : base(new RegularExpressionAttribute(pattern))
     {
         Pattern = pattern;
     }

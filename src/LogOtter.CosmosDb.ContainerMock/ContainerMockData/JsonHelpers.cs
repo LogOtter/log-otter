@@ -21,9 +21,7 @@ internal static class JsonHelpers
             throw new ArgumentException($"Could not extract property key ({path}) from json. Only string or null values supported.");
         }
 
-        return jTokenProperty.Type == JTokenType.Null
-            ? null
-            : jTokenProperty.Value<string>();
+        return jTokenProperty.Type == JTokenType.Null ? null : jTokenProperty.Value<string>();
     }
 
     public static string GetIdFromJson(string json)
@@ -53,9 +51,7 @@ internal static class JsonHelpers
                 throw new ArgumentException("Could not extract ttl from json. Only int or null values supported.", nameof(json));
             }
 
-            ttl = jTokenProperty.Type == JTokenType.Null
-                ? null
-                : jTokenProperty.Value<int>();
+            ttl = jTokenProperty.Type == JTokenType.Null ? null : jTokenProperty.Value<int>();
         }
 
         return ttl ?? defaultDocumentTimeToLive;

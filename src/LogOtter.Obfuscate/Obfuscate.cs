@@ -6,9 +6,8 @@ public static class Obfuscate
 {
     private const string ObfuscationString = "****";
 
-    private static readonly Regex EmailRegex = new(
-        @"^(?<Username>[A-Z0-9._%+-]+)@(?<DomainName>[A-Z0-9.-]+\.[A-Z]{2,})$",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex EmailRegex =
+        new(@"^(?<Username>[A-Z0-9._%+-]+)@(?<DomainName>[A-Z0-9.-]+\.[A-Z]{2,})$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public static string? Email(string? email)
     {
@@ -26,9 +25,7 @@ public static class Obfuscate
         var username = match.Groups["Username"].Value;
         var domainName = match.Groups["DomainName"].Value;
 
-        var obfuscatedUsername = username.Length <= 5
-            ? username[..1] + ObfuscationString
-            : username[..2] + ObfuscationString + username[^1];
+        var obfuscatedUsername = username.Length <= 5 ? username[..1] + ObfuscationString : username[..2] + ObfuscationString + username[^1];
 
         return $"{obfuscatedUsername}@{domainName}";
     }

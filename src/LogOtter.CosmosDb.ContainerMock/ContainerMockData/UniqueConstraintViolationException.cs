@@ -8,19 +8,15 @@ public class UniqueConstraintViolationException : ContainerMockException
 {
     public const HttpStatusCode DefaultStatusCode = HttpStatusCode.Conflict;
 
-    public UniqueConstraintViolationException() : base(DefaultStatusCode, "Conflict")
-    {
-    }
+    public UniqueConstraintViolationException()
+        : base(DefaultStatusCode, "Conflict") { }
 
-    public UniqueConstraintViolationException(string message) : base(DefaultStatusCode, message)
-    {
-    }
+    public UniqueConstraintViolationException(string message)
+        : base(DefaultStatusCode, message) { }
 
-    public UniqueConstraintViolationException(string message, Exception inner) : base(DefaultStatusCode, message, inner)
-    {
-    }
+    public UniqueConstraintViolationException(string message, Exception inner)
+        : base(DefaultStatusCode, message, inner) { }
 
-    protected UniqueConstraintViolationException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
+    protected UniqueConstraintViolationException(SerializationInfo info, StreamingContext context)
+        : base(info, context) { }
 }

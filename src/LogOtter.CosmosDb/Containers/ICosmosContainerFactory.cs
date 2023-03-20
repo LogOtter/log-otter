@@ -11,7 +11,8 @@ public interface ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null);
+        ThroughputProperties? throughputProperties = null
+    );
 
     Container GetContainer(string containerName);
 }

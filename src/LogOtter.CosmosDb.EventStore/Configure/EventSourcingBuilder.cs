@@ -28,22 +28,19 @@ public class EventSourcingBuilder
             config.EventTypes.ToImmutableList(),
             new SimpleSerializationTypeMap(config.EventTypes),
             config.Projections.Cast<IProjectionMetadata>().ToImmutableList(),
-            ImmutableList<ICatchUpSubscriptionMetadata>.Empty);
+            ImmutableList<ICatchUpSubscriptionMetadata>.Empty
+        );
 
         Services.AddSingleton(metadata);
         Services.AddSingleton<IEventSourceMetadata>(metadata);
 
-        Services.AddSingleton(
-            sp =>
-            {
-                var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
-                var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
-                var eventStore = new EventStore(
-                    cosmosContainer.Container,
-                    feedIteratorFactory,
-                    metadata.SerializationTypeMap);
-                return new EventStoreDependency<TBaseEvent>(eventStore);
-            });
+        Services.AddSingleton(sp =>
+        {
+            var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
+            var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
+            var eventStore = new EventStore(cosmosContainer.Container, feedIteratorFactory, metadata.SerializationTypeMap);
+            return new EventStoreDependency<TBaseEvent>(eventStore);
+        });
 
         var eventRepository = typeof(EventRepository<,>);
         var snapshotRepository = typeof(SnapshotRepository<,>);
@@ -58,7 +55,8 @@ public class EventSourcingBuilder
                     projection.SnapshotMetadata.ContainerName,
                     projection.SnapshotMetadata.PartitionKeyPath,
                     compositeIndexes: projection.SnapshotMetadata.AutoProvisionMetadata?.CompositeIndexes,
-                    defaultTimeToLive: -1);
+                    defaultTimeToLive: -1
+                );
 
                 Services.AddSingleton(snapshotRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));
             }
@@ -69,8 +67,10 @@ public class EventSourcingBuilder
         {
             Services.AddSingleton(catchUpSubscription.HandlerType);
 
-            var specificCatchUpSubscriptionType =
-                catchupSubscriptionChangeFeedProcessor.MakeGenericType(typeof(TBaseEvent), catchUpSubscription.HandlerType);
+            var specificCatchUpSubscriptionType = catchupSubscriptionChangeFeedProcessor.MakeGenericType(
+                typeof(TBaseEvent),
+                catchUpSubscription.HandlerType
+            );
 
             _cosmosDbBuilder.AddChangeFeedProcessor(
                 typeof(CosmosDbStorageEvent),
@@ -78,7 +78,8 @@ public class EventSourcingBuilder
                 typeof(Event<TBaseEvent>),
                 typeof(EventConverter<TBaseEvent>),
                 specificCatchUpSubscriptionType,
-                catchUpSubscription.ProjectorName);
+                catchUpSubscription.ProjectorName
+            );
 
             return this;
         }

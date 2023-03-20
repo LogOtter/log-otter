@@ -70,8 +70,6 @@ internal class PathString : IEquatable<PathString>
 
     public override int GetHashCode()
     {
-        return HasValue
-            ? StringComparer.OrdinalIgnoreCase.GetHashCode(Value)
-            : 0;
+        return HasValue ? StringComparer.OrdinalIgnoreCase.GetHashCode(Value) : 0;
     }
 }

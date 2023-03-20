@@ -39,17 +39,15 @@ public class TestApi : WebApplicationFactory<SystemTextStartup>
                 throw new ArgumentOutOfRangeException();
         }
 
-        builder.ConfigureTestServices(
-            sc =>
-            {
-                sc.AddSingleton<TestDataStore>();
-            });
+        builder.ConfigureTestServices(sc =>
+        {
+            sc.AddSingleton<TestDataStore>();
+        });
 
-        builder.ConfigureLogging(
-            options =>
-            {
-                options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
-                options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
-            });
+        builder.ConfigureLogging(options =>
+        {
+            options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+            options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
+        });
     }
 }

@@ -20,24 +20,26 @@ public class RetryPolicy //: ICosmosRetryPolicy
     public async Task<T> CreateAndExecutePolicyAsync<T>(string actionName, Func<Task<T>> action)
     {
         var policy = Policy
-                     .Handle<CosmosException>(exception => exception.StatusCode is HttpStatusCode.ServiceUnavailable or HttpStatusCode.RequestTimeout)
-                     .WaitAndRetryAsync(
-                         BackOffPolicy,
-                         (exception, _, retryCount, _) =>
-                         {
-                             if (exception is not CosmosException cosmosException)
-                             {
-                                 return;
-                             }
+            .Handle<CosmosException>(exception => exception.StatusCode is HttpStatusCode.ServiceUnavailable or HttpStatusCode.RequestTimeout)
+            .WaitAndRetryAsync(
+                BackOffPolicy,
+                (exception, _, retryCount, _) =>
+                {
+                    if (exception is not CosmosException cosmosException)
+                    {
+                        return;
+                    }
 
-                             _logger.LogWarning(
-                                 "Failed to {ActionName} on retry {RetryCount} due to {ExceptionType} {StatusCode} - {ExceptionMessage}. Attempting again",
-                                 actionName,
-                                 retryCount,
-                                 nameof(CosmosException),
-                                 cosmosException.StatusCode,
-                                 cosmosException.Message);
-                         });
+                    _logger.LogWarning(
+                        "Failed to {ActionName} on retry {RetryCount} due to {ExceptionType} {StatusCode} - {ExceptionMessage}. Attempting again",
+                        actionName,
+                        retryCount,
+                        nameof(CosmosException),
+                        cosmosException.StatusCode,
+                        cosmosException.Message
+                    );
+                }
+            );
 
         var result = await policy.ExecuteAndCaptureAsync(action);
 

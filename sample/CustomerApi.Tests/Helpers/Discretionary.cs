@@ -20,9 +20,7 @@ public readonly struct Discretionary<T> : IEquatable<Discretionary<T>>
 
     public T GetValueOrDefault(T defaultValue)
     {
-        return IsSpecified
-            ? Value
-            : defaultValue;
+        return IsSpecified ? Value : defaultValue;
     }
 
     public bool Equals(Discretionary<T> other)

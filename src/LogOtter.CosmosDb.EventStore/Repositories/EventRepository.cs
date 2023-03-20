@@ -2,7 +2,9 @@
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class EventRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IEvent<TSnapshot> where TSnapshot : class, ISnapshot, new()
+public class EventRepository<TBaseEvent, TSnapshot>
+    where TBaseEvent : class, IEvent<TSnapshot>
+    where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventStore _eventStore;
     private readonly EventStoreOptions _options;
@@ -21,9 +23,7 @@ public class EventRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IE
 
         var eventsSelect = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody);
 
-        var events = revision != null
-            ? eventsSelect.Take(revision.Value).ToList()
-            : eventsSelect.ToList();
+        var events = revision != null ? eventsSelect.Take(revision.Value).ToList() : eventsSelect.ToList();
 
         if (!events.Any())
         {
@@ -57,11 +57,7 @@ public class EventRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IE
 
     public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params TBaseEvent[] events)
     {
-        return await ApplyEvents(
-            id,
-            expectedRevision,
-            CancellationToken.None,
-            events);
+        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
     }
 
     public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, params TBaseEvent[] events)
@@ -71,12 +67,7 @@ public class EventRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IE
             throw new ArgumentException("All events must be for the same entity", nameof(events));
         }
 
-        var entity = await Get(
-                id,
-                null,
-                true,
-                cancellationToken) ??
-            new TSnapshot();
+        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
 
         foreach (var eventToApply in events)
         {
@@ -87,11 +78,7 @@ public class EventRepository<TBaseEvent, TSnapshot> where TBaseEvent : class, IE
 
         var eventData = events.Select(e => new EventData(Guid.NewGuid(), e, e.Ttl ?? -1)).ToArray();
 
-        await _eventStore.AppendToStream(
-            streamId,
-            expectedRevision ?? 0,
-            cancellationToken,
-            eventData);
+        await _eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
         entity.Revision += events.Length;
 

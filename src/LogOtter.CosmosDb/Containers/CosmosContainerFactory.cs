@@ -18,7 +18,8 @@ public class CosmosContainerFactory : ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null)
+        ThroughputProperties? throughputProperties = null
+    )
     {
         var containerProperties = new ContainerProperties(containerName, partitionKeyPath) { DefaultTimeToLive = defaultTimeToLive };
 

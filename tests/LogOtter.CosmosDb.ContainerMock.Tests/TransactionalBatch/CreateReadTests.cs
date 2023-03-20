@@ -13,10 +13,25 @@ public class CreateReadTests
     {
         var containerMock = new ContainerMock();
 
-        var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1"))
-                                 .CreateItem(new TestClass { Id = "Foo1", PartitionKey = "Group1", MyValue = "Bar1" })
-                                 .CreateItem(new TestClass { Id = "Foo2", PartitionKey = "Group1", MyValue = "Bar2" })
-                                 .ReadItem("DoesNotExist");
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            )
+            .ReadItem("DoesNotExist");
 
         var response = await batch.ExecuteAsync();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -29,12 +44,34 @@ public class CreateReadTests
     {
         var containerMock = new ContainerMock();
 
-        await containerMock.CreateItemAsync(new TestClass { Id = "Foo1", PartitionKey = "Group1", MyValue = "Bar1" });
+        await containerMock.CreateItemAsync(
+            new TestClass
+            {
+                Id = "Foo1",
+                PartitionKey = "Group1",
+                MyValue = "Bar1"
+            }
+        );
 
-        var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1"))
-                                 .CreateItem(new TestClass { Id = "Foo2", PartitionKey = "Group1", MyValue = "Bar2" })
-                                 .CreateItem(new TestClass { Id = "Foo3", PartitionKey = "Group1", MyValue = "Bar3" })
-                                 .ReadItem("DoesNotExist");
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo3",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar3"
+                }
+            )
+            .ReadItem("DoesNotExist");
 
         var response = await batch.ExecuteAsync();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

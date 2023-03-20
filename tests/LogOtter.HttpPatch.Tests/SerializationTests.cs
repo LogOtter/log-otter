@@ -39,7 +39,8 @@ public class SerializationTests
     {
         var deserialized = DeserializeFromStringWith<TestRequest>(
             engine,
-            "{ \"primitive\": \"hello world\", \"address\": { \"line1\": \"Alpha Tower\", \"postcode\": \"B1 1TT\" } }");
+            "{ \"primitive\": \"hello world\", \"address\": { \"line1\": \"Alpha Tower\", \"postcode\": \"B1 1TT\" } }"
+        );
 
         deserialized.Primitive.IsIncludedInPatch.Should().BeTrue();
         deserialized.Primitive.Value.Should().Be("hello world");
@@ -81,8 +82,8 @@ public class SerializationTests
                 return JsonConvert.DeserializeObject<T>(toDeserialize) ?? throw new InvalidOperationException("Got null from deserialize call");
             case SerializationEngine.SystemText:
                 // Turning on case insensitivity as that is true in the defaults in asp.net APIs
-                return JsonSerializer.Deserialize<T>(toDeserialize, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ??
-                    throw new InvalidOperationException("Got null from deserialize call");
+                return JsonSerializer.Deserialize<T>(toDeserialize, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    ?? throw new InvalidOperationException("Got null from deserialize call");
             default:
                 throw new ArgumentOutOfRangeException(nameof(engine), engine, null);
         }

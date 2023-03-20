@@ -25,7 +25,8 @@ internal class GetEventsHandler : BaseHandler
         EventDescriptionGenerator eventDescriptionGenerator,
         ICosmosContainerFactory containerFactory,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> eventStoreOptions)
+        IOptions<EventStoreOptions> eventStoreOptions
+    )
     {
         _eventStoreCatalog = eventStoreCatalog;
         _eventDescriptionGenerator = eventDescriptionGenerator;
@@ -53,8 +54,9 @@ internal class GetEventsHandler : BaseHandler
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container.GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
-                             .Where(e => e.StreamId == streamId);
+        var query = container
+            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
+            .Where(e => e.StreamId == streamId);
 
         var itemsQuery = query.OrderByDescending(e => e.EventNumber).Page(page, EventStreamsApiMiddleware.PageSize);
 
@@ -68,18 +70,22 @@ internal class GetEventsHandler : BaseHandler
             storageEvents.AddRange(items.Resource);
         }
 
-        var events = storageEvents.Select(
-                                      e => new Event(
-                                          e.Id,
-                                          e.StreamId,
-                                          e.BodyType,
-                                          e.MetadataType,
-                                          e.EventNumber,
-                                          e.EventId,
-                                          e.TimeToLive,
-                                          _eventDescriptionGenerator.GetDescription(e, metaData),
-                                          e.Timestamp))
-                                  .ToList();
+        var events = storageEvents
+            .Select(
+                e =>
+                    new Event(
+                        e.Id,
+                        e.StreamId,
+                        e.BodyType,
+                        e.MetadataType,
+                        e.EventNumber,
+                        e.EventId,
+                        e.TimeToLive,
+                        _eventDescriptionGenerator.GetDescription(e, metaData),
+                        e.Timestamp
+                    )
+            )
+            .ToList();
 
         var response = new EventsResponse(events);
         var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
@@ -87,7 +93,8 @@ internal class GetEventsHandler : BaseHandler
         response.Links.AddPagedLinks(
             page,
             PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, totalEvents.Resource),
-            p => $"{prefix}/{Uri.EscapeDataString(eventStreamName)}/{Uri.EscapeDataString(streamId)}/events?page={p}");
+            p => $"{prefix}/{Uri.EscapeDataString(eventStreamName)}/{Uri.EscapeDataString(streamId)}/events?page={p}"
+        );
 
         await WriteJson(httpContext.Response, response);
     }

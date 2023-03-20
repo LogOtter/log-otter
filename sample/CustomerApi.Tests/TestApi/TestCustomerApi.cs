@@ -52,15 +52,17 @@ public class TestCustomerApi : IDisposable
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    SignatureValidator = (token, _) => new JwtSecurityToken(token), ValidateAudience = false, ValidateIssuer = false
+                    SignatureValidator = (token, _) => new JwtSecurityToken(token),
+                    ValidateAudience = false,
+                    ValidateIssuer = false
                 };
-            });
+            }
+        );
 
-        services.PostConfigure<PageOptions>(
-            options =>
-            {
-                options.PageSize = 5;
-            });
+        services.PostConfigure<PageOptions>(options =>
+        {
+            options.PageSize = 5;
+        });
     }
 
     public HttpClient CreateClient(AuthenticationHeaderValue? authenticationHeaderValue = null)
@@ -83,14 +85,14 @@ public class TestCustomerApi : IDisposable
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureTestServices(_configureTestServices)
-                   .ConfigureServices(_configureServices)
-                   .ConfigureLogging(
-                       options =>
-                       {
-                           options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
-                           options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
-                       });
+            builder
+                .ConfigureTestServices(_configureTestServices)
+                .ConfigureServices(_configureServices)
+                .ConfigureLogging(options =>
+                {
+                    options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
+                    options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
+                });
         }
     }
 }

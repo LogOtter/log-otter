@@ -33,7 +33,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingEqualsWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
@@ -44,10 +51,18 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingContainsOnAnEnumWithAToStringWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", EnumValue = TestEnum.Value2 });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                EnumValue = TestEnum.Value2
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString())));
+            q => q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString()))
+        );
 
         realResults.Count().Should().Be(1);
         realResults.Should().BeEquivalentTo(testResults);
@@ -56,7 +71,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingAValueFromAMethodWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = true });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = true
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value == GetTrue()));
 
@@ -67,7 +89,15 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingAValueFromAMethodAgainstModelWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = true, PartitionKey = "partition" });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = true,
+                PartitionKey = "partition"
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.GetBoolValue() == true));
 
@@ -81,7 +111,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingAValueFromAMethodWithArgsWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = true });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = true
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value == GetBool(true)));
 
@@ -92,7 +129,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingProjectionWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Select(tm => new TestModel { Name = "Projected" }));
 
@@ -103,7 +147,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingNotEqualsWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name != "Bobbeta Bobertson"));
 
@@ -114,7 +165,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingNotXorWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => !(tm.Value ^ false)));
 
@@ -125,7 +183,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingXorWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value ^ true));
 
@@ -136,7 +201,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingToUpperWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name.ToUpper() == "BOB BOBERTSON"));
 
@@ -147,7 +219,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingToLowerWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name.ToLower() == "bob bobertson"));
 
@@ -161,7 +240,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
         await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Children = new[] { new SubModel { Value = "bob bobertson" } } });
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Children.Any(c => c.Value == "bob bobertson")));
+            q => q.Where(tm => tm.Children.Any(c => c.Value == "bob bobertson"))
+        );
 
         realResults.Count().Should().Be(1);
         realResults.Should().BeEquivalentTo(testResults);
@@ -170,10 +250,18 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingToUpperInvariantWhenExecutingThenBothShouldError()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Name.ToUpperInvariant() == "BOB BOBERTSON"));
+            q => q.Where(tm => tm.Name.ToUpperInvariant() == "BOB BOBERTSON")
+        );
 
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
         var testResultsAction = new Func<IList<TestModel>>(() => testResults.ToList());
@@ -185,10 +273,18 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingToLowerInvariantWhenExecutingThenBothShouldError()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Name.ToLowerInvariant() == "bob bobertson"));
+            q => q.Where(tm => tm.Name.ToLowerInvariant() == "bob bobertson")
+        );
 
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
         var testResultsAction = new Func<IList<TestModel>>(() => testResults.ToList());
@@ -200,7 +296,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingToAnyWhenExecutingThenBothShouldError()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "bob bobertson"));
 
@@ -214,7 +317,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingFirstOrDefaultWhenExecutingThenBothShouldError()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
@@ -228,7 +338,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingSingleOrDefaultWhenExecutingThenBothShouldError()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
@@ -242,7 +359,14 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
     [Fact]
     public async Task GivenAQueryUsingAnyWhenExecutingThenTheResultsShouldMatch()
     {
-        await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Name = "Bob Bobertson", Value = false });
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false
+            }
+        );
 
         var (_, realException, _, testException) = _testCosmos.WhenExecutingAQuery<TestModel, bool>(q => q.Any());
 

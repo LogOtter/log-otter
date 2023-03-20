@@ -39,25 +39,22 @@ internal class ContainerData
     public IEnumerable<ContainerItem> GetItemsInPartition(PartitionKey? partitionKey)
     {
         // As of Microsoft.Azure.Cosmos v3 a null partition key causes a cross partition query
-        return partitionKey.HasValue
-            ? GetPartitionFromKey(partitionKey.Value).Values
-            : GetAllItems();
+        return partitionKey.HasValue ? GetPartitionFromKey(partitionKey.Value).Values : GetAllItems();
     }
 
     public ContainerItem? GetItem(string id, PartitionKey partitionKey)
     {
         var partition = GetPartitionFromKey(partitionKey);
 
-        return partition.TryGetValue(id, out var containerItem)
-            ? containerItem
-            : null;
+        return partition.TryGetValue(id, out var containerItem) ? containerItem : null;
     }
 
     public async Task<Response> AddItem(
         string json,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var id = JsonHelpers.GetIdFromJson(json);
         var partition = GetPartitionFromKey(partitionKey);
@@ -70,11 +67,7 @@ internal class ContainerData
                 throw new ObjectAlreadyExistsException();
             }
 
-            return await UpsertItem(
-                json,
-                partitionKey,
-                requestOptions,
-                cancellationToken);
+            return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
         }
         finally
         {
@@ -119,21 +112,11 @@ internal class ContainerData
             throw new ETagMismatchException();
         }
 
-        var newItem = new ContainerItem(
-            id,
-            json,
-            partitionKey,
-            GetExpiryTime(ttl, _currentTimer));
+        var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer));
 
         partition[id] = newItem;
 
-        DataChanged?.Invoke(
-            this,
-            new DataChangedEventArgs(
-                isUpdate
-                    ? Operation.Updated
-                    : Operation.Created,
-                newItem.Json));
+        DataChanged?.Invoke(this, new DataChangedEventArgs(isUpdate ? Operation.Updated : Operation.Created, newItem.Json));
 
         return Task.FromResult(new Response(newItem, isUpdate));
     }
@@ -143,7 +126,8 @@ internal class ContainerData
         string json,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var partition = GetPartitionFromKey(partitionKey);
 
@@ -152,11 +136,7 @@ internal class ContainerData
             throw new NotFoundException();
         }
 
-        return await UpsertItem(
-            json,
-            partitionKey,
-            requestOptions,
-            cancellationToken);
+        return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
     }
 
     public ContainerItem RemoveItem(string id, PartitionKey partitionKey, ItemRequestOptions? requestOptions)
@@ -238,7 +218,8 @@ internal class ContainerData
         if (id.Contains("/") || id.Contains(@"\") || id.Contains("#") || id.Contains("?"))
         {
             throw new InvalidOperationException(
-                "CosmosDb does not escape the following characters: '/' '\\', '#', '?' in the URI when retrieving an item by ID. Please encode the ID to remove them");
+                "CosmosDb does not escape the following characters: '/' '\\', '#', '?' in the URI when retrieving an item by ID. Please encode the ID to remove them"
+            );
         }
     }
 
@@ -258,7 +239,8 @@ internal class ContainerData
                 HttpStatusCode.BadRequest,
                 0,
                 string.Empty,
-                0);
+                0
+            );
         }
     }
 
@@ -376,7 +358,8 @@ internal class ContainerData
                     item.Value<int?>("ExpiryTime"),
                     item.Value<string>("ETag"),
                     item.Value<bool>("RequireETagOnNextUpdate"),
-                    item.Value<bool>("HasScheduledETagMismatch"));
+                    item.Value<bool>("HasScheduledETagMismatch")
+                );
 
                 partitionKeyDictionary[containerItem.Id] = containerItem;
             }

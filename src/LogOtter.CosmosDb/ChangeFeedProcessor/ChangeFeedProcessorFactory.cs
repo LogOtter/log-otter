@@ -18,13 +18,13 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public IChangeFeedProcessor
-        CreateChangeFeedProcessor<TRawDocument, TDocument, TChangeFeedHandlerDocument, TChangeFeedChangeConverter, TChangeFeedProcessorHandler>(
-            string processorName,
-            Container documentContainer,
-            Func<IServiceProvider, Task<bool>>? enabledFunc,
-            int batchSize,
-            DateTime? activationDate)
+    public IChangeFeedProcessor CreateChangeFeedProcessor<
+        TRawDocument,
+        TDocument,
+        TChangeFeedHandlerDocument,
+        TChangeFeedChangeConverter,
+        TChangeFeedProcessorHandler
+    >(string processorName, Container documentContainer, Func<IServiceProvider, Task<bool>>? enabledFunc, int batchSize, DateTime? activationDate)
         where TChangeFeedProcessorHandler : IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
     {
@@ -53,6 +53,7 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             _options,
             changeConverter,
             changeHandler,
-            logger);
+            logger
+        );
     }
 }
