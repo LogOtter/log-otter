@@ -7,16 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CustomerApi\CustomerApi.csproj"/>
-        <ProjectReference Include="..\..\src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj"/>
+        <ProjectReference Include="..\CustomerApi\CustomerApi.csproj" />
+        <ProjectReference Include="..\..\src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus"/>
-        <PackageReference Include="FluentAssertions"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="xunit"/>
+        <PackageReference Include="Bogus" />
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
