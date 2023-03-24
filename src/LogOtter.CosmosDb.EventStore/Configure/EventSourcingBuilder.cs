@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using LogOtter.CosmosDb.EventStore.Metadata;
+using LogOtter.CosmosDb.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -21,7 +22,11 @@ public class EventSourcingBuilder
         var config = new EventSourceConfiguration<TBaseEvent>();
         configure?.Invoke(config);
 
-        _cosmosDbBuilder.AddContainer<TBaseEvent>(containerName, "/streamId", defaultTimeToLive: -1);
+        _cosmosDbBuilder.AddContainer(
+            typeof(TBaseEvent),
+            containerName,
+            new AutoProvisionMetadata(PartitionKeyPath: "/streamId", DefaultTimeToLive: -1)
+        );
 
         var metadata = new EventSourceMetadata<TBaseEvent>(
             containerName,
@@ -53,9 +58,7 @@ public class EventSourcingBuilder
                 _cosmosDbBuilder.AddContainer(
                     projection.ProjectionType,
                     projection.SnapshotMetadata.ContainerName,
-                    projection.SnapshotMetadata.PartitionKeyPath,
-                    compositeIndexes: projection.SnapshotMetadata.AutoProvisionMetadata?.CompositeIndexes,
-                    defaultTimeToLive: -1
+                    projection.SnapshotMetadata.AutoProvisionMetadata
                 );
 
                 Services.AddSingleton(snapshotRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));

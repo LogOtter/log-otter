@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb;
 
-public class ChangeFeedProcessorOptions
+public record ChangeFeedProcessorOptions
 {
     public string LeasesContainerName { get; set; } = "Leases";
     public int DefaultBatchSize { get; set; } = 100;

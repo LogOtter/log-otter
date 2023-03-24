@@ -7,16 +7,17 @@ namespace LogOtter.CosmosDb;
 
 public static class ConfigureExtensions
 {
-    public static CosmosDbBuilder AddCosmosDb(this IServiceCollection serviceCollection, Action<CosmosDbOptions>? setupAction = null)
+    public static CosmosDbBuilder AddCosmosDb(this IServiceCollection services, Action<CosmosDbOptions>? setupAction = null)
     {
         if (setupAction != null)
         {
-            serviceCollection.Configure(setupAction);
+            services.Configure(setupAction);
         }
 
-        serviceCollection.AddSingleton<IValidateOptions<CosmosDbOptions>, CosmosDbOptionsValidator>();
+        services.AddSingleton<IValidateOptions<CosmosDbOptions>, CosmosDbOptionsValidator>();
+        services.AddSingleton(_ => new AutoProvisionSettings(false));
 
-        serviceCollection.AddSingleton(sp =>
+        services.AddSingleton(sp =>
         {
             var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
 
@@ -35,22 +36,26 @@ public static class ConfigureExtensions
             return new CosmosClient(options.ManagedIdentityOptions.AccountEndpoint, tokenCredential, options.ClientOptions);
         });
 
-        serviceCollection.AddSingleton(sp =>
+        services.AddSingleton(sp =>
         {
             var cosmosDbOptions = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
             var client = sp.GetRequiredService<CosmosClient>();
 
-            var response = client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId).GetAwaiter().GetResult();
+            var autoProvisionSettings = sp.GetRequiredService<AutoProvisionSettings>();
 
-            return response.Database;
+            var database = autoProvisionSettings.Enabled
+                ? client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId).GetAwaiter().GetResult().Database
+                : client.GetDatabase(cosmosDbOptions.DatabaseId);
+
+            return database;
         });
 
-        serviceCollection.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
-        serviceCollection.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();
-        serviceCollection.AddSingleton<IChangeFeedProcessorFactory, ChangeFeedProcessorFactory>();
+        services.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
+        services.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();
+        services.AddSingleton<IChangeFeedProcessorFactory, ChangeFeedProcessorFactory>();
 
-        serviceCollection.AddHostedService<ChangeFeedProcessorRunnerService>();
+        services.AddHostedService<ChangeFeedProcessorRunnerService>();
 
-        return new CosmosDbBuilder(serviceCollection);
+        return new CosmosDbBuilder(services);
     }
 }

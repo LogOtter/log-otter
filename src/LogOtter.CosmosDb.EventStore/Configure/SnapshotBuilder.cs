@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using LogOtter.CosmosDb.EventStore.Metadata;
+using LogOtter.CosmosDb.Metadata;
 using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -13,10 +14,29 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
         _mutateMetadata = mutateMetadata;
     }
 
-    public SnapshotBuilder<TBaseEvent, TProjection> AutoProvision(IReadOnlyCollection<Collection<CompositePath>> compositeIndexes)
+    public SnapshotBuilder<TBaseEvent, TProjection> WithAutoProvisionSettings(
+        string partitionKeyPath = "/partitionKey",
+        UniqueKeyPolicy? uniqueKeyPolicy = null,
+        int? defaultTimeToLive = -1,
+        IReadOnlyCollection<Collection<CompositePath>>? compositeIndexes = null,
+        ThroughputProperties? throughputProperties = null
+    )
     {
         _mutateMetadata(
-            md => md with { SnapshotMetadata = md.SnapshotMetadata! with { AutoProvisionMetadata = new AutoProvisionMetadata(compositeIndexes) } }
+            md =>
+                md with
+                {
+                    SnapshotMetadata = md.SnapshotMetadata! with
+                    {
+                        AutoProvisionMetadata = new AutoProvisionMetadata(
+                            partitionKeyPath,
+                            uniqueKeyPolicy,
+                            defaultTimeToLive,
+                            compositeIndexes,
+                            throughputProperties
+                        )
+                    }
+                }
         );
         return this;
     }

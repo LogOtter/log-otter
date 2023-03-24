@@ -25,6 +25,7 @@ services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStream
 
 services
     .AddCosmosDb()
+    .WithAutoProvisioning()
     .AddEventSourcing(options => options.AutoEscapeIds = true)
     .AddEventSource<CustomerEvent>(
         "CustomerEvents",
@@ -32,7 +33,7 @@ services
         {
             c.AddProjection<CustomerReadModel>()
                 .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey)
-                .AutoProvision(
+                .WithAutoProvisionSettings(
                     compositeIndexes: new[]
                     {
                         new Collection<CompositePath>

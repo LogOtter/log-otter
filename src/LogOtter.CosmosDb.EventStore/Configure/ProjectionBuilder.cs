@@ -17,21 +17,17 @@ public class ProjectionBuilder<TBaseEvent, TProjection>
         _addCatchUpSubscription = addCatchUpSubscription;
     }
 
-    public SnapshotBuilder<TBaseEvent, TProjection> WithSnapshot(
-        string containerName,
-        Func<TBaseEvent, string> getSnapshotPartitionFromEvent,
-        string partitionKeyPath = "/partitionKey"
-    )
+    public SnapshotBuilder<TBaseEvent, TProjection> WithSnapshot(string containerName, Func<TBaseEvent, string> getSnapshotPartitionFromEvent)
     {
-        _mutateMetadata(md => md with { SnapshotMetadata = new(containerName, partitionKeyPath, getSnapshotPartitionFromEvent) });
+        _mutateMetadata(md => md with { SnapshotMetadata = new(containerName, getSnapshotPartitionFromEvent) });
 
-        var snapshotProjectionCatchupSubscription = typeof(SnapshotProjectionCatchupSubscription<,>);
-        var specificHandlerType = snapshotProjectionCatchupSubscription.MakeGenericType(typeof(TBaseEvent), typeof(TProjection));
-        var catchUpSubscriptionMetadata = typeof(CatchUpSubscriptionMetadata<>);
-        var specificMetadata = catchUpSubscriptionMetadata.MakeGenericType(specificHandlerType);
+        var specificHandlerType = typeof(SnapshotProjectionCatchupSubscription<,>).MakeGenericType(typeof(TBaseEvent), typeof(TProjection));
+        var specificMetadata = typeof(CatchUpSubscriptionMetadata<>).MakeGenericType(specificHandlerType);
+
         var projector =
             Activator.CreateInstance(specificMetadata, containerName + "ProjectionSnapshotPersister")
             ?? throw new InvalidOperationException("Unable to create metadata for snapshot");
+
         _addCatchUpSubscription((ICatchUpSubscriptionMetadata)projector);
 
         return new SnapshotBuilder<TBaseEvent, TProjection>(_mutateMetadata);
