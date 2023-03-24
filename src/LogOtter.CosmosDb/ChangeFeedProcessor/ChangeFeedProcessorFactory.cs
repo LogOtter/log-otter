@@ -39,7 +39,11 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
             enabled = enabledFunc(scope.ServiceProvider).GetAwaiter().GetResult();
         }
 
-        var leaseContainer = _database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container;
+        var autoProvisionSettings = scope.ServiceProvider.GetRequiredService<AutoProvisionSettings>();
+
+        var leaseContainer = autoProvisionSettings.Enabled
+            ? _database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container
+            : _database.GetContainer(_options.LeasesContainerName);
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
 

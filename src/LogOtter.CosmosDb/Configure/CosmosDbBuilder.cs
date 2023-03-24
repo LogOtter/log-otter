@@ -1,12 +1,22 @@
-﻿using System.Collections.ObjectModel;
-using System.Reflection;
-using Microsoft.Azure.Cosmos;
+﻿using System.Reflection;
+using LogOtter.CosmosDb.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LogOtter.CosmosDb;
 
 public class CosmosDbBuilder
 {
+    private static readonly MethodInfo RegisterCosmosContainerMethod = typeof(CosmosDbBuilder).GetMethod(
+        nameof(RegisterCosmosContainer),
+        BindingFlags.Instance | BindingFlags.NonPublic
+    )!;
+
+    private static readonly MethodInfo AddChangeFeedProcessorMethod = typeof(CosmosDbBuilder).GetMethod(
+        nameof(AddChangeFeedProcessorInternal),
+        BindingFlags.Instance | BindingFlags.NonPublic
+    )!;
+
     private readonly IList<string> _changeFeedProcessors;
     private readonly IDictionary<Type, string> _containers;
 
@@ -18,39 +28,29 @@ public class CosmosDbBuilder
         Services = serviceCollection;
     }
 
-    public IServiceCollection Services { get; }
+    internal IServiceCollection Services { get; }
 
-    public CosmosDbBuilder AddContainer<T>(
-        string containerName,
-        string partitionKeyPath = "/partitionKey",
-        UniqueKeyPolicy? uniqueKeyPolicy = null,
-        int? defaultTimeToLive = null,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null
-    ) => AddContainer(typeof(T), containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties);
+    public CosmosDbBuilder WithAutoProvisioning()
+    {
+        Services.RemoveAll<AutoProvisionSettings>();
+        Services.AddSingleton(_ => new AutoProvisionSettings(true));
+        return this;
+    }
 
-    internal CosmosDbBuilder AddContainer(
-        Type documentType,
-        string containerName,
-        string partitionKeyPath = "/partitionKey",
-        UniqueKeyPolicy? uniqueKeyPolicy = null,
-        int? defaultTimeToLive = null,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
-        ThroughputProperties? throughputProperties = null
-    )
+    public CosmosDbBuilder AddContainer<T>(string containerName, Action<ContainerConfiguration>? configure = null)
+    {
+        var config = new ContainerConfiguration();
+        configure?.Invoke(config);
+
+        return AddContainer(typeof(T), containerName, config.AutoProvisionMetadata);
+    }
+
+    internal CosmosDbBuilder AddContainer(Type documentType, string containerName, AutoProvisionMetadata? autoProvisionMetadata)
     {
         RegisterContainer(documentType, containerName);
 
-        var cosmosContainer = typeof(CosmosContainer<>);
-        var registerCosmosContainer = typeof(CosmosDbBuilder).GetMethod(
-            nameof(RegisterCosmosContainer),
-            BindingFlags.Instance | BindingFlags.NonPublic
-        );
-        var genericMethod = registerCosmosContainer!.MakeGenericMethod(documentType);
-        genericMethod.Invoke(
-            this,
-            new object?[] { containerName, partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, compositeIndexes, throughputProperties }
-        );
+        var genericMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
+        genericMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata });
 
         return this;
     }
@@ -67,10 +67,7 @@ public class CosmosDbBuilder
         DateTime? activationDate = null
     )
     {
-        var addChangeFeedProcessor = typeof(CosmosDbBuilder)
-            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-            .Single(m => m.Name == nameof(AddChangeFeedProcessorInternal));
-        var genericMethod = addChangeFeedProcessor.MakeGenericMethod(
+        var genericMethod = AddChangeFeedProcessorMethod.MakeGenericMethod(
             rawDocumentType,
             documentType,
             changeFeedHandlerDocumentType,
@@ -150,30 +147,28 @@ public class CosmosDbBuilder
         _containers.Add(documentType, containerName);
     }
 
-    private void RegisterCosmosContainer<T>(
-        string containerName,
-        string partitionKeyPath,
-        UniqueKeyPolicy? uniqueKeyPolicy,
-        int? defaultTimeToLive,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes,
-        ThroughputProperties? throughputProperties
-    )
+    private void RegisterCosmosContainer<T>(string containerName, AutoProvisionMetadata? autoProvisionMetadata)
     {
+        autoProvisionMetadata ??= new AutoProvisionMetadata();
+
         Services.AddSingleton(sp =>
         {
             var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
+            var autoProvisionSettings = sp.GetRequiredService<AutoProvisionSettings>();
 
-            var container = cosmosContainerFactory
-                .CreateContainerIfNotExistsAsync(
-                    containerName,
-                    partitionKeyPath,
-                    uniqueKeyPolicy,
-                    defaultTimeToLive,
-                    compositeIndexes,
-                    throughputProperties
-                )
-                .GetAwaiter()
-                .GetResult();
+            var container = autoProvisionSettings.Enabled
+                ? cosmosContainerFactory
+                    .CreateContainerIfNotExistsAsync(
+                        containerName,
+                        autoProvisionMetadata.PartitionKeyPath,
+                        autoProvisionMetadata.UniqueKeyPolicy,
+                        autoProvisionMetadata.DefaultTimeToLive,
+                        autoProvisionMetadata.CompositeIndexes,
+                        autoProvisionMetadata.ThroughputProperties
+                    )
+                    .GetAwaiter()
+                    .GetResult()
+                : cosmosContainerFactory.GetContainer(containerName);
 
             return new CosmosContainer<T>(container);
         });
