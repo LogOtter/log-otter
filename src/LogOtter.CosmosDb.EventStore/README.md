@@ -1,4 +1,6 @@
-﻿# CosmosDB EventStore
+﻿> ⚠️ Warning: LogOtter is still in beta and there are likely to be breaking changes prior to a v1 release. Use at your own peril!
+
+# CosmosDB EventStore
 
 A lightweight event sourcing abstraction for CosmosDB, built on top of LogOtter.CosmosDb.
 
