@@ -1,4 +1,6 @@
-﻿# CosmosDB
+﻿> ⚠️ Warning: LogOtter is still in beta and there are likely to be breaking changes prior to a v1 release. Use at your own peril!
+
+# CosmosDB
 
 A collection of helpers for using CosmosDb in a strongly typed way with dependency injection.
 

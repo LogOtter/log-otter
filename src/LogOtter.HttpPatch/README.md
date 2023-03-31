@@ -1,4 +1,6 @@
-﻿# HttpPatch
+﻿> ⚠️ Warning: LogOtter is still in beta and there are likely to be breaking changes prior to a v1 release. Use at your own peril!
+
+# HttpPatch
 
 Helpers for a simple HttpPatch using a simple model
 
