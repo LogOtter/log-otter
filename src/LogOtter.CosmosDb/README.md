@@ -77,7 +77,7 @@ builder.Services.AddCosmosDb(options =>
 
 ## Auto Provisioning
 
-By default, the library expects the database to exist. To automatically provision the database, chain a call to `.WithAutoProvisioning()`:
+By default, the library expects the database and containers to exist. To automatically provision the database and containers, chain a call to `.WithAutoProvisioning()`:
 
 ```csharp
 services
@@ -89,35 +89,15 @@ services
 
 Before performing useful operations, add a container using `.AddContainer<T>()` where `T` is the type you want to store. Each container can store one type of object, preventing mixed document types in a container.
 
-### Provisioning outside of your application
+### Auto Provisioning Settings
 
-Specify the container name.
+The default container settings when you have called `.WithAutoProvisioning()` are:
 
-```csharp
-services
-    .AddCosmosDb()
-    .AddContainer<Customer>("Customers")
-```
-
-### Auto Provisioning
-
-To provision a container within the application, configure it:
-
-```csharp
-services
-    .AddCosmosDb()
-    .AddContainer<Customer>("Customers", configure =>
-    {
-        configure.WithAutoProvisionSettings();
-    })
-```
-
-This will create the container if it doesn't exist, with default options:
-- The partition key path `/partitionKey`
-- The default ttl `-1`
+- Partition key path `/partitionKey`
+- Default ttl `-1`
 - All other settings will be the defaults usually used when calling `CreateContainerIfNotExistsAsync` (from the Cosmos SDK)
 
-To customize the settings, specify them explicitly:
+To override the defaults, specify them explicitly:
 
 ```csharp
 services
