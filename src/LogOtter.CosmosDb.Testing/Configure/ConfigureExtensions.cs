@@ -7,7 +7,9 @@ public static class ConfigureExtensions
     public static ITestCosmosDbBuilder AddTestCosmosDb(this IServiceCollection services)
     {
         services.AddSingleton<IFeedIteratorFactory, TestFeedIteratorFactory>();
-        services.AddSingleton<TestCosmosContainerFactory>();
+        services.AddSingleton<TestCosmosContainerFactory>(
+            sp => new TestCosmosContainerFactory(sp.GetRequiredService<LogOtterJsonSerializationSettings>())
+        );
         services.AddSingleton<ICosmosContainerFactory>(sp => sp.GetRequiredService<TestCosmosContainerFactory>());
         services.AddSingleton<IChangeFeedProcessorFactory, TestChangeFeedProcessorFactory>();
 

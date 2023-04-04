@@ -1,20 +1,18 @@
 namespace LogOtter.CosmosDb.EventStore;
 
-public class EventData
+public class EventData<TBaseEvent>
+    where TBaseEvent : class
 {
     public Guid EventId { get; }
 
-    public object Body { get; }
+    public TBaseEvent Body { get; }
 
-    public int TimeToLive { get; }
+    public Dictionary<string, string> Metadata { get; }
 
-    public object? Metadata { get; }
-
-    public EventData(Guid eventId, object body, int timeToLive = -1, object? metadata = null)
+    public EventData(Guid eventId, TBaseEvent body, Dictionary<string, string>? metadata = null)
     {
         EventId = eventId;
         Body = body;
-        TimeToLive = timeToLive;
-        Metadata = metadata;
+        Metadata = metadata ?? new Dictionary<string, string>();
     }
 }

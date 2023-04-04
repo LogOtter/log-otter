@@ -1,18 +1,7 @@
-namespace LogOtter.CosmosDb.EventStore;
+﻿namespace LogOtter.CosmosDb.EventStore;
 
-public class EventConverter<TBaseEvent> : IChangeFeedChangeConverter<CosmosDbStorageEvent, Event<TBaseEvent>>
+public class EventConverter<TBaseEvent> : IChangeFeedChangeConverter<StorageEvent<TBaseEvent>, Event<TBaseEvent>>
+    where TBaseEvent : class
 {
-    private readonly EventStore _eventStore;
-
-    public EventConverter(EventStoreDependency<TBaseEvent> eventStoreDependency)
-    {
-        _eventStore = eventStoreDependency.EventStore;
-    }
-
-    public Event<TBaseEvent> ConvertChange(CosmosDbStorageEvent change)
-    {
-        var storageEvent = _eventStore.FromCosmosStorageEvent(change);
-
-        return Event<TBaseEvent>.FromStorageEvent(storageEvent);
-    }
+    public Event<TBaseEvent> ConvertChange(StorageEvent<TBaseEvent> change) => Event<TBaseEvent>.FromStorageEvent(change);
 }

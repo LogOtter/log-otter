@@ -18,6 +18,7 @@ public class ContainerMock : Container
     private readonly ConcurrentQueue<(CosmosException exception, Func<InvocationInformation, bool> condition)> _exceptionsToThrow;
 
     private readonly string _partitionKeyPath;
+    private readonly JsonSerializerSettings? _jsonSerializerSettings;
 
     public override string Id { get; }
     public override Conflicts? Conflicts => null;
@@ -28,13 +29,15 @@ public class ContainerMock : Container
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         string containerName = "TestContainer",
-        int defaultDocumentTimeToLive = -1
+        int defaultDocumentTimeToLive = -1,
+        JsonSerializerSettings? jsonSerializerSettings = null
     )
     {
-        _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive);
+        _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive, jsonSerializerSettings);
         _exceptionsToThrow = new ConcurrentQueue<(CosmosException, Func<InvocationInformation, bool> condition)>();
 
         _partitionKeyPath = partitionKeyPath;
+        _jsonSerializerSettings = jsonSerializerSettings;
 
         Id = containerName;
     }
@@ -347,7 +350,7 @@ public class ContainerMock : Container
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch CreateTransactionalBatch(PartitionKey partitionKey)
     {
-        return new TestTransactionalBatch(partitionKey, this);
+        return new TestTransactionalBatch(partitionKey, this, _jsonSerializerSettings);
     }
 
     public void Reset()

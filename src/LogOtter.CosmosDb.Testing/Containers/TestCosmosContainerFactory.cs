@@ -8,6 +8,13 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
 {
     private readonly ConcurrentBag<ContainerMock.ContainerMock> _containers = new();
 
+    private readonly LogOtterJsonSerializationSettings _serializationSettings;
+
+    internal TestCosmosContainerFactory(LogOtterJsonSerializationSettings serializationSettings)
+    {
+        _serializationSettings = serializationSettings;
+    }
+
     public Task<Container> CreateContainerIfNotExistsAsync(
         string containerName,
         string partitionKeyPath,
@@ -24,7 +31,13 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
             return Task.FromResult<Container>(existingContainer);
         }
 
-        var container = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy, containerName, defaultTimeToLive ?? -1);
+        var container = new ContainerMock.ContainerMock(
+            partitionKeyPath,
+            uniqueKeyPolicy,
+            containerName,
+            defaultTimeToLive ?? -1,
+            _serializationSettings.Settings
+        );
         _containers.Add(container);
 
         return Task.FromResult<Container>(container);

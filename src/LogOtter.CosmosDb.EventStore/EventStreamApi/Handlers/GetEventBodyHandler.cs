@@ -54,10 +54,10 @@ internal class GetEventBodyHandler : BaseHandler
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
         var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .GetItemLinqQueryable<IStorageEvent>(requestOptions: requestOptions)
             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
-        var storageEvent = (CosmosDbStorageEvent?)null;
+        var storageEvent = (IStorageEvent?)null;
 
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
 
@@ -78,6 +78,6 @@ internal class GetEventBodyHandler : BaseHandler
         }
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-        await httpContext.Response.WriteAsync(storageEvent.Body.ToString());
+        await httpContext.Response.WriteAsync(storageEvent.EventBody.GetType().Name);
     }
 }

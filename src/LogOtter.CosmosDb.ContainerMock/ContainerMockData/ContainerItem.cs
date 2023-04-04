@@ -5,6 +5,7 @@ namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 internal class ContainerItem
 {
+    private readonly JsonSerializerSettings? _jsonSerializerSettings;
     public PartitionKey PartitionKey { get; }
     public string Id { get; }
     public string Json { get; }
@@ -14,8 +15,9 @@ internal class ContainerItem
     public bool RequireETagOnNextUpdate { get; private set; }
     public bool HasScheduledETagMismatch { get; private set; }
 
-    public ContainerItem(string id, string json, PartitionKey partitionKey, int? expiryTime)
+    public ContainerItem(string id, string json, PartitionKey partitionKey, int? expiryTime, JsonSerializerSettings? jsonSerializerSettings)
     {
+        _jsonSerializerSettings = jsonSerializerSettings;
         Id = id;
         ExpiryTime = expiryTime;
         Json = json;
@@ -44,7 +46,7 @@ internal class ContainerItem
 
     public T Deserialize<T>()
     {
-        return JsonConvert.DeserializeObject<T>(Json);
+        return JsonConvert.DeserializeObject<T>(Json, _jsonSerializerSettings);
     }
 
     public void ScheduleMismatchETagOnNextUpdate()

@@ -81,6 +81,7 @@ public class TestCustomerApi : IDisposable
         {
             _configureTestServices = configureTestServices;
             _configureServices = configureServices;
+            Server.PreserveExecutionContext = true;
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)

@@ -58,10 +58,10 @@ internal class GetEventHandler : BaseHandler
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
         var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
+            .GetItemLinqQueryable<IStorageEvent>(requestOptions: requestOptions)
             .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
 
-        var storageEvent = (CosmosDbStorageEventWithTimestamp?)null;
+        var storageEvent = (IStorageEvent?)null;
 
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
 
@@ -82,15 +82,13 @@ internal class GetEventHandler : BaseHandler
         }
 
         var @event = new Event(
-            storageEvent.Id,
+            storageEvent.EventId.ToString(),
             storageEvent.StreamId,
-            storageEvent.BodyType,
-            storageEvent.MetadataType,
+            storageEvent.EventBody.GetType().Name,
             storageEvent.EventNumber,
             storageEvent.EventId,
-            storageEvent.TimeToLive,
             _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
-            storageEvent.Timestamp
+            storageEvent.CreatedOn
         );
 
         await WriteJson(httpContext.Response, @event);

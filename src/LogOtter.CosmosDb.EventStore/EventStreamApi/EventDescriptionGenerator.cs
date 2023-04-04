@@ -14,24 +14,23 @@ internal class EventDescriptionGenerator
         _cache = new ConcurrentDictionary<Type, MethodInfo?>();
     }
 
-    public string GetDescription(CosmosDbStorageEvent cosmosDbStorageEvent, IEventSourceMetadata eventSourceMetadata)
+    public string GetDescription(IStorageEvent storageEvent, IEventSourceMetadata eventSourceMetadata)
     {
-        var storageEvent = cosmosDbStorageEvent.ToStorageEvent(eventSourceMetadata.SerializationTypeMap, JsonSerializer.CreateDefault());
-
         var methodInfo = GetDescriptionMethod(storageEvent.EventBody);
         if (methodInfo == null)
         {
-            return cosmosDbStorageEvent.BodyType;
+            return storageEvent.EventBody.GetType().Name;
         }
 
         try
         {
             var description = (string?)methodInfo.Invoke(storageEvent.EventBody, null);
-            return description ?? cosmosDbStorageEvent.BodyType;
+            return description ?? storageEvent.EventBody.GetType().Name;
+            ;
         }
         catch
         {
-            return cosmosDbStorageEvent.BodyType;
+            return storageEvent.EventBody.GetType().Name;
         }
     }
 

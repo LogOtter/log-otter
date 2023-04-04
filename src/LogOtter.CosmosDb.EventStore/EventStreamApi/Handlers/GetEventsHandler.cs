@@ -54,15 +54,13 @@ internal class GetEventsHandler : BaseHandler
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
-        var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEventWithTimestamp>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId);
+        var query = container.GetItemLinqQueryable<IStorageEvent>(requestOptions: requestOptions).Where(e => e.StreamId == streamId);
 
         var itemsQuery = query.OrderByDescending(e => e.EventNumber).Page(page, EventStreamsApiMiddleware.PageSize);
 
         var totalEvents = await query.CountAsync();
 
-        var storageEvents = new List<CosmosDbStorageEventWithTimestamp>();
+        var storageEvents = new List<IStorageEvent>();
         var feedIterator = _feedIteratorFactory.GetFeedIterator(itemsQuery);
         while (feedIterator.HasMoreResults)
         {
@@ -74,15 +72,13 @@ internal class GetEventsHandler : BaseHandler
             .Select(
                 e =>
                     new Event(
-                        e.Id,
+                        e.EventId.ToString(),
                         e.StreamId,
-                        e.BodyType,
-                        e.MetadataType,
+                        e.EventBody.GetType().Name,
                         e.EventNumber,
                         e.EventId,
-                        e.TimeToLive,
                         _eventDescriptionGenerator.GetDescription(e, metaData),
-                        e.Timestamp
+                        e.CreatedOn
                     )
             )
             .ToList();

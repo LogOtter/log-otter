@@ -18,6 +18,7 @@ public class EventSourcingBuilder
     }
 
     public EventSourcingBuilder AddEventSource<TBaseEvent>(string containerName, Action<EventSourceConfiguration<TBaseEvent>>? configure = null)
+        where TBaseEvent : class
     {
         var config = new EventSourceConfiguration<TBaseEvent>();
         configure?.Invoke(config);
@@ -38,13 +39,15 @@ public class EventSourcingBuilder
 
         Services.AddSingleton(metadata);
         Services.AddSingleton<IEventSourceMetadata>(metadata);
+        _cosmosDbBuilder.WithCustomJsonConverter<StorageEventJsonConverter<TBaseEvent>>(
+            sp => new StorageEventJsonConverter<TBaseEvent>(metadata.SerializationTypeMap)
+        );
 
         Services.AddSingleton(sp =>
         {
             var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
             var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
-            var eventStore = new EventStore(cosmosContainer.Container, feedIteratorFactory, metadata.SerializationTypeMap);
-            return new EventStoreDependency<TBaseEvent>(eventStore);
+            return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory);
         });
 
         var eventRepository = typeof(EventRepository<,>);
@@ -76,7 +79,7 @@ public class EventSourcingBuilder
             );
 
             _cosmosDbBuilder.AddChangeFeedProcessor(
-                typeof(CosmosDbStorageEvent),
+                typeof(StorageEvent<TBaseEvent>),
                 typeof(TBaseEvent),
                 typeof(Event<TBaseEvent>),
                 typeof(EventConverter<TBaseEvent>),

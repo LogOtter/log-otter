@@ -26,6 +26,7 @@ services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStream
 services
     .AddCosmosDb()
     .WithAutoProvisioning()
+    .AddContainer<object>("name")
     .AddEventSourcing(options => options.AutoEscapeIds = true)
     .AddEventSource<CustomerEvent>(
         "CustomerEvents",

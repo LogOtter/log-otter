@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class SimpleSerializationTypeMap : ISerializationTypeMap
+internal class SimpleSerializationTypeMap
 {
     private readonly ImmutableDictionary<string, string> _nameFromType;
     private readonly ImmutableDictionary<string, string> _typeFromName;

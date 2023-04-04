@@ -1,43 +1,44 @@
 ﻿using System.Net;
 using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class EventStore
+public class EventStore<TBaseEvent>
+    where TBaseEvent : class
 {
     private readonly Container _container;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly JsonSerializer _jsonSerializer;
-    private readonly ISerializationTypeMap _typeMap;
 
-    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, ISerializationTypeMap typeMap)
+    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory)
     {
         _container = container;
         _feedIteratorFactory = feedIteratorFactory;
-        _typeMap = typeMap;
-        _jsonSerializer = JsonSerializer.CreateDefault();
     }
 
-    public Task AppendToStream(string streamId, int expectedVersion, params EventData[] events)
+    public Task AppendToStream(string streamId, int expectedVersion, params EventData<TBaseEvent>[] events)
     {
         return AppendToStream(streamId, expectedVersion, default, events);
     }
 
-    public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData[] events)
+    public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData<TBaseEvent>[] events)
     {
-        var storageEvents = new List<StorageEvent>();
+        var storageEvents = new List<StorageEvent<TBaseEvent>>();
         var eventVersion = expectedVersion;
+        var date = DateTimeOffset.Now;
 
         foreach (var @event in events)
         {
-            storageEvents.Add(new StorageEvent(streamId, @event, ++eventVersion));
+            storageEvents.Add(new StorageEvent<TBaseEvent>(streamId, @event, ++eventVersion, date));
         }
 
         return AppendToStreamInternal(streamId, storageEvents, cancellationToken);
     }
 
-    private async Task AppendToStreamInternal(string streamId, IEnumerable<StorageEvent> events, CancellationToken cancellationToken = default)
+    private async Task AppendToStreamInternal(
+        string streamId,
+        IEnumerable<StorageEvent<TBaseEvent>> events,
+        CancellationToken cancellationToken = default
+    )
     {
         var storageEvents = events.ToList();
         var firstEventNumber = storageEvents.First().EventNumber;
@@ -49,8 +50,7 @@ public class EventStore
             var batch = _container.CreateTransactionalBatch(new PartitionKey(streamId));
             foreach (var @event in storageEvents)
             {
-                var cosmosDbStorageEvent = CosmosDbStorageEvent.FromStorageEvent(@event, _typeMap, _jsonSerializer);
-                batch.CreateItem(cosmosDbStorageEvent, batchRequestOptions);
+                batch.CreateItem(@event, batchRequestOptions);
             }
 
             // ReSharper disable once UnusedVariable
@@ -67,12 +67,15 @@ public class EventStore
         }
     }
 
-    public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(string streamId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<StorageEvent<TBaseEvent>>> ReadStreamForwards(
+        string streamId,
+        CancellationToken cancellationToken = default
+    )
     {
         return await ReadStreamForwards(streamId, 1, int.MaxValue, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<StorageEvent>> ReadStreamForwards(
+    public async Task<IReadOnlyCollection<StorageEvent<TBaseEvent>>> ReadStreamForwards(
         string streamId,
         int startPosition,
         int numberOfEventsToRead,
@@ -84,14 +87,14 @@ public class EventStore
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
         var query = _container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .GetItemLinqQueryable<StorageEvent<TBaseEvent>>(requestOptions: requestOptions)
             .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
             .OrderBy(e => e.EventNumber)
             .Take(numberOfEventsToRead);
 
         var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
 
-        var events = new List<StorageEvent>();
+        var events = new List<StorageEvent<TBaseEvent>>();
 
         while (feedIterator.HasMoreResults)
         {
@@ -100,16 +103,11 @@ public class EventStore
 
             foreach (var resource in response.Resource)
             {
-                events.Add(FromCosmosStorageEvent(resource));
+                events.Add(resource);
             }
         }
 
         return events.AsReadOnly();
-    }
-
-    public StorageEvent FromCosmosStorageEvent(CosmosDbStorageEvent cosmosDbStorageEvent)
-    {
-        return cosmosDbStorageEvent.ToStorageEvent(_typeMap, _jsonSerializer);
     }
 
     private static async Task<TransactionalBatchResponse> CreateEvents(TransactionalBatch batch, CancellationToken cancellationToken)
