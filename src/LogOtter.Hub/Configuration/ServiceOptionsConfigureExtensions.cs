@@ -7,6 +7,7 @@ internal static class ServiceOptionsConfigureExtensions
         var config = new ConfigurationBuilder()
             .AddJsonFile("services.json", optional: false)
             .AddJsonFile($"services.{builder.Environment.EnvironmentName}.json", optional: true)
+            .AddEnvironmentVariables("Hub:")
             .Build();
 
         var serviceOptions = config.Get<ServicesOptions>();

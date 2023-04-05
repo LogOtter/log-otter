@@ -1,0 +1,53 @@
+name: Publish Docker Images
+
+on:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  build-number:
+    name: Generate Build Number
+    runs-on: ubuntu-latest
+    outputs:
+      build-number: ${{ steps.build-number.outputs.build_number }}
+    steps:
+      - name: Generate build number
+        id: build-number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-customer-api:
+    uses: LogOtter/log-otter/.github/workflows/publish-docker-image.yml
+    needs: build-number
+    with:
+      project_name: customer-api
+      project_title: Customer API
+      project_description: Sample API showing how to use LogOtter
+      project_path: sample/CustomerApi
+      build_number: ${{ needs.build-number.outputs.build-number }}
+    secrets: inherit
+
+  publish-customer-worker:
+    uses: LogOtter/log-otter/.github/workflows/publish-docker-image.yml
+    needs: build-number
+    with:
+      project_name: customer-worker
+      project_title: Customer Worker
+      project_description: Sample Worker showing how to use LogOtter
+      project_path: sample/CustomerWorker
+      build_number: ${{ needs.build-number.outputs.build-number }}
+    secrets: inherit
+
+  publish-hub:
+    uses: LogOtter/log-otter/.github/workflows/publish-docker-image.yml
+    needs: build-number
+    with:
+      project_name: hub
+      project_title: LogOtter Hub
+      project_description: Hub combining event streams from multiple LogOtter services
+      project_path: src/LogOtter.Hub
+      build_number: ${{ needs.build-number.outputs.build-number }}
+    secrets: inherit

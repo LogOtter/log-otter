@@ -1,0 +1,20 @@
+name: Main
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    uses: LogOtter/log-otter/.github/workflows/build-test.yml
+    secrets: inherit
+
+  publish-docker:
+    uses: LogOtter/log-otter/.github/workflows/publish-docker.yml
+    needs: build
+    secrets: inherit
+
+  deploy:
+    uses: LogOtter/log-otter/.github/workflows/deploy.yml
+    needs: publish-docker
+    secrets: inherit
