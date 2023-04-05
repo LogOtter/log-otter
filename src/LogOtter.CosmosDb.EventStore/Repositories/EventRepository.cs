@@ -76,7 +76,8 @@ public class EventRepository<TBaseEvent, TSnapshot>
 
         var streamId = _options.EscapeIdIfRequired(id);
 
-        var eventData = events.Select(e => new EventData(Guid.NewGuid(), e, e.Ttl ?? -1)).ToArray();
+        var now = DateTimeOffset.Now;
+        var eventData = events.Select(e => new EventData(Guid.NewGuid(), e, now)).ToArray();
 
         await _eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
