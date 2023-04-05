@@ -6,15 +6,35 @@ on:
 
 jobs:
   build:
-    uses: LogOtter/log-otter/.github/workflows/build-test.yml
+    uses: ./.github/workflows/build-test.yml
     secrets: inherit
 
-  publish-docker:
-    uses: LogOtter/log-otter/.github/workflows/publish-docker.yml
+  build-number:
+    name: Generate Build Number
+    runs-on: ubuntu-latest
     needs: build
+    outputs:
+      build-number: ${{ steps.build-number.outputs.build_number }}
+      version: "0.0.${{ steps.build-number.outputs.build_number }}"
+    steps:
+      - name: Generate build number
+        id: build-number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-docker:
+    uses: ./.github/workflows/publish-docker.yml
+    with:
+      version: ${{ needs.build-number.outputs.version }}
+    needs: build-number
     secrets: inherit
 
   deploy:
-    uses: LogOtter/log-otter/.github/workflows/deploy.yml
-    needs: publish-docker
+    uses: ./.github/workflows/deploy.yml
+    with:
+      version: ${{ needs.build-number.outputs.version }}
+    needs:
+      - build-number
+      - publish-docker
     secrets: inherit
