@@ -10,6 +10,9 @@ on:
 jobs:
   publish-customer-api:
     uses: ./.github/workflows/publish-docker-image.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       project_name: customer-api
       project_title: Customer API
@@ -20,6 +23,9 @@ jobs:
 
   publish-customer-worker:
     uses: ./.github/workflows/publish-docker-image.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       project_name: customer-worker
       project_title: Customer Worker
@@ -30,6 +36,9 @@ jobs:
 
   publish-hub:
     uses: ./.github/workflows/publish-docker-image.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       project_name: hub
       project_title: LogOtter Hub

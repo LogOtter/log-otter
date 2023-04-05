@@ -7,4 +7,8 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build-test.yml
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
     secrets: inherit

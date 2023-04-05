@@ -25,6 +25,9 @@ jobs:
 
   publish-docker:
     uses: ./.github/workflows/publish-docker.yml
+    permissions:
+      contents: read
+      packages: write
     with:
       version: ${{ needs.build-number.outputs.version }}
     needs: build-number
