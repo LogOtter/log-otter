@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 
-internal class Event
+public class Event
 {
     public string Id { get; }
     public string StreamId { get; }

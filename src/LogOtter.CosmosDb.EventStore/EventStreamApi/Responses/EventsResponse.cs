@@ -3,7 +3,7 @@ using LogOtter.JsonHal;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 
-internal class EventsResponse
+public class EventsResponse
 {
     public IList<Event> Events { get; }
 
