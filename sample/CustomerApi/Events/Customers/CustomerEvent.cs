@@ -18,9 +18,6 @@ public abstract class CustomerEvent : IEvent<CustomerReadModel>
 
     public string EventStreamId => CustomerUri.Uri;
 
-    [JsonProperty("ttl")]
-    public int? Ttl => -1;
-
     public abstract void Apply(CustomerReadModel model);
 
     [EventDescription]

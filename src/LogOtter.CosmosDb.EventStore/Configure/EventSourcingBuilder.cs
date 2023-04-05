@@ -22,11 +22,7 @@ public class EventSourcingBuilder
         var config = new EventSourceConfiguration<TBaseEvent>();
         configure?.Invoke(config);
 
-        _cosmosDbBuilder.AddContainer(
-            typeof(TBaseEvent),
-            containerName,
-            new AutoProvisionMetadata(PartitionKeyPath: "/streamId", DefaultTimeToLive: -1)
-        );
+        _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, new AutoProvisionMetadata(PartitionKeyPath: "/streamId"));
 
         var metadata = new EventSourceMetadata<TBaseEvent>(
             containerName,

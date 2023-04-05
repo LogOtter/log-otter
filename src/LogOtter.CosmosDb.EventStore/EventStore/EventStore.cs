@@ -9,9 +9,9 @@ public class EventStore
     private readonly Container _container;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly JsonSerializer _jsonSerializer;
-    private readonly ISerializationTypeMap _typeMap;
+    private readonly SimpleSerializationTypeMap _typeMap;
 
-    public EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, ISerializationTypeMap typeMap)
+    internal EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, SimpleSerializationTypeMap typeMap)
     {
         _container = container;
         _feedIteratorFactory = feedIteratorFactory;

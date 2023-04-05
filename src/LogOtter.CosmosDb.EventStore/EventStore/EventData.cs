@@ -6,15 +6,15 @@ public class EventData
 
     public object Body { get; }
 
-    public int TimeToLive { get; }
+    public Dictionary<string, string> Metadata { get; }
 
-    public object? Metadata { get; }
+    public DateTimeOffset CreatedOn { get; }
 
-    public EventData(Guid eventId, object body, int timeToLive = -1, object? metadata = null)
+    public EventData(Guid eventId, object body, DateTimeOffset createdOn, Dictionary<string, string>? metadata = null)
     {
         EventId = eventId;
         Body = body;
-        TimeToLive = timeToLive;
-        Metadata = metadata;
+        CreatedOn = createdOn;
+        Metadata = metadata ?? new Dictionary<string, string>();
     }
 }

@@ -21,10 +21,10 @@ public class CosmosDbStorageEvent
     public string BodyType { get; set; }
 
     [JsonProperty("metadata")]
-    public JObject? Metadata { get; set; }
+    public Dictionary<string, string> Metadata { get; set; }
 
-    [JsonProperty("metadataType")]
-    public string MetadataType { get; set; }
+    [JsonProperty("createdOn")]
+    public DateTimeOffset CreatedOn { get; set; }
 
     [JsonProperty("streamId")]
     public string StreamId { get; set; }
@@ -32,10 +32,7 @@ public class CosmosDbStorageEvent
     [JsonProperty("eventNumber")]
     public int EventNumber { get; set; }
 
-    [JsonProperty("ttl")]
-    public int TimeToLive { get; set; }
-
-    public static CosmosDbStorageEvent FromStorageEvent(StorageEvent storageEvent, ISerializationTypeMap typeMap, JsonSerializer serializer)
+    internal static CosmosDbStorageEvent FromStorageEvent(StorageEvent storageEvent, SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
     {
         var cosmosDbStorageEvent = new CosmosDbStorageEvent
         {
@@ -45,14 +42,8 @@ public class CosmosDbStorageEvent
             BodyType = typeMap.GetNameFromType(storageEvent.EventBody.GetType()),
             StreamId = storageEvent.StreamId,
             EventNumber = storageEvent.EventNumber,
-            TimeToLive = storageEvent.TimeToLive
+            Metadata = storageEvent.Metadata
         };
-
-        if (storageEvent.Metadata != null)
-        {
-            cosmosDbStorageEvent.Metadata = JObject.FromObject(storageEvent.Metadata, serializer);
-            cosmosDbStorageEvent.MetadataType = typeMap.GetNameFromType(storageEvent.Metadata.GetType());
-        }
 
         return cosmosDbStorageEvent;
     }
@@ -62,12 +53,11 @@ public class CosmosDbStorageEvent
         return document.Resource;
     }
 
-    public StorageEvent ToStorageEvent(ISerializationTypeMap typeMap, JsonSerializer serializer)
+    internal StorageEvent ToStorageEvent(SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
     {
         var bodyType = typeMap.GetTypeFromName(BodyType);
         var body = Body.ToObject(bodyType, serializer);
-        var metadata = Metadata?.ToObject(typeMap.GetTypeFromName(MetadataType), serializer);
 
-        return new StorageEvent(StreamId, new EventData(EventId, body, TimeToLive, metadata), EventNumber);
+        return new StorageEvent(StreamId, new EventData(EventId, body, CreatedOn, Metadata), EventNumber);
     }
 }

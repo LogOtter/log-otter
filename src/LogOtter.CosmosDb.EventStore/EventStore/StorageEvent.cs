@@ -6,13 +6,13 @@ public class StorageEvent
 
     public object EventBody { get; }
 
-    public object? Metadata { get; }
+    public Dictionary<string, string> Metadata { get; }
 
     public int EventNumber { get; }
 
     public Guid EventId { get; }
 
-    public int TimeToLive { get; }
+    public DateTimeOffset CreatedOn { get; }
 
     public StorageEvent(string streamId, EventData data, int eventNumber)
     {
@@ -21,6 +21,6 @@ public class StorageEvent
         Metadata = data.Metadata;
         EventNumber = eventNumber;
         EventId = data.EventId;
-        TimeToLive = data.TimeToLive;
+        CreatedOn = data.CreatedOn;
     }
 }
