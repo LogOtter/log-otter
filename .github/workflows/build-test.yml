@@ -1,0 +1,48 @@
+name: Build & Test
+
+on:
+  workflow_call:
+    secrets:
+      TEST_COSMOS_CONNECTION_STRING:
+        required: true
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: global.json
+
+      - name: Check formatting
+        run: |
+          dotnet tool restore
+          dotnet csharpier --check .
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test
+        run: dotnet test --no-build
+        env:
+          TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: .NET Tests
+          path: .test-results/*.trx
+          reporter: dotnet-trx

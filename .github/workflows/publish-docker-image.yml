@@ -1,0 +1,69 @@
+name: Build Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      project_name:
+        required: true
+        type: string
+      project_title:
+        required: true
+        type: string
+      project_description:
+        required: true
+        type: string
+      project_path:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: global.json
+
+      - name: Generate variables
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Login to the Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: (${{ inputs.project_name }}) Build for docker image
+        run: |
+          dotnet publish --configuration Release -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" --output bin/docker-publish
+        working-directory: ${{ inputs.project_path }}
+
+      - name: (${{ inputs.project_name }}) Generate metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/logotter/${{ inputs.project_name }}
+          labels: |
+            org.opencontainers.image.title=${{ inputs.project_title }}
+            org.opencontainers.image.description=${{ inputs.project_description }}
+
+      - name: (${{ inputs.project_name }}) Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: ${{ inputs.project_path }}
+          tags: ${{ inputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
