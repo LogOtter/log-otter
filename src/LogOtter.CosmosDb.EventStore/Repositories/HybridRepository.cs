@@ -9,14 +9,14 @@ public class HybridRepository<TBaseEvent, TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
-    private readonly EventStore _eventStore;
+    private readonly EventStore<TBaseEvent> _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _options;
     private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
     private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver;
 
     public HybridRepository(
-        EventStoreDependency<TBaseEvent> eventStoreDependency,
+        EventStore<TBaseEvent> eventStore,
         EventRepository<TBaseEvent, TSnapshot> eventRepository,
         SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
         SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
@@ -24,7 +24,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
         IOptions<EventStoreOptions> options
     )
     {
-        _eventStore = eventStoreDependency.EventStore;
+        _eventStore = eventStore;
         _eventRepository = eventRepository;
         _snapshotRepository = snapshotRepository;
         _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();

@@ -1,12 +1,13 @@
 namespace LogOtter.CosmosDb.EventStore;
 
 public class EventConverter<TBaseEvent> : IChangeFeedChangeConverter<CosmosDbStorageEvent, Event<TBaseEvent>>
+    where TBaseEvent : class
 {
-    private readonly EventStore _eventStore;
+    private readonly EventStore<TBaseEvent> _eventStore;
 
-    public EventConverter(EventStoreDependency<TBaseEvent> eventStoreDependency)
+    public EventConverter(EventStore<TBaseEvent> eventStore)
     {
-        _eventStore = eventStoreDependency.EventStore;
+        _eventStore = eventStore;
     }
 
     public Event<TBaseEvent> ConvertChange(CosmosDbStorageEvent change)

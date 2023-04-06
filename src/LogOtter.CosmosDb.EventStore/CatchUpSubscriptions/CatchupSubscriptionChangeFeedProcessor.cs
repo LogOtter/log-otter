@@ -2,6 +2,7 @@ namespace LogOtter.CosmosDb.EventStore;
 
 public class CatchupSubscriptionChangeFeedProcessor<TBaseEvent, TCatchupSubscriptionHandler> : IChangeFeedProcessorChangeHandler<Event<TBaseEvent>>
     where TCatchupSubscriptionHandler : ICatchupSubscription<TBaseEvent>
+    where TBaseEvent : class
 {
     private readonly ICatchupSubscription<TBaseEvent> _catchupSubscription;
 

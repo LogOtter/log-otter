@@ -6,12 +6,12 @@ public class EventRepository<TBaseEvent, TSnapshot>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventStore _eventStore;
+    private readonly EventStore<TBaseEvent> _eventStore;
     private readonly EventStoreOptions _options;
 
-    public EventRepository(EventStoreDependency<TBaseEvent> eventStoreDependency, IOptions<EventStoreOptions> options)
+    public EventRepository(EventStore<TBaseEvent> eventStore, IOptions<EventStoreOptions> options)
     {
-        _eventStore = eventStoreDependency.EventStore;
+        _eventStore = eventStore;
         _options = options.Value;
     }
 
@@ -77,7 +77,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
         var streamId = _options.EscapeIdIfRequired(id);
 
         var now = DateTimeOffset.Now;
-        var eventData = events.Select(e => new EventData(Guid.NewGuid(), e, now)).ToArray();
+        var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
         await _eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 

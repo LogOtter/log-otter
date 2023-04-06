@@ -3,6 +3,7 @@
 namespace LogOtter.CosmosDb.EventStore;
 
 public class EventSourceConfiguration<TBaseEvent>
+    where TBaseEvent : class
 {
     private readonly Dictionary<Type, IProjectionMetadata<TBaseEvent>> _projections;
 
