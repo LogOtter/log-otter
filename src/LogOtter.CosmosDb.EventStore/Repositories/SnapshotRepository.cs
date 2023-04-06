@@ -10,21 +10,21 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventStore _eventStore;
+    private readonly EventStore<TBaseEvent> _eventStore;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _options;
     private readonly Container _snapshotContainer;
 
     public SnapshotRepository(
         CosmosContainer<TSnapshot> snapshotContainer,
-        EventStoreDependency<TBaseEvent> eventStoreDependency,
+        EventStore<TBaseEvent> eventStore,
         IFeedIteratorFactory feedIteratorFactory,
         IOptions<EventStoreOptions> options
     )
     {
         _feedIteratorFactory = feedIteratorFactory;
         _snapshotContainer = snapshotContainer.Container;
-        _eventStore = eventStoreDependency.EventStore;
+        _eventStore = eventStore;
         _options = options.Value;
     }
 

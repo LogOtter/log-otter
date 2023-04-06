@@ -18,16 +18,18 @@ public class EventSourcingBuilder
     }
 
     public EventSourcingBuilder AddEventSource<TBaseEvent>(string containerName, Action<EventSourceConfiguration<TBaseEvent>>? configure = null)
+        where TBaseEvent : class
     {
         var config = new EventSourceConfiguration<TBaseEvent>();
         configure?.Invoke(config);
 
         _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, new AutoProvisionMetadata(PartitionKeyPath: "/streamId"));
 
+        var simpleSerializationTypeMap = new SimpleSerializationTypeMap(config.EventTypes);
         var metadata = new EventSourceMetadata<TBaseEvent>(
             containerName,
             config.EventTypes.ToImmutableList(),
-            new SimpleSerializationTypeMap(config.EventTypes),
+            simpleSerializationTypeMap,
             config.Projections.Cast<IProjectionMetadata>().ToImmutableList(),
             ImmutableList<ICatchUpSubscriptionMetadata>.Empty
         );
@@ -39,8 +41,8 @@ public class EventSourcingBuilder
         {
             var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
             var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
-            var eventStore = new EventStore(cosmosContainer.Container, feedIteratorFactory, metadata.SerializationTypeMap);
-            return new EventStoreDependency<TBaseEvent>(eventStore);
+
+            return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory, simpleSerializationTypeMap);
         });
 
         var eventRepository = typeof(EventRepository<,>);

@@ -32,7 +32,7 @@ public class CosmosDbStorageEvent
     [JsonProperty("eventNumber")]
     public int EventNumber { get; set; }
 
-    internal static CosmosDbStorageEvent FromStorageEvent(StorageEvent storageEvent, SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
+    internal static CosmosDbStorageEvent FromStorageEvent(IStorageEvent storageEvent, SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
     {
         var cosmosDbStorageEvent = new CosmosDbStorageEvent
         {
@@ -53,11 +53,12 @@ public class CosmosDbStorageEvent
         return document.Resource;
     }
 
-    internal StorageEvent ToStorageEvent(SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
+    internal StorageEvent<TBaseEvent> ToStorageEvent<TBaseEvent>(SimpleSerializationTypeMap typeMap, JsonSerializer serializer)
+        where TBaseEvent : class
     {
         var bodyType = typeMap.GetTypeFromName(BodyType);
         var body = Body.ToObject(bodyType, serializer);
 
-        return new StorageEvent(StreamId, new EventData(EventId, body, CreatedOn, Metadata), EventNumber);
+        return new StorageEvent<TBaseEvent>(StreamId, new EventData<TBaseEvent>(EventId, (TBaseEvent)body, CreatedOn, Metadata), EventNumber);
     }
 }

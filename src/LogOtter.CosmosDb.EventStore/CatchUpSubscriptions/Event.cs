@@ -1,6 +1,7 @@
 ﻿namespace LogOtter.CosmosDb.EventStore;
 
 public class Event<TBaseEvent>
+    where TBaseEvent : class
 {
     public string StreamId { get; }
     public int EventNumber { get; }
@@ -13,7 +14,7 @@ public class Event<TBaseEvent>
         StreamId = streamId;
     }
 
-    public static Event<TBaseEvent> FromStorageEvent(StorageEvent storageEvent)
+    public static Event<TBaseEvent> FromStorageEvent(StorageEvent<TBaseEvent> storageEvent)
     {
         return new Event<TBaseEvent>(storageEvent.StreamId, storageEvent.EventNumber, (TBaseEvent)storageEvent.EventBody);
     }

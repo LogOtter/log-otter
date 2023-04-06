@@ -9,6 +9,8 @@ internal record EventSourceMetadata<TBaseEvent>(
     ImmutableList<IProjectionMetadata> Projections,
     ImmutableList<ICatchUpSubscriptionMetadata> CatchUpSubscriptions
 ) : IEventSourceMetadata
+    where TBaseEvent : class
 {
     Type IEventSourceMetadata.EventBaseType => typeof(TBaseEvent);
+    Type IEventSourceMetadata.EventStoreBaseType => typeof(EventStore<TBaseEvent>);
 }

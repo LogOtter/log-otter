@@ -3,33 +3,26 @@ using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
 internal class GetEventHandler : BaseHandler
 {
-    private readonly ICosmosContainerFactory _containerFactory;
     private readonly EventDescriptionGenerator _eventDescriptionGenerator;
     private readonly EventStoreCatalog _eventStoreCatalog;
     private readonly EventStoreOptions _eventStoreOptions;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
 
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}";
 
     public GetEventHandler(
         EventStoreCatalog eventStoreCatalog,
         EventDescriptionGenerator eventDescriptionGenerator,
-        IFeedIteratorFactory feedIteratorFactory,
-        ICosmosContainerFactory containerFactory,
         IOptions<EventStoreOptions> eventStoreOptions
     )
     {
         _eventStoreCatalog = eventStoreCatalog;
         _eventDescriptionGenerator = eventDescriptionGenerator;
-        _feedIteratorFactory = feedIteratorFactory;
-        _containerFactory = containerFactory;
         _eventStoreOptions = eventStoreOptions.Value;
     }
 
@@ -53,38 +46,13 @@ internal class GetEventHandler : BaseHandler
             return;
         }
 
-        var container = _containerFactory.GetContainer(metaData.EventContainerName);
-
-        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
-
-        var query = container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
-            .Where(e => e.StreamId == streamId && e.EventId == eventIdGuid);
-
-        var storageEvent = (CosmosDbStorageEvent?)null;
-
-        var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
-
-        while (feedIterator.HasMoreResults)
-        {
-            var items = await feedIterator.ReadNextAsync();
-            storageEvent = items.FirstOrDefault();
-            if (storageEvent != null)
-            {
-                break;
-            }
-        }
-
-        if (storageEvent == null)
-        {
-            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            return;
-        }
+        var eventStore = _eventStoreCatalog.GetEventStoreReader(metaData);
+        var storageEvent = await eventStore.ReadEventFromStream(streamId, eventIdGuid);
 
         var @event = new Event(
-            storageEvent.Id,
+            storageEvent.EventId.ToString(),
             storageEvent.StreamId,
-            storageEvent.BodyType,
+            storageEvent.EventBody.GetType().Name,
             storageEvent.EventNumber,
             storageEvent.EventId,
             _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
