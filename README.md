@@ -2,6 +2,10 @@
 
 # Log Otter
 
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/LogOtter/log-otter/main.yml)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/LogOtter/log-otter?include_prereleases)
+![GitHub](https://img.shields.io/github/license/LogOtter/log-otter)
+
 A collection of libraries to help create modern microservices using CosmosDB and Event Sourcing
 and the tools to test them.
 
