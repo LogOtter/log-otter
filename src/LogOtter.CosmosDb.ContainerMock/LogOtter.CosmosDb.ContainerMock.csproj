@@ -18,4 +18,7 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="LogOtter.CosmosDb.ContainerMock.IntegrationTests" />
+    </ItemGroup>
 </Project>

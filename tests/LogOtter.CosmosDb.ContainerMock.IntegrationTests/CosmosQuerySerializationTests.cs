@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Linq.Expressions;
+using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -9,36 +9,73 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 [Collection("Integration Tests")]
 public sealed class CosmosQuerySerializationTests
 {
-    private readonly IntegrationTestsFixture _fixture;
-
-    public CosmosQuerySerializationTests(IntegrationTestsFixture testFixture)
+    [Theory]
+    [InlineData(false, false, false, false)]
+    [InlineData(false, false, true, true)]
+    [InlineData(false, true, false, true)]
+    [InlineData(false, true, true, false)]
+    [InlineData(true, false, false, false)]
+    [InlineData(true, false, true, true)]
+    [InlineData(true, true, false, true)]
+    [InlineData(true, true, true, false)]
+    public async Task GivenACustomSerializer_WhenQueryingWithLingSerializationOptions_ShouldRetrieveTheExpectedRecords(
+        bool matchOnPropertyUsingASpecifiedName,
+        bool useCamelCaseOnBaseSerializer,
+        bool useCamelCaseOnQuery,
+        bool shouldThrow
+    )
     {
-        _fixture = testFixture;
-    }
-
-    [Fact]
-    public async Task GivenACustomSerializer_WhenQueryingWithLingSerializationOptions_ShouldRetrieveTheExpectedRecords()
-    {
-        var cosmosClientOptions = new CosmosClientOptions
+        var cosmosSerializationOptions = new CosmosSerializationOptions();
+        if (useCamelCaseOnBaseSerializer)
         {
-            Serializer = new
-        };
-        var testCosmos = _fixture.CreateTestCosmos();
-        await testCosmos.SetupAsync("/partitionKey");
-        await testCosmos.GivenAnExistingItem(
+            cosmosSerializationOptions.PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase;
+        }
+
+        var containerMock = new ContainerMock(cosmosSerializationOptions: cosmosSerializationOptions);
+
+        await containerMock.CreateItemAsync(
             new TestModel
             {
-                Id = "RECORD1",
+                Id = "ID",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "PartitionKeyValue"
             }
         );
 
-        var (realResults, testResults) = await testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name == "Bob Bobertson"));
+        var linqSerializerOptions = new CosmosLinqSerializerOptions();
+        if (useCamelCaseOnQuery)
+        {
+            linqSerializerOptions.PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase;
+        }
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        Expression<Func<TestModel, bool>> predicate = tm => tm.Name == "Bob Bobertson";
+
+        if (matchOnPropertyUsingASpecifiedName)
+        {
+            predicate = tm => tm.Id == "ID";
+        }
+
+        Func<List<TestModel>> act = () =>
+            containerMock
+                .GetItemLinqQueryable<TestModel>(
+                    true,
+                    requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey("PartitionKeyValue") },
+                    linqSerializerOptions: linqSerializerOptions
+                )
+                .Where(predicate)
+                .ToList();
+
+        if (shouldThrow)
+        {
+            act.Should()
+                .Throw<ArgumentException>()
+                .WithMessage("Linq serialization options do not match the base serializer options (Parameter 'linqSerializerOptions')")
+                .WithParameterName("linqSerializerOptions");
+        }
+        else
+        {
+            act.Should().NotThrow().Which.Should().NotBeEmpty();
+        }
     }
 }

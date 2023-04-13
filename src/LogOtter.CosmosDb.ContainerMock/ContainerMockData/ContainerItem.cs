@@ -33,7 +33,8 @@ internal class ContainerItem
         string eTag,
         bool requireETagOnNextUpdate,
         bool hasScheduledETagMismatch,
-        StringSerializationHelper serializationHelper)
+        StringSerializationHelper serializationHelper
+    )
     {
         Id = id;
         ExpiryTime = expiryTime;

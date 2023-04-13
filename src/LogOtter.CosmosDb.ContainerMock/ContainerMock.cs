@@ -5,7 +5,6 @@ using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Scripts;
-using Newtonsoft.Json;
 
 #pragma warning disable CS1998
 
@@ -20,6 +19,7 @@ public class ContainerMock : Container
     private readonly string _partitionKeyPath;
 
     private readonly StringSerializationHelper _serializationHelper;
+    private CosmosSerializationOptions _cosmosSerializationOptions;
 
     public override string Id { get; }
     public override Conflicts? Conflicts => null;
@@ -31,10 +31,11 @@ public class ContainerMock : Container
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         string containerName = "TestContainer",
         int defaultDocumentTimeToLive = -1,
-        CosmosClientOptions? cosmosClientOptions = null
+        CosmosSerializationOptions? cosmosSerializationOptions = null
     )
     {
-        _serializationHelper = new StringSerializationHelper(cosmosClientOptions ?? new CosmosClientOptions());
+        _cosmosSerializationOptions = cosmosSerializationOptions ?? new CosmosSerializationOptions();
+        _serializationHelper = new StringSerializationHelper(_cosmosSerializationOptions);
         _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive, _serializationHelper);
         _exceptionsToThrow = new ConcurrentQueue<(CosmosException, Func<InvocationInformation, bool> condition)>();
 
@@ -321,32 +322,14 @@ public class ContainerMock : Container
 
         var items = _containerData.GetItemsInPartition(requestOptions?.PartitionKey);
 
-        var itemLinqQueryable = new CosmosQueryableMock<T>(items.OrderBy(i => i.Id).Select(i => i.Deserialize<T>()).AsQueryable());
+        var asQueryable = items.OrderBy(i => i.Id).Select(i => i.Deserialize<T>()).AsQueryable();
+        if (SerializationSettingsDoNotMatch(linqSerializerOptions))
+        {
+            throw new ArgumentException("Linq serialization options do not match the base serializer options", nameof(linqSerializerOptions));
+        }
 
+        var itemLinqQueryable = new CosmosQueryableMock<T>(asQueryable);
         return itemLinqQueryable;
-    }
-
-    public async IAsyncEnumerable<TResult> QueryAsync<TModel, TResult>(string? partitionKey, Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery)
-    {
-        if (applyQuery == null)
-        {
-            throw new ArgumentNullException(nameof(applyQuery));
-        }
-
-        ThrowNextExceptionIfPresent(new InvocationInformation(nameof(QueryAsync)));
-
-        var partition = partitionKey == null ? (PartitionKey?)null : new PartitionKey(partitionKey);
-
-        var items = _containerData.GetItemsInPartition(partition);
-
-        var itemLinqQueryable = new CosmosQueryableMock<TModel>(items.OrderBy(i => i.Id).Select(i => i.Deserialize<TModel>()).AsQueryable());
-
-        var results = applyQuery(itemLinqQueryable).ToList();
-
-        foreach (var result in results)
-        {
-            yield return result;
-        }
     }
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch CreateTransactionalBatch(PartitionKey partitionKey)
@@ -400,6 +383,12 @@ public class ContainerMock : Container
         responseMessage.Headers.Add("etag", response.Item.ETag);
 
         return responseMessage;
+    }
+
+    private bool SerializationSettingsDoNotMatch(CosmosLinqSerializerOptions? linqSerializerOptions)
+    {
+        linqSerializerOptions ??= new CosmosLinqSerializerOptions();
+        return linqSerializerOptions.PropertyNamingPolicy != _cosmosSerializationOptions.PropertyNamingPolicy;
     }
 
     private static ItemResponse<T> ToCosmosItemResponse<T>(Response response)

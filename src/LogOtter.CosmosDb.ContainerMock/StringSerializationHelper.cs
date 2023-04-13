@@ -1,18 +1,14 @@
-﻿using System.Reflection;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb.ContainerMock;
 
 internal class StringSerializationHelper
 {
-    private const string DefaultSerializerName = "Microsoft.Azure.Cosmos.CosmosJsonDotNetSerializer";
-    private readonly CosmosClientOptions _cosmosClientOptions;
     private readonly CosmosSerializer _serializer;
 
-    public StringSerializationHelper(CosmosClientOptions cosmosClientOptions)
+    public StringSerializationHelper(CosmosSerializationOptions cosmosClientOptions)
     {
-        _cosmosClientOptions = cosmosClientOptions;
-        _serializer = _cosmosClientOptions.Serializer ?? CreateDefaultSerializer();
+        _serializer = new DefaultSerializer(cosmosClientOptions);
     }
 
     public string SerializeObject<T>(T toSerialize)
@@ -31,32 +27,5 @@ internal class StringSerializationHelper
         stream.Position = 0;
         var deserializeObject = _serializer.FromStream<T>(stream);
         return deserializeObject;
-    }
-
-    /// <summary>
-    /// Need to fall back to the default, so that we can simulate the behaviour of Cosmos.
-    /// This class is internal so using reflection to create it.
-    /// </summary>
-    /// <returns></returns>
-    private CosmosSerializer CreateDefaultSerializer()
-    {
-        var defaultSerializerType = typeof(CosmosSerializer).Assembly.GetType(DefaultSerializerName);
-        if (defaultSerializerType == null)
-        {
-            throw new NullReferenceException($"Could not locate type {DefaultSerializerName} to use as the default serializer");
-        }
-
-        var ctor =
-            defaultSerializerType.GetConstructor(
-                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
-                new[] { typeof(CosmosSerializationOptions) }
-            )
-            ?? throw new NullReferenceException($"Could not locate constructor on {DefaultSerializerName} which accepts only serialization options");
-
-        var serializer =
-            ctor.Invoke(new object[] { _cosmosClientOptions.SerializerOptions })
-            ?? throw new NullReferenceException($"Failed to construct type {DefaultSerializerName} to use as the default serializer");
-
-        return (CosmosSerializer)serializer;
     }
 }
