@@ -8,13 +8,15 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
 {
     private readonly List<TransactionalBatchOperationResult> _results;
     private HttpStatusCode _statusCode;
+    private readonly StringSerializationHelper _serializationHelper;
 
     public override HttpStatusCode StatusCode => _statusCode;
     public override int Count => _results.Count;
     public override TransactionalBatchOperationResult this[int index] => _results[index];
 
-    public TestTransactionalBatchResponse()
+    public TestTransactionalBatchResponse(StringSerializationHelper serializationHelper)
     {
+        _serializationHelper = serializationHelper;
         _statusCode = HttpStatusCode.OK;
         _results = new List<TransactionalBatchOperationResult>();
     }
@@ -35,7 +37,7 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
         var streamReader = new StreamReader(result.ResourceStream);
         var json = streamReader.ReadToEnd();
 
-        var resource = JsonConvert.DeserializeObject<T>(json);
+        var resource = _serializationHelper.DeserializeObject<T>(json);
         return new TestTransactionalBatchOperationResult<T>(result, resource);
     }
 

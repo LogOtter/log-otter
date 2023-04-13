@@ -9,11 +9,13 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     private readonly Queue<Action<TestTransactionalBatchResponse>> _actions;
     private readonly ContainerMock _containerMock;
     private readonly PartitionKey _partitionKey;
+    private readonly StringSerializationHelper _serializationHelper;
 
-    public TestTransactionalBatch(PartitionKey partitionKey, ContainerMock containerMock)
+    internal TestTransactionalBatch(PartitionKey partitionKey, ContainerMock containerMock, StringSerializationHelper serializationHelper)
     {
         _partitionKey = partitionKey;
         _containerMock = containerMock;
+        _serializationHelper = serializationHelper;
 
         _actions = new Queue<Action<TestTransactionalBatchResponse>>();
     }
@@ -24,7 +26,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
         _actions.Enqueue(response =>
         {
-            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
+            var bytes = Encoding.UTF8.GetBytes(_serializationHelper.SerializeObject(item));
 
             using var ms = new MemoryStream(bytes);
 
@@ -62,7 +64,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
     {
         var snapshot = _containerMock.CreateSnapshot();
 
-        var response = new TestTransactionalBatchResponse();
+        var response = new TestTransactionalBatchResponse(_serializationHelper);
 
         while (_actions.Any())
         {

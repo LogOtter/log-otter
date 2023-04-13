@@ -13,17 +13,19 @@ internal class ContainerData
     private readonly ConcurrentDictionary<PartitionKey, ConcurrentDictionary<string, ContainerItem>> _data;
     private readonly int _defaultDocumentTimeToLive;
     private readonly UniqueKeyPolicy? _uniqueKeyPolicy;
+    private readonly StringSerializationHelper _serializationHelper;
 
     private readonly SemaphoreSlim _updateSemaphore = new(1, 1);
 
     private int _currentTimer;
 
-    public ContainerData(UniqueKeyPolicy? uniqueKeyPolicy, int defaultDocumentTimeToLive)
+    public ContainerData(UniqueKeyPolicy? uniqueKeyPolicy, int defaultDocumentTimeToLive, StringSerializationHelper serializationHelper)
     {
         GuardAgainstInvalidUniqueKeyPolicy(uniqueKeyPolicy);
 
         _uniqueKeyPolicy = uniqueKeyPolicy;
         _defaultDocumentTimeToLive = defaultDocumentTimeToLive;
+        _serializationHelper = serializationHelper;
 
         _data = new ConcurrentDictionary<PartitionKey, ConcurrentDictionary<string, ContainerItem>>();
         _currentTimer = 0;
@@ -112,11 +114,11 @@ internal class ContainerData
             throw new ETagMismatchException();
         }
 
-        var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer));
+        var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer), _serializationHelper);
 
         partition[id] = newItem;
 
-        DataChanged?.Invoke(this, new DataChangedEventArgs(isUpdate ? Operation.Updated : Operation.Created, newItem.Json));
+        DataChanged?.Invoke(this, new DataChangedEventArgs(isUpdate ? Operation.Updated : Operation.Created, newItem.Json, _serializationHelper));
 
         return Task.FromResult(new Response(newItem, isUpdate));
     }
@@ -165,7 +167,7 @@ internal class ContainerData
 
         if (removedItem != null)
         {
-            DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Deleted, removedItem.Json));
+            DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Deleted, removedItem.Json, _serializationHelper));
         }
 
         return removedItem;
@@ -358,7 +360,8 @@ internal class ContainerData
                     item.Value<int?>("ExpiryTime"),
                     item.Value<string>("ETag"),
                     item.Value<bool>("RequireETagOnNextUpdate"),
-                    item.Value<bool>("HasScheduledETagMismatch")
+                    item.Value<bool>("HasScheduledETagMismatch"),
+                    _serializationHelper
                 );
 
                 partitionKeyDictionary[containerItem.Id] = containerItem;

@@ -19,6 +19,8 @@ public class ContainerMock : Container
 
     private readonly string _partitionKeyPath;
 
+    private readonly StringSerializationHelper _serializationHelper;
+
     public override string Id { get; }
     public override Conflicts? Conflicts => null;
     public override Scripts? Scripts => null;
@@ -28,10 +30,12 @@ public class ContainerMock : Container
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         string containerName = "TestContainer",
-        int defaultDocumentTimeToLive = -1
+        int defaultDocumentTimeToLive = -1,
+        CosmosClientOptions? cosmosClientOptions = null
     )
     {
-        _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive);
+        _serializationHelper = new StringSerializationHelper(cosmosClientOptions ?? new CosmosClientOptions());
+        _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive, _serializationHelper);
         _exceptionsToThrow = new ConcurrentQueue<(CosmosException, Func<InvocationInformation, bool> condition)>();
 
         _partitionKeyPath = partitionKeyPath;
@@ -67,7 +71,7 @@ public class ContainerMock : Container
 
         streamPayload.Position = 0;
         var streamReader = new StreamReader(streamPayload);
-        var json = await streamReader.ReadToEndAsync();
+        var json = await streamReader.ReadToEndAsync(cancellationToken);
 
         if (JsonHelpers.GetIdFromJson(json) == string.Empty)
         {
@@ -106,7 +110,7 @@ public class ContainerMock : Container
             );
         }
 
-        var json = JsonConvert.SerializeObject(item);
+        var json = _serializationHelper.SerializeObject(item);
 
         if (JsonHelpers.GetIdFromJson(json) == string.Empty)
         {
@@ -207,7 +211,7 @@ public class ContainerMock : Container
 
         streamPayload.Position = 0;
         var streamReader = new StreamReader(streamPayload);
-        var json = await streamReader.ReadToEndAsync();
+        var json = await streamReader.ReadToEndAsync(cancellationToken);
 
         try
         {
@@ -229,7 +233,7 @@ public class ContainerMock : Container
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(UpsertItemAsync)));
 
-        var json = JsonConvert.SerializeObject(item);
+        var json = _serializationHelper.SerializeObject(item);
 
         try
         {
@@ -252,7 +256,7 @@ public class ContainerMock : Container
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(ReplaceItemAsync)));
 
-        var json = JsonConvert.SerializeObject(item);
+        var json = _serializationHelper.SerializeObject(item);
 
         try
         {
@@ -347,7 +351,7 @@ public class ContainerMock : Container
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch CreateTransactionalBatch(PartitionKey partitionKey)
     {
-        return new TestTransactionalBatch(partitionKey, this);
+        return new TestTransactionalBatch(partitionKey, this, _serializationHelper);
     }
 
     public void Reset()
