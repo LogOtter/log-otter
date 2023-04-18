@@ -41,20 +41,17 @@ public class IntegrationTestsFixture : IAsyncLifetime
         }
     }
 
-    public TestCosmos CreateTestCosmos()
+    public TestCosmos CreateTestCosmos(CosmosClientOptions? clientOptions = null)
     {
-        var cosmosClient = !_useTestContainers
-            ? new CosmosClient(_cosmosConnectionString)
-            : new CosmosClient(
-                _container!.ConnectionString,
-                new CosmosClientOptions
-                {
-                    ConnectionMode = ConnectionMode.Gateway,
-                    HttpClientFactory = () => _container.HttpClient,
-                    RequestTimeout = TimeSpan.FromMinutes(3)
-                }
-            );
+        clientOptions ??= new CosmosClientOptions();
+        if (_useTestContainers)
+        {
+            clientOptions.ConnectionMode = ConnectionMode.Gateway;
+            clientOptions.HttpClientFactory = () => _container!.HttpClient;
+            clientOptions.RequestTimeout = TimeSpan.FromMinutes(3);
+            return new TestCosmos(new CosmosClient(_container!.ConnectionString, clientOptions), clientOptions);
+        }
 
-        return new TestCosmos(cosmosClient);
+        return new TestCosmos(new CosmosClient(_cosmosConnectionString, clientOptions), clientOptions);
     }
 }

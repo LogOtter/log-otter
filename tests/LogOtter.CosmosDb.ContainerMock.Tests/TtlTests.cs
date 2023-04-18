@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text;
 using FluentAssertions;
+using LogOtter.CosmosDb.ContainerMock.Tests.Helpers;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Xunit;

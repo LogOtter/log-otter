@@ -7,14 +7,16 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 public sealed class TestCosmos : IDisposable
 {
     private readonly CosmosClient _client;
+    private readonly CosmosClientOptions _cosmosClientOptions;
 
     private Container? _realContainer;
 
     private Container? _testContainer;
 
-    public TestCosmos(CosmosClient client)
+    public TestCosmos(CosmosClient client, CosmosClientOptions cosmosClientOptions)
     {
         _client = client;
+        _cosmosClientOptions = cosmosClientOptions;
     }
 
     public void Dispose()
@@ -26,7 +28,7 @@ public sealed class TestCosmos : IDisposable
     {
         var response = await CreateCosmosContainer(partitionKeyPath, uniqueKeyPolicy);
         _realContainer = response.Container;
-        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy);
+        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy, cosmosSerializationOptions: _cosmosClientOptions.SerializerOptions);
     }
 
     public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(
@@ -75,7 +77,8 @@ public sealed class TestCosmos : IDisposable
     [SuppressMessage("", "CA1031", Justification = "Need to catch exceptions")]
     public async Task<(IList<T>? realResults, IList<T>? testResults)> WhenExecutingAQuery<T>(
         string? partitionKey,
-        Func<IQueryable<T>, IQueryable<T>>? query = null
+        Func<IQueryable<T>, IQueryable<T>>? query = null,
+        CosmosLinqSerializerOptions? linqSerializerOptions = null
     )
     {
         if (_realContainer == null || _testContainer == null)
@@ -92,11 +95,11 @@ public sealed class TestCosmos : IDisposable
         {
             if (query != null)
             {
-                realQuery = await _realContainer.QueryAsync<T>(partitionKey, query).ToListAsync();
+                realQuery = await _realContainer.QueryAsync<T>(partitionKey, query, linqSerializerOptions).ToListAsync();
             }
             else
             {
-                realQuery = await _realContainer.QueryAsync<T>(partitionKey).ToListAsync();
+                realQuery = await _realContainer.QueryAsync<T>(partitionKey, linqSerializerOptions).ToListAsync();
             }
         }
         catch (Exception ex)
@@ -108,11 +111,11 @@ public sealed class TestCosmos : IDisposable
         {
             if (query != null)
             {
-                inMemoryQuery = await _testContainer.QueryAsync<T>(partitionKey, query).ToListAsync();
+                inMemoryQuery = await _testContainer.QueryAsync<T>(partitionKey, query, linqSerializerOptions).ToListAsync();
             }
             else
             {
-                inMemoryQuery = await _testContainer.QueryAsync<T>(partitionKey).ToListAsync();
+                inMemoryQuery = await _testContainer.QueryAsync<T>(partitionKey, linqSerializerOptions).ToListAsync();
             }
         }
         catch (Exception ex)

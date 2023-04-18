@@ -23,4 +23,7 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="LogOtter.CosmosDb.EventStore" />
+    </ItemGroup>
 </Project>

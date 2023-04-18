@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
@@ -14,10 +13,13 @@ internal class ContainerItem
     public bool RequireETagOnNextUpdate { get; private set; }
     public bool HasScheduledETagMismatch { get; private set; }
 
-    public ContainerItem(string id, string json, PartitionKey partitionKey, int? expiryTime)
+    private readonly StringSerializationHelper _serializationHelper;
+
+    public ContainerItem(string id, string json, PartitionKey partitionKey, int? expiryTime, StringSerializationHelper serializationHelper)
     {
         Id = id;
         ExpiryTime = expiryTime;
+        _serializationHelper = serializationHelper;
         Json = json;
         PartitionKey = partitionKey;
         ETag = GenerateETag();
@@ -30,11 +32,13 @@ internal class ContainerItem
         int? expiryTime,
         string eTag,
         bool requireETagOnNextUpdate,
-        bool hasScheduledETagMismatch
+        bool hasScheduledETagMismatch,
+        StringSerializationHelper serializationHelper
     )
     {
         Id = id;
         ExpiryTime = expiryTime;
+        _serializationHelper = serializationHelper;
         Json = json;
         PartitionKey = partitionKey;
         ETag = eTag;
@@ -44,7 +48,7 @@ internal class ContainerItem
 
     public T Deserialize<T>()
     {
-        return JsonConvert.DeserializeObject<T>(Json);
+        return _serializationHelper.DeserializeObject<T>(Json);
     }
 
     public void ScheduleMismatchETagOnNextUpdate()

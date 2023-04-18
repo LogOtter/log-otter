@@ -42,43 +42,47 @@ internal static class ShimExtensions
     public static IAsyncEnumerable<TModel> QueryAsync<TModel>(
         this Container container,
         string? partitionKey,
-        Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery
+        Func<IQueryable<TModel>, IQueryable<TModel>> applyQuery,
+        CosmosLinqSerializerOptions? linqSerializerOptions = null
     )
     {
-        return QueryAsync<TModel, TModel>(container, partitionKey, applyQuery);
+        return QueryAsync<TModel, TModel>(container, partitionKey, applyQuery, linqSerializerOptions);
     }
 
-    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(this Container container, string? partitionKey)
+    public static IAsyncEnumerable<TModel> QueryAsync<TModel>(
+        this Container container,
+        string? partitionKey,
+        CosmosLinqSerializerOptions? linqSerializerOptions = null
+    )
     {
-        return QueryAsync<TModel, TModel>(container, partitionKey, q => q);
+        return QueryAsync<TModel, TModel>(container, partitionKey, q => q, linqSerializerOptions);
     }
 
     public static async IAsyncEnumerable<TResult> QueryAsync<TModel, TResult>(
         this Container container,
         string? partitionKey,
-        Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery
+        Func<IQueryable<TModel>, IQueryable<TResult>> applyQuery,
+        CosmosLinqSerializerOptions? linqSerializerOptions
     )
     {
-        if (container is ContainerMock mock)
+        var queryRequestOptions = new QueryRequestOptions();
+        if (partitionKey != null)
         {
-            var results = mock.QueryAsync(partitionKey, applyQuery);
-            await foreach (var result in results)
+            queryRequestOptions.PartitionKey = new PartitionKey(partitionKey);
+        }
+
+        var queryable = container.GetItemLinqQueryable<TModel>(requestOptions: queryRequestOptions, linqSerializerOptions: linqSerializerOptions);
+        var projectedQuery = applyQuery(queryable);
+
+        if (container is ContainerMock)
+        {
+            foreach (var result in projectedQuery)
             {
                 yield return result;
             }
         }
         else
         {
-            var queryRequestOptions = new QueryRequestOptions();
-            if (partitionKey != null)
-            {
-                queryRequestOptions.PartitionKey = new PartitionKey(partitionKey);
-            }
-
-            var queryable = container.GetItemLinqQueryable<TModel>(requestOptions: queryRequestOptions);
-
-            var projectedQuery = applyQuery(queryable);
-
             using var feedIterator = projectedQuery.ToFeedIterator();
 
             while (feedIterator.HasMoreResults)
