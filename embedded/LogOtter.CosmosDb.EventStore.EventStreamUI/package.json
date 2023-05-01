@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
-    "bootstrap-icons": "^1.10.2",
+    "bootstrap-icons": "^1.10.5",
     "dayjs": "^1.11.7",
     "vue": "^3.2.45",
     "vue-json-viewer": "^3.0.4"
