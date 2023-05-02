@@ -13,6 +13,7 @@
         <PackageReference Include="Polly" />
         <PackageReference Include="Polly.Contrib.WaitAndRetry" />
         <PackageReference Include="Testcontainers" />
+        <PackageReference Include="Testcontainers.CosmosDb" />
         <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <PrivateAssets>all</PrivateAssets>
