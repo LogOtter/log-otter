@@ -8,6 +8,10 @@ jobs:
   build:
     name: Build & Test
     uses: ./.github/workflows/build-test.yml
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
     secrets: inherit
 
   build-number:
