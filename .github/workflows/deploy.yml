@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+    secrets:
+      ARM_ACCESS_KEY:
+        required: true
+      AZURERM_CLIENT_SECRET:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
+
+jobs:
+  publish:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Terraform Plan
+        run: terraform plan -out tfplan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Terraform Apply
+        run: terraform apply -input=false tfplan
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Trigger container update
+        working-directory: sample/terraform
+        run: |
+          # Use terraform-bin as the wrapper created by setup-terraform does not work with output
+          customer_api_webhook=$(terraform-bin output -raw customer_api_webhook)
+          customer_worker_webhook=$(terraform-bin output -raw customer_worker_webhook)
+
+          curl $customer_api_webhook -H "" -d ""
+          curl $customer_worker_webhook -H "" -d ""
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}

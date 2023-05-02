@@ -128,3 +128,43 @@ resource "azurerm_linux_web_app" "customer-worker" {
     }
   }
 }
+
+resource "azurerm_linux_web_app" "hub" {
+  name                = "log-otter-hub"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_service_plan.service-plan.location
+  service_plan_id     = azurerm_service_plan.service-plan.id
+  https_only          = true
+
+  app_settings = {
+    ASPNETCORE_ENVIRONMENT              = "Development"
+    DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_url
+    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_username
+    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
+    Hub__Services__0__Name              = "CustomerApi"
+    Hub__Services__0__Url               = "https://${azurerm_linux_web_app.customer-api.default_hostname}/logotter/api"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
+    #WEBSITE_WARMUP_PATH                 = "/health"
+  }
+
+  site_config {
+    always_on     = false
+    http2_enabled = true
+    application_stack {
+      docker_image     = "ghcr.io/logotter/hub"
+      docker_image_tag = var.container_tag_name
+    }
+  }
+
+  logs {
+    application_logs {
+      file_system_level = "Information"
+    }
+    http_logs {
+      file_system {
+        retention_in_days = 30
+        retention_in_mb   = 35
+      }
+    }
+  }
+}
