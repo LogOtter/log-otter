@@ -18,9 +18,11 @@ jobs:
     name: Generate Build Number
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
     outputs:
       build-number: ${{ steps.build-number.outputs.build_number }}
-      version: "0.0.${{ steps.build-number.outputs.build_number }}"
+      version: "0.1.${{ steps.build-number.outputs.build_number }}"
     steps:
       - name: Generate build number
         id: build-number
