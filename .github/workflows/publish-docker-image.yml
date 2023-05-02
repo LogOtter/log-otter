@@ -21,7 +21,7 @@ on:
 
 jobs:
   build:
-    name: Build Docker Image
+    name: (${{ inputs.project_name }}) Publish Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,5 +65,5 @@ jobs:
         with:
           push: true
           context: ${{ inputs.project_path }}
-          tags: ${{ inputs.version }}
+          tags: ghcr.io/logotter/${{ inputs.project_name }}:${{ inputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
