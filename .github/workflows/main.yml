@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build & Test
     uses: ./.github/workflows/build-test.yml
     secrets: inherit
 
@@ -24,6 +25,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-docker:
+    name: Publish Docker Containers
     uses: ./.github/workflows/publish-docker.yml
     permissions:
       contents: read
@@ -34,6 +36,7 @@ jobs:
     secrets: inherit
 
   deploy:
+    name: Deploy
     uses: ./.github/workflows/deploy.yml
     with:
       version: ${{ needs.build-number.outputs.version }}

@@ -9,6 +9,7 @@ on:
 
 jobs:
   publish-customer-api:
+    name: Publish Customer API
     uses: ./.github/workflows/publish-docker-image.yml
     permissions:
       contents: read
@@ -22,6 +23,7 @@ jobs:
     secrets: inherit
 
   publish-customer-worker:
+    name: Publish Customer Worker
     uses: ./.github/workflows/publish-docker-image.yml
     permissions:
       contents: read

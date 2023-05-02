@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build & Test
     uses: ./.github/workflows/build-test.yml
     permissions:
       id-token: write
