@@ -9,7 +9,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.5" />
-    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.32.3" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.33.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.5" />
@@ -23,7 +23,8 @@
     <PackageVersion Include="Polly" Version="7.2.3" />
     <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageVersion Include="Testcontainers" Version="3.0.0" />
+    <PackageVersion Include="Testcontainers" Version="3.1.0" />
+    <PackageVersion Include="Testcontainers.CosmosDb" Version="3.1.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="Xunit.SkippableFact" Version="1.4.13" />

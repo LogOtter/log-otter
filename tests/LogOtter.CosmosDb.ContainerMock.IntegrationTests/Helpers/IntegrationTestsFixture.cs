@@ -1,16 +1,12 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
+using Testcontainers.CosmosDb;
 using Xunit;
-
-#pragma warning disable CS0618
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public class IntegrationTestsFixture : IAsyncLifetime
 {
-    private readonly CosmosDbTestcontainer? _container;
+    private readonly CosmosDbContainer? _container;
     private readonly string _cosmosConnectionString;
     private readonly bool _useTestContainers;
 
@@ -21,7 +17,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
         if (_useTestContainers)
         {
-            _container = new ContainerBuilder<CosmosDbTestcontainer>().WithDatabase(new CosmosDbTestcontainerConfiguration()).Build();
+            _container = new CosmosDbBuilder().WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "2").Build();
         }
     }
 
@@ -49,7 +45,8 @@ public class IntegrationTestsFixture : IAsyncLifetime
             clientOptions.ConnectionMode = ConnectionMode.Gateway;
             clientOptions.HttpClientFactory = () => _container!.HttpClient;
             clientOptions.RequestTimeout = TimeSpan.FromMinutes(3);
-            return new TestCosmos(new CosmosClient(_container!.ConnectionString, clientOptions), clientOptions);
+
+            return new TestCosmos(new CosmosClient(_container!.GetConnectionString(), clientOptions), clientOptions);
         }
 
         return new TestCosmos(new CosmosClient(_cosmosConnectionString, clientOptions), clientOptions);
