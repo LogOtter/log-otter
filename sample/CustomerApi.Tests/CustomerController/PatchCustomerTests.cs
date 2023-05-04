@@ -34,7 +34,7 @@ public class PatchCustomerTests
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
-        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+        var existingCustomer = await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient(authHeader);
         var request = new { FirstName = "Bobby" };
@@ -42,7 +42,11 @@ public class PatchCustomerTests
 
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bobby" && c.LastName == "Bobertson"
+            c =>
+                c.EmailAddress == "bob@bobertson.co.uk"
+                && c.FirstName == "Bobby"
+                && c.LastName == "Bobertson"
+                && c.Revision == existingCustomer.Revision + 1
         );
     }
 
@@ -110,6 +114,52 @@ public class PatchCustomerTests
         var response = await client.PatchAsJObjectAsync("/customers/CustomerId", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task SameValues_ReturnsOk()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
+        var existingCustomer = await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+        var previousRevision = existingCustomer.Revision;
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new
+        {
+            FirstName = "Bob",
+            LastName = "Bobertson",
+            EmailAddress = "bob@bobertson.co.uk"
+        };
+        var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson" && c.Revision == previousRevision
+        );
+    }
+
+    [Fact]
+    public async Task NoChange_ReturnsOk()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new { };
+        var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+        );
     }
 
     [Fact]

@@ -42,7 +42,7 @@ public class PatchCustomerController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, includeDeleted: true, cancellationToken: cancellationToken);
+        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, cancellationToken: cancellationToken);
 
         if (customerReadModel == null)
         {
@@ -51,7 +51,7 @@ public class PatchCustomerController : ControllerBase
 
         var events = new List<CustomerEvent>();
 
-        if (request.EmailAddress.IsIncludedInPatch)
+        if (request.EmailAddress.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.EmailAddress))
         {
             events.Add(
                 new CustomerEmailAddressChanged(customerUri, customerReadModel.EmailAddress, request.EmailAddress.Value!, DateTimeOffset.UtcNow)
@@ -61,7 +61,10 @@ public class PatchCustomerController : ControllerBase
             await _emailAddressReservationService.ReserveEmailAddress(request.EmailAddress.Value!);
         }
 
-        if (request.FirstName.IsIncludedInPatch || request.LastName.IsIncludedInPatch)
+        if (
+            request.FirstName.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.FirstName)
+            || request.LastName.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.LastName)
+        )
         {
             var newFirstName = request.FirstName.GetValueIfIncludedOrDefault(customerReadModel.FirstName);
             var newLastName = request.LastName.GetValueIfIncludedOrDefault(customerReadModel.LastName);
@@ -76,6 +79,11 @@ public class PatchCustomerController : ControllerBase
                     DateTimeOffset.UtcNow
                 )
             );
+        }
+
+        if (events.Count == 0)
+        {
+            return Ok(new CustomerResponse(customerReadModel));
         }
 
         var updatedCustomer = await _customerEventRepository.ApplyEvents(
