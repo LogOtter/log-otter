@@ -14,6 +14,15 @@ cd sample\CustomerApi
 dotnet user-jwts create --name "Bob Bobertson" --role "Customers.Read" --role "Customers.ReadWrite" --role "Customers.Delete" --role "Customers.Create"
 ```
 
+### Generate token for `.http` files
+
+The `CustomerApi` sample contains a couple of `.http` files that can be used for calling the API during
+development. To quickly generate a token and add it to the the `http-client.private.env.json`, just run
+
+```pwsh
+.\build\Generate-DevToken.ps1
+```
+
 ## Integration Tests
 
 The `LogOtter.CosmosDb.ContainerMock.IntegrationTests` project uses Testcontainers to run
