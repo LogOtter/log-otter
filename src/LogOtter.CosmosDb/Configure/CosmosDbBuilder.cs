@@ -183,7 +183,7 @@ public class CosmosDbBuilder
                         autoProvisionMetadata.PartitionKeyPath,
                         autoProvisionMetadata.UniqueKeyPolicy,
                         autoProvisionMetadata.DefaultTimeToLive,
-                        autoProvisionMetadata.CompositeIndexes,
+                        autoProvisionMetadata.IndexingPolicy,
                         autoProvisionMetadata.ThroughputProperties
                     )
                     .GetAwaiter()

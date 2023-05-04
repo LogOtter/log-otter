@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using LogOtter.CosmosDb.Metadata;
+﻿using LogOtter.CosmosDb.Metadata;
 using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb;
@@ -19,17 +18,11 @@ public class ContainerConfiguration<TDocument>
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = -1,
-        IReadOnlyCollection<Collection<CompositePath>>? compositeIndexes = null,
+        IndexingPolicy? indexingPolicy = null,
         ThroughputProperties? throughputProperties = null
     )
     {
-        AutoProvisionMetadata = new AutoProvisionMetadata(
-            partitionKeyPath,
-            uniqueKeyPolicy,
-            defaultTimeToLive,
-            compositeIndexes,
-            throughputProperties
-        );
+        AutoProvisionMetadata = new AutoProvisionMetadata(partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive, indexingPolicy, throughputProperties);
 
         return this;
     }

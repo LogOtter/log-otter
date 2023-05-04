@@ -13,7 +13,7 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
         string partitionKeyPath,
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
+        IndexingPolicy? indexingPolicy = null,
         ThroughputProperties? throughputProperties = null
     )
     {

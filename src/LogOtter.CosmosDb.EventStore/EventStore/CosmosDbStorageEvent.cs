@@ -42,7 +42,8 @@ public class CosmosDbStorageEvent
             BodyType = typeMap.GetNameFromType(storageEvent.EventBody.GetType()),
             StreamId = storageEvent.StreamId,
             EventNumber = storageEvent.EventNumber,
-            Metadata = storageEvent.Metadata
+            Metadata = storageEvent.Metadata,
+            CreatedOn = storageEvent.CreatedOn
         };
 
         return cosmosDbStorageEvent;

@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using LogOtter.CosmosDb.EventStore.Metadata;
 using LogOtter.CosmosDb.Metadata;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LogOtter.CosmosDb.EventStore;
@@ -78,12 +79,20 @@ public class EventSourcingBuilder
             }
         }
 
-        _cosmosDbBuilder.AddContainer(
-            typeof(TBaseEvent),
-            containerName,
-            new AutoProvisionMetadata(PartitionKeyPath: "/streamId"),
-            changeFeedProcessorsMetadata
+        var autoProvisionMetadata = new AutoProvisionMetadata(
+            PartitionKeyPath: "/streamId",
+            IndexingPolicy: new IndexingPolicy
+            {
+                IncludedPaths = { new IncludedPath { Path = "/*" } },
+                ExcludedPaths =
+                {
+                    new ExcludedPath { Path = "/body/*" },
+                    new ExcludedPath { Path = "/metadata/*" }
+                }
+            }
         );
+
+        _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, autoProvisionMetadata, changeFeedProcessorsMetadata);
 
         Services.AddSingleton(sp =>
         {

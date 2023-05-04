@@ -43,14 +43,10 @@ services
             c.AddProjection<CustomerReadModel>()
                 .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey)
                 .WithAutoProvisionSettings(
-                    compositeIndexes: new[]
-                    {
-                        new Collection<CompositePath>
-                        {
-                            new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
-                            new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
-                        }
-                    }
+                    indexingPolicy: new IndexingPolicy().WithCompositeIndex(
+                        new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
+                        new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+                    )
                 );
 
             c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");

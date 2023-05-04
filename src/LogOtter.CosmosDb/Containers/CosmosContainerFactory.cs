@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb;
@@ -17,7 +16,7 @@ public class CosmosContainerFactory : ICosmosContainerFactory
         string partitionKeyPath,
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
-        IEnumerable<Collection<CompositePath>>? compositeIndexes = null,
+        IndexingPolicy? indexingPolicy = null,
         ThroughputProperties? throughputProperties = null
     )
     {
@@ -28,12 +27,9 @@ public class CosmosContainerFactory : ICosmosContainerFactory
             containerProperties.UniqueKeyPolicy = uniqueKeyPolicy;
         }
 
-        if (compositeIndexes != null)
+        if (indexingPolicy != null)
         {
-            foreach (var index in compositeIndexes)
-            {
-                containerProperties.IndexingPolicy.CompositeIndexes.Add(index);
-            }
+            containerProperties.IndexingPolicy = indexingPolicy;
         }
 
         var containerResponse = await _database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
