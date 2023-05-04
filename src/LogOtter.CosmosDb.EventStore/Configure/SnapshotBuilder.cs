@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using LogOtter.CosmosDb.EventStore.Metadata;
+﻿using LogOtter.CosmosDb.EventStore.Metadata;
 using LogOtter.CosmosDb.Metadata;
 using Microsoft.Azure.Cosmos;
 
@@ -18,7 +17,7 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
         string partitionKeyPath = "/partitionKey",
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = -1,
-        IReadOnlyCollection<Collection<CompositePath>>? compositeIndexes = null,
+        IndexingPolicy? indexingPolicy = null,
         ThroughputProperties? throughputProperties = null
     )
     {
@@ -32,7 +31,7 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
                             partitionKeyPath,
                             uniqueKeyPolicy,
                             defaultTimeToLive,
-                            compositeIndexes,
+                            indexingPolicy,
                             throughputProperties
                         )
                     }
