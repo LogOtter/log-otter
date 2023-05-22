@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -10,25 +9,25 @@ public class EventStore<TBaseEvent> : IEventStoreReader
 {
     private readonly Container _container;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly JsonSerializer _jsonSerializer;
-    private readonly SimpleSerializationTypeMap _typeMap;
+    private readonly LogOtterJsonSerializationSettings _serializationSettings;
 
-    internal EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, SimpleSerializationTypeMap typeMap)
+    internal EventStore(Container container, IFeedIteratorFactory feedIteratorFactory, LogOtterJsonSerializationSettings serializationSettings)
     {
         _container = container;
         _feedIteratorFactory = feedIteratorFactory;
-        _typeMap = typeMap;
-        _jsonSerializer = JsonSerializer.CreateDefault();
+        _serializationSettings = serializationSettings;
     }
 
-    async Task<IReadOnlyCollection<IStorageEvent>> IEventStoreReader.ReadStreamForwards(string streamId, CancellationToken cancellationToken) =>
-        (await ReadStreamForwards(streamId, cancellationToken)).Cast<IStorageEvent>().ToList();
+    async Task<IReadOnlyCollection<IStorageEvent>> IEventStoreReader.ReadStreamForwards(
+        string streamId,
+        CancellationToken cancellationToken = default
+    ) => (await ReadStreamForwards(streamId, cancellationToken)).Cast<IStorageEvent>().ToList();
 
     async Task<IReadOnlyCollection<IStorageEvent>> IEventStoreReader.ReadStreamForwards(
         string streamId,
         int startPosition,
         int numberOfEventsToRead,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken = default
     ) => (await ReadStreamForwards(streamId, startPosition, numberOfEventsToRead, cancellationToken)).Cast<IStorageEvent>().ToList();
 
     async Task<IStorageEvent> IEventStoreReader.ReadEventFromStream(string streamId, Guid eventId, CancellationToken cancellationToken) =>
@@ -43,10 +42,11 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     {
         var storageEvents = new List<StorageEvent<TBaseEvent>>();
         var eventVersion = expectedVersion;
+        var date = DateTimeOffset.Now;
 
         foreach (var @event in events)
         {
-            storageEvents.Add(new StorageEvent<TBaseEvent>(streamId, @event, ++eventVersion));
+            storageEvents.Add(new StorageEvent<TBaseEvent>(streamId, @event, ++eventVersion, date));
         }
 
         return AppendToStreamInternal(streamId, storageEvents, cancellationToken);
@@ -68,8 +68,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
             var batch = _container.CreateTransactionalBatch(new PartitionKey(streamId));
             foreach (var @event in storageEvents)
             {
-                var cosmosDbStorageEvent = CosmosDbStorageEvent.FromStorageEvent(@event, _typeMap, _jsonSerializer);
-                batch.CreateItem(cosmosDbStorageEvent, batchRequestOptions);
+                batch.CreateItem(@event, batchRequestOptions);
             }
 
             // ReSharper disable once UnusedVariable
@@ -84,6 +83,18 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         {
             throw new ConcurrencyException($"Concurrency conflict when appending to stream {streamId}. Expected revision {firstEventNumber - 1}", ex);
         }
+    }
+
+    public async Task<int> ReadStreamEventCount(string streamId)
+    {
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
+        return await _container
+            .GetItemLinqQueryable<StorageEvent<TBaseEvent>>(
+                requestOptions: requestOptions,
+                linqSerializerOptions: _serializationSettings.LinqSettings
+            )
+            .Where(e => e.StreamId == streamId)
+            .CountAsync();
     }
 
     public async Task<IReadOnlyCollection<StorageEvent<TBaseEvent>>> ReadStreamForwards(
@@ -106,7 +117,10 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 
         var query = _container
-            .GetItemLinqQueryable<CosmosDbStorageEvent>(requestOptions: requestOptions)
+            .GetItemLinqQueryable<StorageEvent<TBaseEvent>>(
+                requestOptions: requestOptions,
+                linqSerializerOptions: _serializationSettings.LinqSettings
+            )
             .Where(e => e.StreamId == streamId && e.EventNumber >= startPosition && e.EventNumber <= endPosition)
             .OrderBy(e => e.EventNumber)
             .Take(numberOfEventsToRead);
@@ -122,7 +136,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
 
             foreach (var resource in response.Resource)
             {
-                events.Add(FromCosmosStorageEvent(resource));
+                events.Add(resource);
             }
         }
 
@@ -163,6 +177,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     public StorageEvent<TBaseEvent> FromCosmosStorageEvent(CosmosDbStorageEvent cosmosDbStorageEvent)
     {
         return cosmosDbStorageEvent.ToStorageEvent<TBaseEvent>(_typeMap, _jsonSerializer);
+    }
     }
 
     private static async Task<TransactionalBatchResponse> CreateEvents(TransactionalBatch batch, CancellationToken cancellationToken)

@@ -14,15 +14,18 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly EventStoreOptions _options;
     private readonly Container _snapshotContainer;
+    private readonly LogOtterJsonSerializationSettings _serializationSettings;
 
     public SnapshotRepository(
         CosmosContainer<TSnapshot> snapshotContainer,
         EventStore<TBaseEvent> eventStore,
         IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options
+        IOptions<EventStoreOptions> options,
+        LogOtterJsonSerializationSettings serializationSettings
     )
     {
         _feedIteratorFactory = feedIteratorFactory;
+        _serializationSettings = serializationSettings;
         _snapshotContainer = snapshotContainer.Container;
         _eventStore = eventStore;
         _options = options.Value;
@@ -169,7 +172,12 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
             requestOptions.PartitionKey = new PartitionKey(partitionKey);
         }
 
-        var query = (IQueryable<TSnapshot>)_snapshotContainer.GetItemLinqQueryable<TSnapshot>(requestOptions: requestOptions);
+        var query =
+            (IQueryable<TSnapshot>)
+                _snapshotContainer.GetItemLinqQueryable<TSnapshot>(
+                    requestOptions: requestOptions,
+                    linqSerializerOptions: _serializationSettings.LinqSettings
+                );
 
         if (!includeDeleted)
         {

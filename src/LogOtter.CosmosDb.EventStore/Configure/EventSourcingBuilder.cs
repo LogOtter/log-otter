@@ -36,6 +36,9 @@ public class EventSourcingBuilder
 
         Services.AddSingleton(metadata);
         Services.AddSingleton<IEventSourceMetadata>(metadata);
+        _cosmosDbBuilder.WithCustomJsonConverter<StorageEventJsonConverter<TBaseEvent>>(
+            sp => new StorageEventJsonConverter<TBaseEvent>(metadata.SerializationTypeMap)
+        );
 
         Services.AddSingleton(sp =>
         {
@@ -74,7 +77,7 @@ public class EventSourcingBuilder
             );
 
             _cosmosDbBuilder.AddChangeFeedProcessor(
-                typeof(CosmosDbStorageEvent),
+                typeof(StorageEvent<TBaseEvent>),
                 typeof(TBaseEvent),
                 typeof(Event<TBaseEvent>),
                 typeof(EventConverter<TBaseEvent>),

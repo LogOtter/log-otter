@@ -2,6 +2,7 @@
 using LogOtter.CosmosDb.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb;
 
@@ -34,6 +35,14 @@ public class CosmosDbBuilder
     {
         Services.RemoveAll<AutoProvisionSettings>();
         Services.AddSingleton(_ => new AutoProvisionSettings(true));
+        return this;
+    }
+
+    public CosmosDbBuilder WithCustomJsonConverter<T>(Func<IServiceProvider, T> factory)
+        where T : JsonConverter
+    {
+        Services.AddSingleton<T>(factory);
+        Services.AddSingleton<IRegisteredJsonConverter, RegisteredJsonConverter<T>>();
         return this;
     }
 

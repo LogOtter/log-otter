@@ -7,6 +7,8 @@ public class Event
     public string BodyType { get; }
     public int EventNumber { get; }
     public Guid EventId { get; }
+
+    public int TimeToLive { get; }
     public string Description { get; }
     public DateTimeOffset Timestamp { get; }
 
