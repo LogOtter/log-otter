@@ -28,7 +28,13 @@ services.AddSingleton<EmailAddressReservationService>();
 services
     .AddCosmosDb()
     .WithAutoProvisioning()
-    .AddContainer<EmailAddressReservation>("EmailAddressReservations")
+    .AddContainer<EmailAddressReservation>(
+        "EmailAddressReservations",
+        c =>
+        {
+            c.WithChangeFeedProcessor<TestEmailAddressReservationChangeFeedProcessor>("TestEmailAddressReservationChangeFeedProcessor");
+        }
+    )
     .AddEventSourcing(options => options.AutoEscapeIds = true)
     .AddEventSource<CustomerEvent>(
         "CustomerEvents",

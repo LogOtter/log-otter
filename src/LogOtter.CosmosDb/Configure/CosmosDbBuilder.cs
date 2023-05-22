@@ -37,25 +37,45 @@ public class CosmosDbBuilder
         return this;
     }
 
-    public CosmosDbBuilder AddContainer<T>(string containerName, Action<ContainerConfiguration>? configure = null)
+    public CosmosDbBuilder AddContainer<T>(string containerName, Action<ContainerConfiguration<T>>? configure = null)
     {
-        var config = new ContainerConfiguration();
+        var config = new ContainerConfiguration<T>();
         configure?.Invoke(config);
 
-        return AddContainer(typeof(T), containerName, config.AutoProvisionMetadata);
+        return AddContainer(typeof(T), containerName, config.AutoProvisionMetadata, config.ChangeFeedProcessorsMetadata);
     }
 
-    internal CosmosDbBuilder AddContainer(Type documentType, string containerName, AutoProvisionMetadata? autoProvisionMetadata)
+    internal CosmosDbBuilder AddContainer(
+        Type documentType,
+        string containerName,
+        AutoProvisionMetadata? autoProvisionMetadata,
+        List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata
+    )
     {
         RegisterContainer(documentType, containerName);
 
         var genericMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
         genericMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata });
 
+        foreach (var metadata in changeFeedProcessorsMetadata)
+        {
+            AddChangeFeedProcessor(
+                metadata.RawDocumentType,
+                metadata.DocumentType,
+                metadata.ChangeFeedHandlerDocumentType,
+                metadata.ChangeFeedChangeConverterType,
+                metadata.ChangeFeedProcessorHandlerType,
+                metadata.ProcessorName,
+                metadata.EnabledFunc,
+                metadata.BatchSize,
+                metadata.ActivationDate
+            );
+        }
+
         return this;
     }
 
-    internal CosmosDbBuilder AddChangeFeedProcessor(
+    private CosmosDbBuilder AddChangeFeedProcessor(
         Type rawDocumentType,
         Type documentType,
         Type changeFeedHandlerDocumentType,
@@ -67,6 +87,8 @@ public class CosmosDbBuilder
         DateTime? activationDate = null
     )
     {
+        RegisterChangeFeedProcessor(processorName);
+
         var genericMethod = AddChangeFeedProcessorMethod.MakeGenericMethod(
             rawDocumentType,
             documentType,
@@ -74,11 +96,13 @@ public class CosmosDbBuilder
             changeFeedChangeConverterType,
             changeFeedProcessorHandlerType
         );
+
         genericMethod.Invoke(this, new object?[] { processorName, enabledFunc, batchSize, activationDate });
+
         return this;
     }
 
-    private CosmosDbBuilder AddChangeFeedProcessorInternal<
+    private void AddChangeFeedProcessorInternal<
         TRawDocument,
         TDocument,
         TChangeFeedHandlerDocument,
@@ -88,8 +112,6 @@ public class CosmosDbBuilder
         where TChangeFeedChangeConverter : class, IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
         where TChangeFeedProcessorHandler : class, IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
-        RegisterChangeFeedProcessor(processorName);
-
         var documentType = typeof(TDocument);
 
         if (!_containers.ContainsKey(documentType))
@@ -113,8 +135,6 @@ public class CosmosDbBuilder
                 TChangeFeedProcessorHandler
             >(processorName, container.Container, enabledFunc, batchSize, activationDate);
         });
-
-        return this;
     }
 
     private void RegisterChangeFeedProcessor(string processorName)
