@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Bogus;
 using CustomerApi.Events.Customers;
+using CustomerApi.Services;
 using CustomerApi.Uris;
 using FluentAssertions;
 using LogOtter.CosmosDb.EventStore;
@@ -11,17 +12,18 @@ namespace CustomerApi.Tests;
 
 public class CustomerStore
 {
-    private static readonly Faker Faker = new("en_GB");
-
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
+    private readonly EmailAddressReservationService _emailAddressReservationService;
     private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;
 
     public CustomerStore(
         EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+        EmailAddressReservationService emailAddressReservationService,
         SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository
     )
     {
         _customerEventRepository = customerEventRepository;
+        _emailAddressReservationService = emailAddressReservationService;
         _customerSnapshotRepository = customerSnapshotRepository;
     }
 
@@ -38,7 +40,7 @@ public class CustomerStore
             return customerReadModel;
         }
 
-        var fakePerson = Faker.Person;
+        var fakePerson = new Person("en_GB");
 
         var customerCreated = new CustomerCreated(
             customerUri,
@@ -47,6 +49,7 @@ public class CustomerStore
             lastName.GetValueOrDefault(fakePerson.LastName)
         );
 
+        await _emailAddressReservationService.ReserveEmailAddress(customerCreated.EmailAddress);
         return await _customerEventRepository.ApplyEvents(customerUri.Uri, 0, customerCreated);
     }
 

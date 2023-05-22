@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
+using CustomerApi.Services;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -22,10 +23,12 @@ services.AddAuthentication().AddJwtBearer();
 services.Configure<CosmosDbOptions>(configuration.GetSection("CosmosDb"));
 services.Configure<PageOptions>(configuration.GetSection("PageOptions"));
 services.Configure<EventStreamsApiOptions>(configuration.GetSection("EventStreamsApi"));
+services.AddSingleton<EmailAddressReservationService>();
 
 services
     .AddCosmosDb()
     .WithAutoProvisioning()
+    .AddContainer<EmailAddressReservation>("EmailAddressReservations")
     .AddEventSourcing(options => options.AutoEscapeIds = true)
     .AddEventSource<CustomerEvent>(
         "CustomerEvents",

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using CustomerApi.Controllers.Customers.Create;
 using CustomerApi.Uris;
 using FluentAssertions;
 using LogOtter.HttpPatch;
@@ -43,6 +44,25 @@ public class PatchCustomerTests
             customerUri,
             c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bobby" && c.LastName == "Bobertson"
         );
+    }
+
+    [Fact]
+    public async Task Valid_ReuseEmailAddress()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite", "Customers.Create");
+        await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new { EmailAddress = "bob@example.com" };
+        await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        var createRequest = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+        var response = await client.PostAsJsonAsync("/customers", createRequest);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     public static IEnumerable<object[]> InvalidData()

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApi.Events.Customers;
+using CustomerApi.Services;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,15 @@ namespace CustomerApi.Controllers.Customers.Create;
 public class CreateCustomerController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
+    private readonly EmailAddressReservationService _emailAddressReservationService;
 
-    public CreateCustomerController(EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository)
+    public CreateCustomerController(
+        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+        EmailAddressReservationService emailAddressReservationService
+    )
     {
         _customerEventRepository = customerEventRepository;
+        _emailAddressReservationService = emailAddressReservationService;
     }
 
     [HttpPost]
@@ -27,6 +33,15 @@ public class CreateCustomerController : ControllerBase
         CancellationToken cancellationToken
     )
     {
+        try
+        {
+            await _emailAddressReservationService.ReserveEmailAddress(customerData.EmailAddress);
+        }
+        catch (EmailAddressInUseException)
+        {
+            return Conflict("Email address already in use");
+        }
+
         var customerUri = CustomerUri.Generate();
 
         var customerCreated = new CustomerCreated(customerUri, customerData.EmailAddress, customerData.FirstName, customerData.LastName);
