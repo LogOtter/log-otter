@@ -23,7 +23,29 @@ public class EventSourcingBuilder
         var config = new EventSourceConfiguration<TBaseEvent>();
         configure?.Invoke(config);
 
-        _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, new AutoProvisionMetadata(PartitionKeyPath: "/streamId"));
+        var changeFeedProcessorsMetadata = new List<ChangeFeedProcessorMetadata>();
+
+        var catchupSubscriptionChangeFeedProcessor = typeof(CatchupSubscriptionChangeFeedProcessor<,>);
+        foreach (var catchUpSubscription in config.CatchUpSubscriptions)
+        {
+            Services.AddSingleton(catchUpSubscription.HandlerType);
+
+            var specificCatchUpSubscriptionType = catchupSubscriptionChangeFeedProcessor.MakeGenericType(
+                typeof(TBaseEvent),
+                catchUpSubscription.HandlerType
+            );
+
+            changeFeedProcessorsMetadata.Add(
+                new ChangeFeedProcessorMetadata(
+                    typeof(CosmosDbStorageEvent),
+                    typeof(TBaseEvent),
+                    typeof(Event<TBaseEvent>),
+                    typeof(EventConverter<TBaseEvent>),
+                    specificCatchUpSubscriptionType,
+                    catchUpSubscription.ProjectorName
+                )
+            );
+        }
 
         var simpleSerializationTypeMap = new SimpleSerializationTypeMap(config.EventTypes);
         var metadata = new EventSourceMetadata<TBaseEvent>(
@@ -37,14 +59,6 @@ public class EventSourcingBuilder
         Services.AddSingleton(metadata);
         Services.AddSingleton<IEventSourceMetadata>(metadata);
 
-        Services.AddSingleton(sp =>
-        {
-            var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
-            var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
-
-            return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory, simpleSerializationTypeMap);
-        });
-
         var eventRepository = typeof(EventRepository<,>);
         var snapshotRepository = typeof(SnapshotRepository<,>);
         foreach (var projection in config.Projections)
@@ -56,34 +70,28 @@ public class EventSourcingBuilder
                 _cosmosDbBuilder.AddContainer(
                     projection.ProjectionType,
                     projection.SnapshotMetadata.ContainerName,
-                    projection.SnapshotMetadata.AutoProvisionMetadata
+                    projection.SnapshotMetadata.AutoProvisionMetadata,
+                    new List<ChangeFeedProcessorMetadata>()
                 );
 
                 Services.AddSingleton(snapshotRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));
             }
         }
 
-        var catchupSubscriptionChangeFeedProcessor = typeof(CatchupSubscriptionChangeFeedProcessor<,>);
-        foreach (var catchUpSubscription in config.CatchUpSubscriptions)
+        _cosmosDbBuilder.AddContainer(
+            typeof(TBaseEvent),
+            containerName,
+            new AutoProvisionMetadata(PartitionKeyPath: "/streamId"),
+            changeFeedProcessorsMetadata
+        );
+
+        Services.AddSingleton(sp =>
         {
-            Services.AddSingleton(catchUpSubscription.HandlerType);
+            var cosmosContainer = sp.GetRequiredService<CosmosContainer<TBaseEvent>>();
+            var feedIteratorFactory = sp.GetRequiredService<IFeedIteratorFactory>();
 
-            var specificCatchUpSubscriptionType = catchupSubscriptionChangeFeedProcessor.MakeGenericType(
-                typeof(TBaseEvent),
-                catchUpSubscription.HandlerType
-            );
-
-            _cosmosDbBuilder.AddChangeFeedProcessor(
-                typeof(CosmosDbStorageEvent),
-                typeof(TBaseEvent),
-                typeof(Event<TBaseEvent>),
-                typeof(EventConverter<TBaseEvent>),
-                specificCatchUpSubscriptionType,
-                catchUpSubscription.ProjectorName
-            );
-
-            return this;
-        }
+            return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory, simpleSerializationTypeMap);
+        });
 
         return this;
     }
