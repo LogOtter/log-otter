@@ -26,7 +26,7 @@ if ($startContainer) {
     mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator | Out-Null
 }
 
-Write-Host 'Waiting for CosmosDb Emulator to start...'
+Write-Host 'Waiting for emulator to start...'
 $startupCounter = 0;
 $succeeded = $false
 
@@ -53,6 +53,7 @@ if (!$succeeded) {
 Write-Host 'Container started'
 
 Write-Host 'Importing certificate...'
-Import-Certificate -FilePath $certificateFileName -CertStoreLocation Cert:\CurrentUser\Root | Out-Null
+$certificate = Import-Certificate -FilePath $certificateFileName -CertStoreLocation Cert:\CurrentUser\Root
+$certificate.FriendlyName = 'CosmosDb Emulator Certificate'
 
 Write-Host 'Import complete'
