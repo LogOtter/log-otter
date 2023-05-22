@@ -1,4 +1,5 @@
 ﻿using CustomerApi.Events.Customers;
+using CustomerApi.Services;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.HttpPatch;
@@ -13,10 +14,15 @@ namespace CustomerApi.Controllers.Customers.Patch;
 public class PatchCustomerController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
+    private readonly EmailAddressReservationService _emailAddressReservationService;
 
-    public PatchCustomerController(EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository)
+    public PatchCustomerController(
+        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+        EmailAddressReservationService emailAddressReservationService
+    )
     {
         _customerEventRepository = customerEventRepository;
+        _emailAddressReservationService = emailAddressReservationService;
     }
 
     [HttpPatch("{id}")]
@@ -50,6 +56,9 @@ public class PatchCustomerController : ControllerBase
             events.Add(
                 new CustomerEmailAddressChanged(customerUri, customerReadModel.EmailAddress, request.EmailAddress.Value!, DateTimeOffset.UtcNow)
             );
+
+            await _emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
+            await _emailAddressReservationService.ReserveEmailAddress(request.EmailAddress.Value!);
         }
 
         if (request.FirstName.IsIncludedInPatch || request.LastName.IsIncludedInPatch)

@@ -1,4 +1,5 @@
 ﻿using CustomerApi.Events.Customers;
+using CustomerApi.Services;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,15 @@ namespace CustomerApi.Controllers.Customers.Delete;
 public class DeleteCustomerController : ControllerBase
 {
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
+    private readonly EmailAddressReservationService _emailAddressReservationService;
 
-    public DeleteCustomerController(EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository)
+    public DeleteCustomerController(
+        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+        EmailAddressReservationService emailAddressReservationService
+    )
     {
         _customerEventRepository = customerEventRepository;
+        _emailAddressReservationService = emailAddressReservationService;
     }
 
     [HttpDelete("{id}")]
@@ -41,6 +47,8 @@ public class DeleteCustomerController : ControllerBase
         {
             return NoContent();
         }
+
+        await _emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
 
         var customerDeleted = new CustomerDeleted(customerUri);
 

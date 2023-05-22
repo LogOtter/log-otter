@@ -44,6 +44,44 @@ public class CreateCustomerTests
         );
     }
 
+    [Fact]
+    public async Task Invalid_DuplicateEmailAddress()
+    {
+        using var customerApi = new TestCustomerApi();
+
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+        await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");
+
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var response = await client.PostAsJsonAsync("/customers", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Valid_DeleteCustomer_DuplicateEmailAddress()
+    {
+        using var customerApi = new TestCustomerApi();
+
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+        await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");
+
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create", "Customers.Delete");
+
+        var client = customerApi.CreateClient(authHeader);
+
+        await client.DeleteAsync(customerUri.Uri);
+
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+        var response = await client.PostAsJsonAsync("/customers", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
     [Theory]
     [InlineData(null, "Bob", "Bobertson")]
     [InlineData("", "Bob", "Bobertson")]
