@@ -1,4 +1,5 @@
-using Microsoft.Azure.Cosmos;
+using System.Net;
+using Microsoft.Azure.Cosmos.Fluent;
 
 namespace LogOtter.CosmosDb;
 
@@ -8,5 +9,5 @@ public record CosmosDbOptions
     public string DatabaseId { get; set; } = "";
     public ManagedIdentityOptions? ManagedIdentityOptions { get; set; }
     public ChangeFeedProcessorOptions ChangeFeedProcessorOptions { get; set; } = new();
-    public CosmosClientOptions? ClientOptions { get; set; }
+    public ClientOptions ClientOptions { get; set; } = new();
 }
