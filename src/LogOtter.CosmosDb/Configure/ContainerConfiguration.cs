@@ -9,9 +9,12 @@ public class ContainerConfiguration<TDocument>
 
     internal List<ChangeFeedProcessorMetadata> ChangeFeedProcessorsMetadata { get; }
 
+    internal HashSet<Type> SubTypes { get; }
+
     internal ContainerConfiguration()
     {
         ChangeFeedProcessorsMetadata = new List<ChangeFeedProcessorMetadata>();
+        SubTypes = new HashSet<Type>();
     }
 
     public ContainerConfiguration<TDocument> WithAutoProvisionSettings(
@@ -83,6 +86,13 @@ public class ContainerConfiguration<TDocument>
 
         ChangeFeedProcessorsMetadata.Add(metadata);
 
+        return this;
+    }
+
+    public ContainerConfiguration<TDocument> WithSubType<T>()
+        where T : TDocument
+    {
+        SubTypes.Add(typeof(T));
         return this;
     }
 }

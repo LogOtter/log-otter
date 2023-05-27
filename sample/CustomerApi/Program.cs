@@ -3,6 +3,7 @@ using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using CustomerApi.Services;
+using CustomerApi.Services.Lookup;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -33,6 +34,13 @@ services
         c =>
         {
             c.WithChangeFeedProcessor<TestEmailAddressReservationChangeFeedProcessor>("TestEmailAddressReservationChangeFeedProcessor");
+        }
+    )
+    .AddContainer<LookupItem>(
+        "LookupItems",
+        c =>
+        {
+            c.WithSubType<Movie>().WithSubType<Song>();
         }
     )
     .AddEventSourcing(options => options.AutoEscapeIds = true)
