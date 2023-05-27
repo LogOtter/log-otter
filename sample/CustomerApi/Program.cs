@@ -29,6 +29,7 @@ services.AddSingleton<EmailAddressReservationService>();
 services
     .AddCosmosDb()
     .WithAutoProvisioning()
+    .AddContainer<SearchableInterest>("SearchableInterest")
     .AddContainer<EmailAddressReservation>(
         "EmailAddressReservations",
         c =>
@@ -40,7 +41,7 @@ services
         "LookupItems",
         c =>
         {
-            c.WithSubType<Movie>().WithSubType<Song>();
+            c.WithSubType<Movie>().WithSubType<Song>().WithChangeFeedProcessor<SearchableInterestsProcessor>("SearchableInterestChangeFeedProcessor");
         }
     )
     .AddEventSourcing(options => options.AutoEscapeIds = true)
