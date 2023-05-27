@@ -12,6 +12,11 @@ public class CosmosDbBuilder
         BindingFlags.Instance | BindingFlags.NonPublic
     )!;
 
+    private static readonly MethodInfo RegisterSubTypeContainerMethod = typeof(CosmosDbBuilder).GetMethod(
+        nameof(RegisterSubTypeContainer),
+        BindingFlags.Instance | BindingFlags.NonPublic
+    )!;
+
     private static readonly MethodInfo AddChangeFeedProcessorMethod = typeof(CosmosDbBuilder).GetMethod(
         nameof(AddChangeFeedProcessorInternal),
         BindingFlags.Instance | BindingFlags.NonPublic
@@ -42,7 +47,7 @@ public class CosmosDbBuilder
         var config = new ContainerConfiguration<T>();
         configure?.Invoke(config);
 
-        return AddContainer(typeof(T), containerName, config.AutoProvisionMetadata, config.ChangeFeedProcessorsMetadata);
+        return AddContainer(typeof(T), containerName, config.AutoProvisionMetadata, config.ChangeFeedProcessorsMetadata, config.SubTypes);
     }
 
     internal CosmosDbBuilder AddContainer(
@@ -52,10 +57,27 @@ public class CosmosDbBuilder
         List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata
     )
     {
+        return AddContainer(documentType, containerName, autoProvisionMetadata, changeFeedProcessorsMetadata, new HashSet<Type>());
+    }
+
+    internal CosmosDbBuilder AddContainer(
+        Type documentType,
+        string containerName,
+        AutoProvisionMetadata? autoProvisionMetadata,
+        List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata,
+        HashSet<Type> subTypes
+    )
+    {
         RegisterContainer(documentType, containerName);
 
-        var genericMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
-        genericMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata });
+        var genericRegisterMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
+        genericRegisterMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata });
+
+        foreach (var subType in subTypes)
+        {
+            var genericRegisterSubTypeMethod = RegisterSubTypeContainerMethod.MakeGenericMethod(documentType, subType);
+            genericRegisterSubTypeMethod.Invoke(this, null);
+        }
 
         foreach (var metadata in changeFeedProcessorsMetadata)
         {
@@ -191,6 +213,15 @@ public class CosmosDbBuilder
                 : cosmosContainerFactory.GetContainer(containerName);
 
             return new CosmosContainer<T>(container);
+        });
+    }
+
+    private void RegisterSubTypeContainer<TBaseType, TSubType>()
+    {
+        Services.AddSingleton(sp =>
+        {
+            var baseTypeContainer = sp.GetRequiredService<CosmosContainer<TBaseType>>();
+            return new CosmosContainer<TSubType>(baseTypeContainer.Container);
         });
     }
 }
