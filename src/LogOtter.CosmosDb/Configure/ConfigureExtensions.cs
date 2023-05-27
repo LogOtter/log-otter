@@ -21,11 +21,6 @@ public static class ConfigureExtensions
         {
             var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
 
-            options.ClientOptions ??= new CosmosClientOptions
-            {
-                // Hrmmm I'm not sure how to set the serializer TypeNameHandling...
-            };
-
             if (options.ManagedIdentityOptions == null)
             {
                 return new CosmosClient(options.ConnectionString, options.ClientOptions);
