@@ -2,9 +2,12 @@
 using Bogus;
 using CustomerApi.Events.Customers;
 using CustomerApi.Services;
+using CustomerApi.Services.CustomerInterests;
 using CustomerApi.Uris;
 using FluentAssertions;
+using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
+using Microsoft.Azure.Cosmos;
 
 // ReSharper disable UnusedMethodReturnValue.Local
 
@@ -15,16 +18,22 @@ public class CustomerStore
     private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
     private readonly EmailAddressReservationService _emailAddressReservationService;
     private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;
+    private readonly Container _movieContainer;
+    private readonly Container _songContainer;
 
     public CustomerStore(
         EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
         EmailAddressReservationService emailAddressReservationService,
-        SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository
+        SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository,
+        CosmosContainer<Movie> movieContainer,
+        CosmosContainer<Song> songContainer
     )
     {
         _customerEventRepository = customerEventRepository;
         _emailAddressReservationService = emailAddressReservationService;
         _customerSnapshotRepository = customerSnapshotRepository;
+        _movieContainer = movieContainer.Container;
+        _songContainer = songContainer.Container;
     }
 
     public async Task<CustomerReadModel> GivenAnExistingCustomer(
@@ -99,5 +108,19 @@ public class CustomerStore
         ).SingleOrDefault(c => c.CustomerUri == customerUri);
         customerQueryRead.Should().NotBeNull();
         customerQueryRead.Should().Match(matchFunc);
+    }
+
+    public async Task ThenTheMovieShouldMatch(MovieUri movieUri, Expression<Func<Movie, bool>> matchFunc)
+    {
+        var movie = await _movieContainer.ReadItemAsync<Movie>(movieUri.MovieId, new PartitionKey(Movie.StaticPartition));
+        movie.Resource.Should().NotBeNull();
+        movie.Resource.Should().Match(matchFunc);
+    }
+
+    public async Task ThenTheSongShouldMatch(SongUri songUri, Expression<Func<Song, bool>> matchFunc)
+    {
+        var song = await _songContainer.ReadItemAsync<Song>(songUri.SongId, new PartitionKey(Song.StaticPartition));
+        song.Resource.Should().NotBeNull();
+        song.Resource.Should().Match(matchFunc);
     }
 }

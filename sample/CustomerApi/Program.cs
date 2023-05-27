@@ -3,7 +3,7 @@ using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
 using CustomerApi.Services;
-using CustomerApi.Services.Lookup;
+using CustomerApi.Services.CustomerInterests;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -36,7 +36,7 @@ services
             c.WithChangeFeedProcessor<TestEmailAddressReservationChangeFeedProcessor>("TestEmailAddressReservationChangeFeedProcessor");
         }
     )
-    .AddContainer<LookupItem>(
+    .AddContainer<CustomerInterest>(
         "LookupItems",
         c =>
         {
