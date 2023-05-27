@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using CustomerApi.Services.CustomerInterests;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
 
 namespace CustomerApi.Controllers;
 

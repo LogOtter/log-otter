@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Bogus;
 using CustomerApi.Events.Customers;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
-using CustomerApi.Services.CustomerInterests;
 using CustomerApi.Uris;
 using FluentAssertions;
 using LogOtter.CosmosDb;
