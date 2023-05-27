@@ -2,8 +2,8 @@ using System.Collections.ObjectModel;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.HealthChecks;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
-using CustomerApi.Services.CustomerInterests;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -41,7 +41,9 @@ services
         "LookupItems",
         c =>
         {
-            c.WithSubType<Movie>().WithSubType<Song>().WithChangeFeedProcessor<SearchableInterestsProcessor>("SearchableInterestChangeFeedProcessor");
+            c.WithSubTypeThatMustHaveDistinctPartition<Movie>()
+                .WithSubTypeThatMustHaveDistinctPartition<Song>()
+                .WithChangeFeedProcessor<SearchableInterestsProcessor>("SearchableInterestChangeFeedProcessor");
         }
     )
     .AddEventSourcing(options => options.AutoEscapeIds = true)

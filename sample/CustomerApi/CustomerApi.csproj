@@ -28,4 +28,8 @@
         <InternalsVisibleTo Include="CustomerApi.Tests" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="NonEventSourcedData\" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CustomerApi.Services.CustomerInterests;
+namespace CustomerApi.NonEventSourcedData.CustomerInterests;
 
 public record SearchableInterest(
     [property: JsonProperty("id")]

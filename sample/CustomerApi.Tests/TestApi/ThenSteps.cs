@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using CustomerApi.Events.Customers;
-using CustomerApi.Services.CustomerInterests;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Uris;
 
 namespace CustomerApi.Tests;

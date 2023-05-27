@@ -1,9 +1,10 @@
 using Newtonsoft.Json;
 
-namespace CustomerApi.Services.CustomerInterests;
+namespace CustomerApi.NonEventSourcedData.CustomerInterests;
 
-public abstract record CustomerInterest(
+public record CustomerInterest(
     [property: JsonProperty("id")] string Id,
+    string Uri,
     string Name,
     [property: JsonProperty("partitionKey")] string PartitionKey
 );

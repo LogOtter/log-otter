@@ -89,7 +89,7 @@ public class ContainerConfiguration<TDocument>
         return this;
     }
 
-    public ContainerConfiguration<TDocument> WithSubType<T>()
+    public ContainerConfiguration<TDocument> WithSubTypeThatMustHaveDistinctPartition<T>()
         where T : TDocument
     {
         SubTypes.Add(typeof(T));

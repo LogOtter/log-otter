@@ -1,4 +1,4 @@
-using CustomerApi.Services.CustomerInterests;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb;
 using Microsoft.AspNetCore.Authorization;
