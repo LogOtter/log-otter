@@ -42,6 +42,24 @@ public class CreateCustomerInterestTests
     }
 
     [Fact]
+    public async Task ValidMovie_ProcessedToSearchableInterest()
+    {
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new CreateMovieRequest("Alien", 116);
+
+        var response = await client.PostAsJsonAsync("/interests/movies", request);
+        var location = response.Headers.Location?.ToString();
+        location.Should().NotBeNull("Location should be returned");
+
+        var movieUri = MovieUri.Parse(location!);
+
+        await customerApi.Then.TheSearchableInterestShouldMatch(movieUri.MovieId, c => c.Name == "Alien" && c.Uri == movieUri.Uri);
+    }
+
+    [Fact]
     public async Task ValidSong_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
@@ -71,5 +89,23 @@ public class CreateCustomerInterestTests
         var songUri = SongUri.Parse(location!);
 
         await customerApi.Then.TheSongShouldMatch(songUri, c => c.Name == "Drink" && c.Genre == "Pirate Metal");
+    }
+
+    [Fact]
+    public async Task ValidSong_ProcessedToSearchableInterest()
+    {
+        using var customerApi = new TestCustomerApi();
+        var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new CreateSongRequest("Drink", "Pirate Metal");
+
+        var response = await client.PostAsJsonAsync("/interests/songs", request);
+        var location = response.Headers.Location?.ToString();
+        location.Should().NotBeNull("Location should be returned");
+
+        var songUri = SongUri.Parse(location!);
+
+        await customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri);
     }
 }

@@ -40,6 +40,7 @@ public class TestCustomerApi : IDisposable
 
         services.AddTransient<ConsumerStore>();
         services.AddTransient<CustomerStore>();
+        services.AddTransient<SearchableInterestStore>();
         services.AddTransient<GivenSteps>();
         services.AddTransient<ThenSteps>();
     }

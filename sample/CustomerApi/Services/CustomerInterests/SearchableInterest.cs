@@ -1,0 +1,15 @@
+using Newtonsoft.Json;
+
+namespace CustomerApi.Services.CustomerInterests;
+
+public record SearchableInterest(
+    [property: JsonProperty("id")]
+    string Id,
+    string Uri,
+    string Name)
+{
+    [JsonProperty("partitionKey")]
+    public string PartitionKey => StaticPartition;
+
+    public const string StaticPartition = "searchable";
+}
