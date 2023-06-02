@@ -9,10 +9,12 @@ namespace CustomerApi.Tests.CustomerInterestsController;
 
 public class CreateCustomerInterestTests
 {
-    [Fact]
-    public async Task ValidMovie_ReturnsOk()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ValidMovie_ReturnsOk(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi();
+        using var customerApi = new TestCustomerApi(disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -23,10 +25,12 @@ public class CreateCustomerInterestTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
-    [Fact]
-    public async Task ValidMovie_StoredCorrectly()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ValidMovie_StoredCorrectly(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi();
+        using var customerApi = new TestCustomerApi(disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);

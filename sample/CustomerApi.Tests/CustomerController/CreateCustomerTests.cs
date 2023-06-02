@@ -9,10 +9,12 @@ namespace CustomerApi.Tests.CustomerController;
 
 public class CreateCustomerTests
 {
-    [Fact]
-    public async Task Valid_ReturnsOk()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Valid_ReturnsOk(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi();
+        using var customerApi = new TestCustomerApi(disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -23,10 +25,12 @@ public class CreateCustomerTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
-    [Fact]
-    public async Task Valid_StoredCorrectly()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Valid_StoredCorrectly(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi();
+        using var customerApi = new TestCustomerApi(disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
