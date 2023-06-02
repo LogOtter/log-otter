@@ -1,12 +1,19 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using CustomerApi.Configuration;
+using CustomerApi.Events.Customers;
+using CustomerApi.NonEventSourcedData.CustomerInterests;
+using CustomerApi.Services;
+using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.Testing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,13 +23,19 @@ public class TestCustomerApi : IDisposable
 {
     private readonly TestApplicationFactory _hostedApi;
 
+    private readonly bool _disableCosmosAutoProvisioning;
+
     public Uri BaseAddress => _hostedApi.Server.BaseAddress;
 
     public GivenSteps Given { get; }
     public ThenSteps Then { get; }
 
     public TestCustomerApi()
+        : this(false) { }
+
+    public TestCustomerApi(bool disableCosmosAutoProvisioning)
     {
+        _disableCosmosAutoProvisioning = disableCosmosAutoProvisioning;
         _hostedApi = new TestApplicationFactory(ConfigureTestServices, ConfigureServices);
 
         Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
@@ -36,7 +49,25 @@ public class TestCustomerApi : IDisposable
 
     private void ConfigureTestServices(IServiceCollection services)
     {
-        services.AddTestCosmosDb();
+        if (_disableCosmosAutoProvisioning)
+        {
+            services.RemoveAll<AutoProvisionSettings>();
+            services.AddSingleton(_ => new AutoProvisionSettings(false));
+        }
+
+        services
+            .AddTestCosmosDb()
+            .WithPreProvisionedContainer<SearchableInterest>("SearchableInterest")
+            .WithPreProvisionedContainer<EmailAddressReservation>("EmailAddressReservations")
+            .WithPreProvisionedContainer<CustomerInterest>("LookupItems")
+            .WithPreProvisionedContainer<CustomerEvent>("CustomerEvents")
+            .WithPreProvisionedContainer<CustomerReadModel>(
+                "Customers",
+                indexingPolicy: new IndexingPolicy().WithCompositeIndex(
+                    new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
+                    new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+                )
+            );
 
         services.AddTransient<ConsumerStore>();
         services.AddTransient<CustomerStore>();
