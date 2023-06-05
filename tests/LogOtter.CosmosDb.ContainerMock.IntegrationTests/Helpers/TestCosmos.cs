@@ -579,7 +579,11 @@ public sealed class TestCosmos : IDisposable
 
     private async Task<ContainerResponse> CreateCosmosContainer(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy)
     {
-        var dbName = typeof(TestCosmos).Assembly.GetName().Name;
+        // HACK: Since we can't run the CosmosDb in TestContainers on GitHub actions due to a bug in the emulator
+        // and running on real cosmos uses too much of the control plane RU/s, we'll split the tests between different databases.
+        var dbNameIndex = new Random().Next(1, 25);
+        var dbName = typeof(TestCosmos).Assembly.GetName().Name + "_" + dbNameIndex.ToString("00");
+
         var database = (await _client.CreateDatabaseIfNotExistsAsync(dbName, throughput: null)).Database;
 
         var containerProperties = new ContainerProperties
