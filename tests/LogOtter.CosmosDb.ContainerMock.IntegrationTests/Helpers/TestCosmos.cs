@@ -1,16 +1,20 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Net;
 using Microsoft.Azure.Cosmos;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public sealed class TestCosmos : IDisposable
 {
+    private static readonly IEnumerable<TimeSpan> BackOffPolicy = Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(500), 5, fastFirst: true);
+
     private readonly CosmosClient _client;
     private readonly CosmosClientOptions _cosmosClientOptions;
 
     private Container? _realContainer;
-
     private Container? _testContainer;
 
     public TestCosmos(CosmosClient client, CosmosClientOptions cosmosClientOptions)
@@ -581,7 +585,7 @@ public sealed class TestCosmos : IDisposable
     {
         // HACK: Since we can't run the CosmosDb in TestContainers on GitHub actions due to a bug in the emulator
         // and running on real cosmos uses too much of the control plane RU/s, we'll split the tests between different databases.
-        var dbNameIndex = new Random().Next(1, 25);
+        var dbNameIndex = new Random().Next(1, 10);
         var dbName = typeof(TestCosmos).Assembly.GetName().Name + "_" + dbNameIndex.ToString("00");
 
         var database = (await _client.CreateDatabaseIfNotExistsAsync(dbName, throughput: null)).Database;
@@ -597,7 +601,21 @@ public sealed class TestCosmos : IDisposable
             containerProperties.UniqueKeyPolicy = uniqueKeyPolicy;
         }
 
-        var response = await database.CreateContainerAsync(containerProperties);
-        return response;
+        var policy = Policy
+            .Handle<CosmosException>(exception => exception.StatusCode is HttpStatusCode.ServiceUnavailable or HttpStatusCode.RequestTimeout)
+            .WaitAndRetryAsync(BackOffPolicy);
+
+        var result = await policy.ExecuteAndCaptureAsync(async () =>
+        {
+            var response = await database.CreateContainerAsync(containerProperties);
+            return response;
+        });
+
+        if (result.Outcome == OutcomeType.Successful)
+        {
+            return result.Result;
+        }
+
+        throw result.FinalException;
     }
 }
