@@ -6,6 +6,7 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public class IntegrationTestsFixture : IAsyncLifetime
 {
+    private const int CosmosEmulatorPartitionCount = 5;
     private readonly CosmosDbContainer? _container;
     private readonly string _cosmosConnectionString;
     private readonly bool _useTestContainers;
@@ -17,7 +18,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
         if (_useTestContainers)
         {
-            _container = new CosmosDbBuilder().WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "2").Build();
+            _container = new CosmosDbBuilder().WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", $"{CosmosEmulatorPartitionCount}").Build();
         }
     }
 
