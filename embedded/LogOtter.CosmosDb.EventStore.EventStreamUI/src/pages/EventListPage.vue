@@ -115,7 +115,7 @@ export default {
       <event-card :event-stream-name="eventStreamName" :stream-id="streamId" :event="event" v-for="event in events" :key="event.eventId"></event-card>
 
       <div v-if="!loading && !events.length && !error">
-        <div class="card mb-1 p-3 text-muted">
+        <div class="card mb-1 p-3 text-body-secondary">
           <span><i class="bi-info-square me-2"></i> No events found </span>
         </div>
       </div>

@@ -42,7 +42,7 @@ export default defineComponent({
       <div class="row">
         <div class="col">
           <h6 class="card-title">{{ event.description }}</h6>
-          <div class="card-subtitle text-muted">
+          <div class="card-subtitle text-body-secondary">
             {{ event.eventNumber }} &middot; {{ event.bodyType }} &middot;
             <span ref="timeTooltip" data-bs-toggle="tooltip" :data-bs-title="formatTimestamp(event.timestamp)">
               {{ formatTimestampFromNow(event.timestamp) }}

@@ -91,7 +91,7 @@ export default defineComponent({
           <h5 class="card-title">
             <span class="placeholder col-2"></span>
           </h5>
-          <div class="card-subtitle text-muted">
+          <div class="card-subtitle text-body-secondary">
             <span class="placeholder col-4"></span>
           </div>
         </div>
@@ -100,14 +100,14 @@ export default defineComponent({
     <div class="card mb-2" v-for="eventStream in eventStreams" :key="eventStream.name">
       <div class="card-body">
         <h5 class="card-title">{{ eventStream.name }}</h5>
-        <div class="card-subtitle text-muted">{{ eventStream.typeName }}</div>
+        <div class="card-subtitle text-body-secondary">{{ eventStream.typeName }}</div>
         <a :href="'#/' + eventStream.name" class="stretched-link"></a>
       </div>
     </div>
     <span ref="loadMore"></span>
   </div>
   <div v-if="!loading && !eventStreams.length && !error">
-    <div class="card m-3 p-3 text-muted">
+    <div class="card m-3 p-3 text-body-secondary">
       <span> <i class="bi-info-square me-2"></i> No event streams configured </span>
     </div>
   </div>
