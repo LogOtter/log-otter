@@ -111,7 +111,7 @@ export default defineComponent({
     <i class="bi-list"></i>
   </div>
   <div class="flex-column flex-shrink-0 p-3 text-bg-dark sidebar" :class="{ collapsed: !isExpanded }" ref="sidebar">
-    <a href="./" class="d-flex align-items-center text-white text-decoration-none" @click="() => (isExpanded = false)">
+    <a href="./#" class="d-flex align-items-center text-white text-decoration-none" @click="() => (isExpanded = false)">
       <img src="@/assets/log-otter-grayscale.svg" class="me-2" width="32" alt="LogOtter" />
       <span class="fs-5">Event Stream Viewer</span>
     </a>
@@ -138,7 +138,7 @@ export default defineComponent({
       <span ref="loadMore"></span>
     </ul>
     <hr />
-    <div class="text-muted">
+    <div class="text-white text-opacity-50">
       <small v-if="version">v{{ version }}</small>
     </div>
   </div>
