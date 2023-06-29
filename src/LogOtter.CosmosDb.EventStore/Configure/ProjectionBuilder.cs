@@ -4,15 +4,19 @@ namespace LogOtter.CosmosDb.EventStore;
 
 public class ProjectionBuilder<TBaseEvent, TProjection>
 {
+    private readonly Type _catchupSubscriptionType;
+
     private readonly Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> _mutateMetadata;
 
     private readonly Action<ICatchUpSubscriptionMetadata> _addCatchUpSubscription;
 
     internal ProjectionBuilder(
+        Type catchupSubscriptionType,
         Action<Func<ProjectionMetadata<TBaseEvent, TProjection>, ProjectionMetadata<TBaseEvent, TProjection>>> mutateMetadata,
         Action<ICatchUpSubscriptionMetadata> addCatchUpSubscription
     )
     {
+        _catchupSubscriptionType = catchupSubscriptionType;
         _mutateMetadata = mutateMetadata;
         _addCatchUpSubscription = addCatchUpSubscription;
     }
@@ -21,7 +25,7 @@ public class ProjectionBuilder<TBaseEvent, TProjection>
     {
         _mutateMetadata(md => md with { SnapshotMetadata = new(containerName, getSnapshotPartitionFromEvent) });
 
-        var specificHandlerType = typeof(SnapshotProjectionCatchupSubscription<,>).MakeGenericType(typeof(TBaseEvent), typeof(TProjection));
+        var specificHandlerType = _catchupSubscriptionType.MakeGenericType(typeof(TBaseEvent), typeof(TProjection));
         var specificMetadata = typeof(CatchUpSubscriptionMetadata<>).MakeGenericType(specificHandlerType);
 
         var projector =

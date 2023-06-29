@@ -5,6 +5,7 @@ namespace LogOtter.CosmosDb.EventStore;
 public class EventSourceConfiguration<TBaseEvent>
     where TBaseEvent : class
 {
+    private readonly Type _snapshotProjectionType;
     private readonly Dictionary<Type, IProjectionMetadata<TBaseEvent>> _projections;
 
     private readonly Dictionary<Type, ICatchUpSubscriptionMetadata> _catchUpSubscriptions;
@@ -15,8 +16,9 @@ public class EventSourceConfiguration<TBaseEvent>
 
     internal IReadOnlyCollection<ICatchUpSubscriptionMetadata> CatchUpSubscriptions => _catchUpSubscriptions.Values;
 
-    internal EventSourceConfiguration()
+    internal EventSourceConfiguration(Type snapshotProjectionType)
     {
+        _snapshotProjectionType = snapshotProjectionType;
         EventTypes = GetEventsOfTypeFromSameAssembly();
         _projections = new Dictionary<Type, IProjectionMetadata<TBaseEvent>>();
         _catchUpSubscriptions = new Dictionary<Type, ICatchUpSubscriptionMetadata>();
@@ -27,7 +29,8 @@ public class EventSourceConfiguration<TBaseEvent>
     {
         var projectionConfiguration = new ProjectionMetadata<TBaseEvent, TProjection>();
         _projections.Add(typeof(TProjection), projectionConfiguration);
-        return new ProjectionBuilder<TBaseEvent, TProjection>(UpdateMetadata, AddCatchUpSubscription);
+
+        return new ProjectionBuilder<TBaseEvent, TProjection>(_snapshotProjectionType, UpdateMetadata, AddCatchUpSubscription);
     }
 
     private void AddCatchUpSubscription(ICatchUpSubscriptionMetadata obj)
