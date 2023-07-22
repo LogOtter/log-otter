@@ -360,6 +360,23 @@ public sealed class TestCosmos : IDisposable
         return (realResult, testResult);
     }
 
+    public async Task<(ResponseMessage realResult, ResponseMessage testResult)> WhenDeletingStream(
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? testRequestOptions = null,
+        ItemRequestOptions? realRequestOptions = null
+    )
+    {
+        if (_realContainer == null || _testContainer == null)
+        {
+            throw new Exception("Call SetupAsync() first");
+        }
+
+        var realResult = await _realContainer.DeleteItemStreamAsync(id, partitionKey, realRequestOptions);
+        var testResult = await _testContainer.DeleteItemStreamAsync(id, partitionKey, testRequestOptions);
+        return (realResult, testResult);
+    }
+
     public async Task<(ResponseMessage realResult, ResponseMessage testResult)> WhenUpsertingStream(
         Stream stream,
         PartitionKey partitionKey,
@@ -487,6 +504,42 @@ public sealed class TestCosmos : IDisposable
         try
         {
             await _testContainer.DeleteItemAsync<T>(id, partitionKey, testRequestOptions);
+        }
+        catch (CosmosException exc)
+        {
+            test = exc;
+        }
+
+        return (real, test);
+    }
+
+    public async Task<(CosmosException? realException, CosmosException? testException)> WhenDeletingStreamProducesException(
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? testRequestOptions = null,
+        ItemRequestOptions? realRequestOptions = null
+    )
+    {
+        if (_realContainer == null || _testContainer == null)
+        {
+            throw new Exception("Call SetupAsync() first");
+        }
+
+        CosmosException? real = null;
+        CosmosException? test = null;
+
+        try
+        {
+            await _realContainer.DeleteItemStreamAsync(id, partitionKey, realRequestOptions);
+        }
+        catch (CosmosException exc)
+        {
+            real = exc;
+        }
+
+        try
+        {
+            await _testContainer.DeleteItemStreamAsync(id, partitionKey, testRequestOptions);
         }
         catch (CosmosException exc)
         {
