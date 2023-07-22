@@ -311,6 +311,27 @@ public class ContainerMock : Container
         }
     }
 
+    public override async Task<ResponseMessage> DeleteItemStreamAsync(
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ThrowNextExceptionIfPresent(new InvocationInformation(nameof(DeleteItemStreamAsync)));
+
+        try
+        {
+            _containerData.RemoveItem(id, partitionKey, requestOptions);
+            var responseMessage = new ResponseMessage(HttpStatusCode.NoContent);
+            return responseMessage;
+        }
+        catch (ContainerMockException ex)
+        {
+            return new ResponseMessage(ex.StatusCode);
+        }
+    }
+
     public override IOrderedQueryable<T> GetItemLinqQueryable<T>(
         bool allowSynchronousQueryExecution = false,
         string? continuationToken = null,
@@ -552,16 +573,6 @@ public class ContainerMock : Container
         PartitionKey partitionKey,
         IReadOnlyList<PatchOperation> patchOperations,
         PatchItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Task<ResponseMessage> DeleteItemStreamAsync(
-        string id,
-        PartitionKey partitionKey,
-        ItemRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
