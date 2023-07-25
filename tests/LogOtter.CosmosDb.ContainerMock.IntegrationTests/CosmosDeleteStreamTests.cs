@@ -41,21 +41,18 @@ public sealed class CosmosDeleteStreamTests : IAsyncLifetime, IDisposable
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test-dt1"
+                PartitionKey = "test"
             }
         );
 
-        var (realException, testException) = await _testCosmos.WhenDeletingStreamProducesException(
+        var (real, test) = await _testCosmos.WhenDeletingStream(
             "RECORD1",
-            new PartitionKey("test-dt1"),
+            new PartitionKey("test"),
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() },
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
         );
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        real.StatusCode.Should().Be(test.StatusCode);
     }
 
     [Fact]
