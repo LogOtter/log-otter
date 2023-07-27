@@ -38,7 +38,7 @@ public class EventSourcingBuilder
 
             changeFeedProcessorsMetadata.Add(
                 new ChangeFeedProcessorMetadata(
-                    typeof(CosmosDbStorageEvent),
+                    typeof(StorageEvent<TBaseEvent>),
                     typeof(TBaseEvent),
                     typeof(Event<TBaseEvent>),
                     typeof(EventConverter<TBaseEvent>),
@@ -59,6 +59,9 @@ public class EventSourcingBuilder
 
         Services.AddSingleton(metadata);
         Services.AddSingleton<IEventSourceMetadata>(metadata);
+        _cosmosDbBuilder.WithCustomJsonConverter<StorageEventJsonConverter<TBaseEvent>>(
+            _ => new StorageEventJsonConverter<TBaseEvent>(metadata.SerializationTypeMap)
+        );
 
         var eventRepository = typeof(EventRepository<,>);
         var snapshotRepository = typeof(SnapshotRepository<,>);

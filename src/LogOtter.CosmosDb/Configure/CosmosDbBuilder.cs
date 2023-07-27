@@ -51,7 +51,7 @@ public class CosmosDbBuilder
         return this;
     }
 
-    public CosmosDbBuilder AddContainer<T>(string containerName, Action<ContainerConfiguration>? configure = null)
+    public CosmosDbBuilder AddContainer<T>(string containerName, Action<ContainerConfiguration<T>>? configure = null)
     {
         var config = new ContainerConfiguration<T>();
         configure?.Invoke(config);
