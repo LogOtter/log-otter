@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using CustomerApi.Events.Customers;
+using CustomerApi.Events.Movies;
 using CustomerApi.Uris;
 
 namespace CustomerApi.Tests;
@@ -9,11 +10,13 @@ public class GivenSteps
 {
     private readonly ConsumerStore _consumerStore;
     private readonly CustomerStore _customerStore;
+    private readonly MovieStore _movieStore;
 
-    public GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore)
+    public GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore, MovieStore movieStore)
     {
         _customerStore = customerStore;
         _consumerStore = consumerStore;
+        _movieStore = movieStore;
     }
 
     public Task<AuthenticationHeaderValue> AnExistingConsumer(params string[] roles)
@@ -31,6 +34,11 @@ public class GivenSteps
     )
     {
         return await _customerStore.GivenAnExistingCustomer(customerUri, emailAddress, firstName, lastName);
+    }
+
+    public async Task<MovieReadModel> AnExistingMovie(MovieUri movieUri, Discretionary<string> name = default)
+    {
+        return await _movieStore.GivenAnExistingMovie(movieUri, name);
     }
 
     public async Task TheCustomerIsDeleted(CustomerUri customerUri)

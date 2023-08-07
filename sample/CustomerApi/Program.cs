@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
+using CustomerApi.Events.Movies;
 using CustomerApi.HealthChecks;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
@@ -61,6 +62,15 @@ services
                 );
 
             c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+        }
+    )
+    .AddEventSource<MovieEvent>(
+        "MovieEvents",
+        c =>
+        {
+            c.AddProjection<MovieReadModel>().WithSnapshot("Movies", _ => MovieReadModel.StaticPartitionKey);
+
+            c.SpecifyEnabledFunc(_ => Task.FromResult(false));
         }
     );
 

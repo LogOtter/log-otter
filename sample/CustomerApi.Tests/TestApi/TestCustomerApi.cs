@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
+using CustomerApi.Events.Movies;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
 using LogOtter.CosmosDb;
@@ -67,10 +68,13 @@ public class TestCustomerApi : IDisposable
                     new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
                     new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
                 )
-            );
+            )
+            .WithPreProvisionedContainer<MovieEvent>("MovieEvents")
+            .WithPreProvisionedContainer<MovieReadModel>("Movies");
 
         services.AddTransient<ConsumerStore>();
         services.AddTransient<CustomerStore>();
+        services.AddTransient<MovieStore>();
         services.AddTransient<SearchableInterestStore>();
         services.AddTransient<GivenSteps>();
         services.AddTransient<ThenSteps>();
