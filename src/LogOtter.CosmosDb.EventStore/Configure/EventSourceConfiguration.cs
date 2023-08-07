@@ -15,6 +15,8 @@ public class EventSourceConfiguration<TBaseEvent>
 
     internal IReadOnlyCollection<ICatchUpSubscriptionMetadata> CatchUpSubscriptions => _catchUpSubscriptions.Values;
 
+    internal Func<IServiceProvider, Task<bool>>? EnabledFunc;
+
     internal EventSourceConfiguration()
     {
         EventTypes = GetEventsOfTypeFromSameAssembly();
@@ -51,6 +53,11 @@ public class EventSourceConfiguration<TBaseEvent>
         where TCatchupSubscriptionHandler : class, ICatchupSubscription<TBaseEvent>
     {
         _catchUpSubscriptions.Add(typeof(TCatchupSubscriptionHandler), new CatchUpSubscriptionMetadata<TCatchupSubscriptionHandler>(projectorName));
+    }
+
+    public void SpecifyEnabledFunc(Func<IServiceProvider, Task<bool>> enabledFunc)
+    {
+        EnabledFunc = enabledFunc;
     }
 
     private static IReadOnlyCollection<Type> GetEventsOfTypeFromSameAssembly()

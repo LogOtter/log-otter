@@ -43,7 +43,8 @@ public class EventSourcingBuilder
                     typeof(Event<TBaseEvent>),
                     typeof(EventConverter<TBaseEvent>),
                     specificCatchUpSubscriptionType,
-                    catchUpSubscription.ProjectorName
+                    catchUpSubscription.ProjectorName,
+                    config.EnabledFunc
                 )
             );
         }
