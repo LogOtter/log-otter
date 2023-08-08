@@ -41,6 +41,16 @@ public class GivenSteps
         return await _movieStore.GivenAnExistingMovie(movieUri, name);
     }
 
+    public async Task<MovieReadModel> AnExistingMovieWithAProjectedSnapshot(MovieUri movieUri, Discretionary<string> name = default)
+    {
+        return await _movieStore.GivenAnExistingMovieSnapshot(movieUri, name);
+    }
+
+    public async Task<MovieReadModel> AnExistingMovieNameIsChangedButNotProjected(MovieUri movieUri, string newName)
+    {
+        return await _movieStore.GivenAnExistingMovieNameIsChanged(movieUri, newName);
+    }
+
     public async Task TheCustomerIsDeleted(CustomerUri customerUri)
     {
         await _customerStore.GivenTheCustomerIsDeleted(customerUri);

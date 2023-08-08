@@ -4,6 +4,17 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
+/// <summary>
+/// Uses the snapshot store and event stream in tandem to produce immediately consistent results at the cost of performance
+/// This repository is suitable for use when:
+///   * You are working with a relatively small amount of data (but not a single entity)
+///   * You are working with a single entity that has a large number of events in the stream
+///   * You require immediately consistent results
+///
+/// If you are working with a single entity the <see cref="EventRepository{TBaseEvent, TSnapshot}"/> is possibly a better choice if the number of events in the stream will not be large
+/// If you are working with lots of data, the <see cref="SnapshotRepository{TBaseEvent, TSnapshot}"/> is almost definitely a better choice
+/// Requirements for large amounts of immediately consistent data should be stored in an immediate state store, not an event sourced system.
+/// </summary>
 public class HybridRepository<TBaseEvent, TSnapshot>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
@@ -57,12 +68,25 @@ public class HybridRepository<TBaseEvent, TSnapshot>
         }
     }
 
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params TBaseEvent[] events)
+    public async Task<TSnapshot?> GetSnapshotWithCatchupExpensivelyAsync(
+        string id,
+        string partitionKey,
+        bool includeDeleted = false,
+        CancellationToken cancellationToken = default
+    )
     {
-        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
+        var streamId = _options.EscapeIdIfRequired(id);
+        var snapshot = await _snapshotRepository.GetSnapshot(id, partitionKey, includeDeleted, cancellationToken);
+
+        return await ApplyNewEvents(snapshot, streamId, includeDeleted, cancellationToken);
     }
 
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, params TBaseEvent[] events)
+    public async Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        params TBaseEvent[] events
+    )
     {
         var snapshot = await _eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
 

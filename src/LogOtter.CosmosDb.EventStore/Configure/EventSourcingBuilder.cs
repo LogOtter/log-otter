@@ -63,6 +63,7 @@ public class EventSourcingBuilder
 
         var eventRepository = typeof(EventRepository<,>);
         var snapshotRepository = typeof(SnapshotRepository<,>);
+        var hybridRepository = typeof(HybridRepository<,>);
         foreach (var projection in config.Projections)
         {
             Services.AddSingleton(eventRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));
@@ -77,6 +78,7 @@ public class EventSourcingBuilder
                 );
 
                 Services.AddSingleton(snapshotRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));
+                Services.AddSingleton(hybridRepository.MakeGenericType(typeof(TBaseEvent), projection.ProjectionType));
             }
         }
 

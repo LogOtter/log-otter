@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using CustomerApi.Events.Customers;
+using CustomerApi.Events.Movies;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Uris;
 
@@ -8,12 +9,14 @@ namespace CustomerApi.Tests;
 public class ThenSteps
 {
     private readonly CustomerStore _customerStore;
+    private readonly MovieStore _movieStore;
     private readonly SearchableInterestStore _searchableInterestStore;
 
-    public ThenSteps(CustomerStore customerStore, SearchableInterestStore searchableInterestStore)
+    public ThenSteps(CustomerStore customerStore, SearchableInterestStore searchableInterestStore, MovieStore movieStore)
     {
         _customerStore = customerStore;
         _searchableInterestStore = searchableInterestStore;
+        _movieStore = movieStore;
     }
 
     public async Task TheCustomerShouldBeDeleted(CustomerUri customerUri)
@@ -29,6 +32,11 @@ public class ThenSteps
     public async Task TheMovieShouldMatch(MovieUri movieUri, Expression<Func<Movie, bool>> matchFunc)
     {
         await _customerStore.ThenTheMovieShouldMatch(movieUri, matchFunc);
+    }
+
+    public async Task TheMovieSnapshotShouldMatch(MovieUri movieUri, Expression<Func<MovieReadModel, bool>> matchFunc)
+    {
+        await _movieStore.ThenTheMovieSnapshotShouldMatch(movieUri, matchFunc);
     }
 
     public async Task TheSongShouldMatch(SongUri songUri, Expression<Func<Song, bool>> matchFunc)
