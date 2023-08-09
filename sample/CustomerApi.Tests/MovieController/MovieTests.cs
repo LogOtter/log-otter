@@ -43,7 +43,7 @@ public class MovieTests
 
         var client = customerApi.CreateClient();
 
-        var response = await client.GetAsync("/movies/ExistingMovie/by-event");
+        var response = await client.GetAsync("/movies/ExistingMovie/by-hybrid");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
