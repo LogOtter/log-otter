@@ -25,7 +25,7 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
     {
         GuardInvalidMethods(node);
 
-        if (HandleIsNullAndIsDefined(node, out var replacementExpression))
+        if (HandleIsNullAndIsDefined(node, out var replacementExpression) && replacementExpression != null)
         {
             return base.Visit(replacementExpression);
         }
@@ -96,6 +96,7 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
                     && enumType.IsEnum
                     && leftConvert.Operand is MemberExpression leftMember
                     && leftMember.Member.Name == "Value"
+                    && leftMember.Expression != null
                 )
                 {
                     var nullableEnumType = typeof(Nullable<>).MakeGenericType(enumType);
@@ -134,7 +135,7 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
             return;
         }
 
-        if (!CosmosExpressionValidatorConstants.AllowList.ContainsKey(node.Method.DeclaringType))
+        if (node.Method.DeclaringType != null && !CosmosExpressionValidatorConstants.AllowList.ContainsKey(node.Method.DeclaringType))
         {
             var nodeObject = node.Object;
             if (node.Method.ReturnType.IsPrimitive && (nodeObject == null || nodeObject.Type != typeof(TModel)))
@@ -151,7 +152,8 @@ public class CosmosExpressionValidator<TModel> : ExpressionVisitor
             );
         }
 
-        var allowList = CosmosExpressionValidatorConstants.AllowList[node.Method.DeclaringType];
+        var allowList =
+            node.Method.DeclaringType != null ? CosmosExpressionValidatorConstants.AllowList[node.Method.DeclaringType] : new List<string>();
         if (!allowList.Contains(node.Method.Name))
         {
             throw new CosmosException(
