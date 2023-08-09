@@ -13,20 +13,26 @@ public class MovieTests
     public async Task Valid_ReturnsOkWhenUsingEventStream()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingMovie(MovieUri.Parse("/movies/ExistingMovie"), "The Matrix");
+        var movieUri = MovieUri.Parse("/movies/ExistingMovie");
+        await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
         var client = customerApi.CreateClient();
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-event");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
+        movie.Should().NotBeNull();
+        movie!.MovieUri.Should().Be(movieUri);
+        movie.Name.Should().Be("The Matrix");
     }
 
     [Fact]
     public async Task Valid_ReturnsNotFoundWhenUsingSnapshotThatIsNotEnabled()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingMovie(MovieUri.Parse("/movies/ExistingMovie"), "The Matrix");
+        var movieUri = MovieUri.Parse("/movies/ExistingMovie");
+        await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
         var client = customerApi.CreateClient();
 
@@ -39,13 +45,18 @@ public class MovieTests
     public async Task Valid_ReturnsOkWhenUsingHybridAndSnapshotIsNotEnabled()
     {
         using var customerApi = new TestCustomerApi();
-        await customerApi.Given.AnExistingMovie(MovieUri.Parse("/movies/ExistingMovie"), "The Matrix");
+        var movieUri = MovieUri.Parse("/movies/ExistingMovie");
+        await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
         var client = customerApi.CreateClient();
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-hybrid");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
+        movie.Should().NotBeNull();
+        movie!.MovieUri.Should().Be(movieUri);
+        movie.Name.Should().Be("The Matrix");
     }
 
     [Fact]
@@ -60,6 +71,10 @@ public class MovieTests
         response.Headers.Location.Should().NotBeNull();
         var movieUri = MovieUri.Parse(response.Headers.Location!.ToString());
         await customerApi.Then.TheMovieSnapshotShouldMatch(movieUri, snapshot => snapshot.Name == "Hot Fuzz");
+        var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
+        movie.Should().NotBeNull();
+        movie!.MovieUri.Should().Be(movieUri);
+        movie.Name.Should().Be("Hot Fuzz");
     }
 
     [Fact]
@@ -77,7 +92,8 @@ public class MovieTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
         movie.Should().NotBeNull();
-        movie!.Name.Should().Be("The Matrix Reloaded");
+        movie!.MovieUri.Should().Be(movieUri);
+        movie.Name.Should().Be("The Matrix Reloaded");
     }
 
     [Fact]
@@ -96,7 +112,7 @@ public class MovieTests
         var movieHistory = await response.Content.ReadFromJsonAsync<MovieHistoryResponse>();
         movieHistory.Should().NotBeNull();
         movieHistory!.ChangeDescriptions.Should().HaveCount(2);
-        movieHistory!.ChangeDescriptions.Should().Contain("Movie The Matrix added");
-        movieHistory!.ChangeDescriptions.Should().Contain("Movie /movies/ExistingMovie name changed to The Matrix Reloaded");
+        movieHistory.ChangeDescriptions.Should().Contain("Movie The Matrix added");
+        movieHistory.ChangeDescriptions.Should().Contain("Movie /movies/ExistingMovie name changed to The Matrix Reloaded");
     }
 }
