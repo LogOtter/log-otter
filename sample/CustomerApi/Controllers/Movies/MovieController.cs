@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using CustomerApi.Events.Movies;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
@@ -24,47 +25,63 @@ public class MovieController : ControllerBase
         _movieHybridRepository = movieHybridRepository;
     }
 
-    [HttpGet("{movieId}/by-event")]
-    public async Task<IActionResult> GetByEvent(string movieId, CancellationToken cancellationToken)
+    [HttpGet("{movieId}/by-event", Name = "Get a movie from the event store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieQueryResponse>> GetByEvent(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
         var movie = await _movieEventRepository.Get(movieUri.Uri, cancellationToken: cancellationToken);
 
         if (movie != null)
         {
-            return Ok(movie);
+            return Ok(new MovieQueryResponse(movieUri, movie.Name));
         }
 
         return NotFound();
     }
 
-    [HttpGet("{movieId}/history")]
-    public async Task<IActionResult> GetMovieHistory(string movieId, CancellationToken cancellationToken)
+    [HttpGet("{movieId}/history", Name = "Get the history of a movie from the event store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieHistoryResponse>> GetMovieHistory(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
         var movieEvents = await _movieEventRepository.GetEventStream(movieUri.Uri, cancellationToken: cancellationToken);
 
-        var history = movieEvents.Select(e => e.GetDescription() ?? "").ToList();
+        if (movieEvents.Count > 0)
+        {
+            var history = movieEvents.Select(e => e.GetDescription() ?? "").ToList();
+            return Ok(new MovieHistoryResponse(history));
+        }
 
-        return Ok(new MovieHistoryResponse(history));
+        return NotFound();
     }
 
-    [HttpGet("{movieId}/by-snapshot")]
-    public async Task<IActionResult> GetBySnapshot(string movieId, CancellationToken cancellationToken)
+    [HttpGet("{movieId}/by-snapshot", Name = "Get a movie from the snapshot store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieQueryResponse>> GetBySnapshot(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
         var movie = await _movieSnapshotRepository.GetSnapshot(movieUri.Uri, MovieReadModel.StaticPartitionKey, cancellationToken: cancellationToken);
 
         if (movie != null)
         {
-            return Ok(movie);
+            return Ok(new MovieQueryResponse(movieUri, movie.Name));
         }
 
         return NotFound();
     }
 
-    [HttpGet("{movieId}/by-hybrid")]
-    public async Task<IActionResult> GetByHybrid(string movieId, CancellationToken cancellationToken)
+    [HttpGet("{movieId}/by-hybrid", Name = "Get a movie from the hybrid store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieQueryResponse>> GetByHybrid(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
         var movie = await _movieHybridRepository.GetSnapshotWithCatchupExpensivelyAsync(
@@ -75,14 +92,17 @@ public class MovieController : ControllerBase
 
         if (movie != null)
         {
-            return Ok(movie);
+            return Ok(new MovieQueryResponse(movieUri, movie.Name));
         }
 
         return NotFound();
     }
 
-    [HttpGet("{movieId}/by-hybrid-query")]
-    public async Task<IActionResult> GetByHybridQuery(string movieId, CancellationToken cancellationToken)
+    [HttpGet("{movieId}/by-hybrid-query", Name = "Get a movie by querying the hybrid store for it")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieQueryResponse>> GetByHybridQuery(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
 
@@ -103,14 +123,17 @@ public class MovieController : ControllerBase
         return NotFound();
     }
 
-    [HttpPost("create-hybrid")]
-    public async Task<IActionResult> CreateUsingHybrid(CreateMovieRequest request, CancellationToken cancellationToken)
+    [HttpPost("create-hybrid", Name = "Create a movie using the hybrid store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<MovieQueryResponse>> CreateUsingHybrid(CreateMovieRequest request, CancellationToken cancellationToken)
     {
         var movieUri = MovieUri.Generate();
 
         var movieCreated = new MovieAdded(movieUri, request.Name);
         var movie = await _movieHybridRepository.ApplyEventsAndUpdateSnapshotImmediately(movieUri.Uri, 0, cancellationToken, movieCreated);
 
-        return Created(movieUri.Uri, movie);
+        return Created(movieUri.Uri, new MovieQueryResponse(movieUri, movie.Name));
     }
 }
