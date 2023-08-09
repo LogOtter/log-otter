@@ -38,6 +38,17 @@ public class MovieController : ControllerBase
         return NotFound();
     }
 
+    [HttpGet("{movieId}/history")]
+    public async Task<IActionResult> GetMovieHistory(string movieId, CancellationToken cancellationToken)
+    {
+        var movieUri = new MovieUri(movieId);
+        var movieEvents = await _movieEventRepository.GetEventStream(movieUri.Uri, cancellationToken: cancellationToken);
+
+        var history = movieEvents.Select(e => e.GetDescription() ?? "").ToList();
+
+        return Ok(new MovieHistoryResponse(history));
+    }
+
     [HttpGet("{movieId}/by-snapshot")]
     public async Task<IActionResult> GetBySnapshot(string movieId, CancellationToken cancellationToken)
     {

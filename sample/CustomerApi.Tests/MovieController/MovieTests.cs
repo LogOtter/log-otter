@@ -79,4 +79,24 @@ public class MovieTests
         movie.Should().NotBeNull();
         movie!.Name.Should().Be("The Matrix Reloaded");
     }
+
+    [Fact]
+    public async Task Valid_ReturnsStreamChanges()
+    {
+        using var customerApi = new TestCustomerApi();
+        var movieUri = MovieUri.Parse("/movies/ExistingMovie");
+        await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
+        await customerApi.Given.AnExistingMovieNameIsChangedButNotProjected(movieUri, "The Matrix Reloaded");
+
+        var client = customerApi.CreateClient();
+
+        var response = await client.GetAsync("/movies/ExistingMovie/history");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var movieHistory = await response.Content.ReadFromJsonAsync<MovieHistoryResponse>();
+        movieHistory.Should().NotBeNull();
+        movieHistory!.ChangeDescriptions.Should().HaveCount(2);
+        movieHistory!.ChangeDescriptions.Should().Contain("Movie The Matrix added");
+        movieHistory!.ChangeDescriptions.Should().Contain("Movie /movies/ExistingMovie name changed to The Matrix Reloaded");
+    }
 }
