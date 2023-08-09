@@ -6,7 +6,7 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 public class TestModel
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     public string? Name { get; set; }
 
@@ -21,11 +21,11 @@ public class TestModel
     public TestEnum? NullableEnumNotString { get; set; }
 
     [JsonProperty("partitionKey")]
-    public string PartitionKey { get; set; }
+    public string? PartitionKey { get; set; }
 
-    public IEnumerable<SubModel> Children { get; set; }
+    public IEnumerable<SubModel>? Children { get; set; }
 
-    public SubModel OnlyChild { get; set; }
+    public SubModel? OnlyChild { get; set; }
 
     public bool GetBoolValue()
     {

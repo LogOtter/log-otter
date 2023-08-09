@@ -48,7 +48,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et1",
-            q => q.Where(tm => tm.NullableEnum.Value != null && tm.NullableEnum == TestEnum.Value1)
+            q => q.Where(tm => tm.NullableEnum.HasValue && tm.NullableEnum == TestEnum.Value1)
         );
 
         realResults.Should().NotBeNull();
@@ -71,7 +71,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et2",
-            q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum.Value != null && tm.OnlyChild.NullableEnum == TestEnum.Value1)
+            q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum.HasValue && tm.OnlyChild.NullableEnum == TestEnum.Value1)
         );
 
         realResults.Should().NotBeNull();
@@ -95,7 +95,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et3",
-            q => q.Where(tm => null != tm.NullableEnum.Value && TestEnum.Value1 == tm.NullableEnum)
+            q => q.Where(tm => tm.NullableEnum.HasValue && TestEnum.Value1 == tm.NullableEnum)
         );
 
         realResults.Should().NotBeNull();
@@ -119,7 +119,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et4",
-            q => q.Where(tm => tm.NullableEnum.Value == null)
+            q => q.Where(tm => !tm.NullableEnum.HasValue)
         );
 
         realResults.Should().NotBeNull();
@@ -143,7 +143,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et5",
-            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value == null)
+            q => q.Where(tm => tm.OnlyChild != null && !tm.OnlyChild.NullableEnum.HasValue)
         );
 
         realResults.Should().NotBeNull();
@@ -167,7 +167,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et6",
-            q => q.Where(tm => tm.OnlyChild.NullableEnum.Value != null)
+            q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum.HasValue)
         );
 
         realResults.Should().NotBeNull();
@@ -191,7 +191,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et7",
-            q => q.Where(tm => null == tm.NullableEnum.Value)
+            q => q.Where(tm => !tm.NullableEnum.HasValue)
         );
 
         realResults.Should().NotBeNull();
@@ -215,7 +215,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et8",
-            q => q.Where(tm => tm.NullableEnumNotString.Value != null && tm.NullableEnumNotString == TestEnum.Value1)
+            q => q.Where(tm => tm.NullableEnumNotString.HasValue && tm.NullableEnumNotString == TestEnum.Value1)
         );
 
         realResults.Should().NotBeNull();
@@ -239,7 +239,7 @@ public sealed class CosmosEnumTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition-et9",
-            q => q.Where(tm => tm.NullableEnumNotString.Value == null)
+            q => q.Where(tm => !tm.NullableEnumNotString.HasValue)
         );
 
         realResults.Should().NotBeNull();
