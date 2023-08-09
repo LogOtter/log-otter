@@ -326,7 +326,7 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition",
-            q => q.Where(tm => tm.Name.ToUpper() == "BOB BOBERTSON")
+            q => q.Where(tm => tm.Name != null && tm.Name.ToUpper() == "BOB BOBERTSON")
         );
 
         realResults.Should().NotBeNull();
@@ -349,7 +349,7 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition",
-            q => q.Where(tm => tm.Name.ToLower() == "bob bobertson")
+            q => q.Where(tm => tm.Name != null && tm.Name.ToLower() == "bob bobertson")
         );
 
         realResults.Should().NotBeNull();
@@ -371,7 +371,7 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition",
-            q => q.Where(tm => tm.Children.Any(c => c.Value == "bob bobertson"))
+            q => q.Where(tm => tm.Children != null && tm.Children.Any(c => c.Value == "bob bobertson"))
         );
 
         realResults.Should().NotBeNull();
@@ -393,7 +393,10 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
         );
 
         Func<Task> action = () =>
-            _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name.ToUpperInvariant() == "BOB BOBERTSON"));
+            _testCosmos.WhenExecutingAQuery<TestModel>(
+                "partition",
+                q => q.Where(tm => tm.Name != null && tm.Name.ToUpperInvariant() == "BOB BOBERTSON")
+            );
 
         var exceptionAssertions = await action.Should().ThrowAsync<CosmosEquivalencyException>();
         exceptionAssertions.Which.RealException.Should().NotBeNull();
@@ -414,7 +417,10 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
         );
 
         Func<Task> action = () =>
-            _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name.ToLowerInvariant() == "bob bobertson"));
+            _testCosmos.WhenExecutingAQuery<TestModel>(
+                "partition",
+                q => q.Where(tm => tm.Name != null && tm.Name.ToLowerInvariant() == "bob bobertson")
+            );
 
         var exceptionAssertions = await action.Should().ThrowAsync<CosmosEquivalencyException>();
         exceptionAssertions.Which.RealException.Should().NotBeNull();
@@ -467,7 +473,7 @@ public sealed class CosmosQueryEquivalencyTests : IAsyncLifetime, IDisposable
         testResults.Should().NotBeNull();
 
         realResults!.FirstOrDefault().Should().NotBeNull();
-        testResults!.FirstOrDefault().Should().BeEquivalentTo(realResults.FirstOrDefault());
+        testResults!.FirstOrDefault().Should().BeEquivalentTo(realResults!.FirstOrDefault());
     }
 
     [Fact]

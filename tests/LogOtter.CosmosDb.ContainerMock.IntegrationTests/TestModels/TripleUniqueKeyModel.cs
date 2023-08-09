@@ -11,11 +11,9 @@ public class TripleUniqueKeyModel
     [JsonProperty("partitionKey")]
     public string PartitionKey => CustomerId;
 
-    public string CustomerId { get; set; }
+    public required string CustomerId { get; set; }
 
-    public string ItemId { get; set; }
-
-    public string Value { get; set; }
+    public required string ItemId { get; set; }
 
     [JsonConverter(typeof(StringEnumConverter))]
     public TestEnum Type { get; set; }

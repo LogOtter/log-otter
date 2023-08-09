@@ -210,7 +210,9 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
             }
         );
 
-        var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name.ToUpper() == "BOB BOBERTSON"));
+        var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
+            q => q.Where(tm => tm.Name != null && tm.Name.ToUpper() == "BOB BOBERTSON")
+        );
 
         realResults.Count().Should().Be(1);
         realResults.Should().BeEquivalentTo(testResults);
@@ -228,7 +230,9 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
             }
         );
 
-        var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name.ToLower() == "bob bobertson"));
+        var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
+            q => q.Where(tm => tm.Name != null && tm.Name.ToLower() == "bob bobertson")
+        );
 
         realResults.Count().Should().Be(1);
         realResults.Should().BeEquivalentTo(testResults);
@@ -240,7 +244,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
         await _testCosmos.GivenAnExistingItem(new TestModel { Id = "RECORD1", Children = new[] { new SubModel { Value = "bob bobertson" } } });
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Children.Any(c => c.Value == "bob bobertson"))
+            q => q.Where(tm => tm.Children != null && tm.Children.Any(c => c.Value == "bob bobertson"))
         );
 
         realResults.Count().Should().Be(1);
@@ -260,7 +264,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
         );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Name.ToUpperInvariant() == "BOB BOBERTSON")
+            q => q.Where(tm => tm.Name != null && tm.Name.ToUpperInvariant() == "BOB BOBERTSON")
         );
 
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
@@ -283,7 +287,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, I
         );
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(
-            q => q.Where(tm => tm.Name.ToLowerInvariant() == "bob bobertson")
+            q => q.Where(tm => tm.Name != null && tm.Name.ToLowerInvariant() == "bob bobertson")
         );
 
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
