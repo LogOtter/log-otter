@@ -12,7 +12,7 @@ public class CosmosDbEventualStorageEvent
     public string Id { get; set; }
 
     [JsonProperty("eventId")]
-    public Guid EventId { get; set; }
+    public string EventId { get; set; }
 
     [JsonProperty("body")]
     public JObject Body { get; set; }
@@ -40,7 +40,7 @@ public class CosmosDbEventualStorageEvent
     {
         var cosmosDbStorageEvent = new CosmosDbEventualStorageEvent
         {
-            Id = $"{storageEvent.StreamId}:{storageEvent.Timestamp:O}",
+            Id = $"{storageEvent.StreamId}:{storageEvent.EventId}",
             EventId = storageEvent.EventId,
             Body = JObject.FromObject(storageEvent.EventBody, serializer),
             BodyType = typeMap.GetNameFromType(storageEvent.EventBody.GetType()),

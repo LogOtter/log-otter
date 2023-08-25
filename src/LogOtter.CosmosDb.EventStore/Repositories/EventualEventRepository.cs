@@ -58,7 +58,7 @@ public class EventualEventRepository<TBaseEvent, TSnapshot>
         var streamId = _options.EscapeIdIfRequired(id);
 
         var now = DateTimeOffset.Now;
-        var eventData = events.Select(e => new EventualEventData<TBaseEvent>(Guid.NewGuid(), e, e.Timestamp, now)).ToArray();
+        var eventData = events.Select(e => new EventualEventData<TBaseEvent>(e.EventId, e, e.Timestamp, now)).ToArray();
 
         await _eventStore.AddToStream(streamId, cancellationToken, eventData);
 

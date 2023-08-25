@@ -15,10 +15,10 @@ public class EventualEventTests
 
         var messageEvents = new[]
         {
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 05, 00, TimeSpan.Zero), "Delivered"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked")
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Delivered"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked")
         };
 
         await eventualEventRepository.ApplyEvents(messageId, messageEvents);
@@ -40,10 +40,10 @@ public class EventualEventTests
 
         var messageEvents = new[]
         {
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 05, 00, TimeSpan.Zero), "Delivered")
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Delivered")
         };
 
         await eventualEventRepository.ApplyEvents(messageId, messageEvents);
@@ -65,10 +65,10 @@ public class EventualEventTests
 
         var messageEvents = new[]
         {
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked"),
-            new MessageEvent(messageId, new DateTimeOffset(2023, 08, 22, 01, 05, 00, TimeSpan.Zero), "Delivered")
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 00, 00, TimeSpan.Zero), "Opened"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Sent"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 02, 10, 00, TimeSpan.Zero), "Clicked"),
+            new MessageEvent(Guid.NewGuid().ToString(), messageId, new DateTimeOffset(2023, 08, 22, 01, 00, 00, TimeSpan.Zero), "Delivered")
         };
 
         foreach (var messageEvent in messageEvents)

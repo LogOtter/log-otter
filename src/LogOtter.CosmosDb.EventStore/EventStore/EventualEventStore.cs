@@ -101,7 +101,7 @@ public class EventualEventStore<TBaseEvent>
 
     public async Task<EventualStorageEvent<TBaseEvent>> ReadEventFromStream(
         string streamId,
-        Guid eventId,
+        string eventId,
         CancellationToken cancellationToken = default
     )
     {

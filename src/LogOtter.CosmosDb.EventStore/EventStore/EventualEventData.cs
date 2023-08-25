@@ -3,7 +3,7 @@ namespace LogOtter.CosmosDb.EventStore;
 public class EventualEventData<TBaseEvent>
     where TBaseEvent : class
 {
-    public Guid EventId { get; }
+    public string EventId { get; }
 
     public TBaseEvent Body { get; }
 
@@ -14,7 +14,7 @@ public class EventualEventData<TBaseEvent>
     public DateTimeOffset CreatedOn { get; }
 
     public EventualEventData(
-        Guid eventId,
+        string eventId,
         TBaseEvent body,
         DateTimeOffset timestamp,
         DateTimeOffset createdOn,

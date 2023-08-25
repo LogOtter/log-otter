@@ -6,7 +6,7 @@ public interface IEventualStorageEvent
     object EventBody { get; }
     Dictionary<string, string> Metadata { get; }
     DateTimeOffset Timestamp { get; }
-    Guid EventId { get; }
+    string EventId { get; }
     DateTimeOffset CreatedOn { get; }
     Type BaseEventType { get; }
 }

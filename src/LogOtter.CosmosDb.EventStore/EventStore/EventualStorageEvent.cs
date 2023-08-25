@@ -15,7 +15,7 @@ public class EventualStorageEvent<TBaseEvent> : IEventualStorageEvent
 
     public DateTimeOffset Timestamp { get; }
 
-    public Guid EventId { get; }
+    public string EventId { get; }
 
     public DateTimeOffset CreatedOn { get; }
 
