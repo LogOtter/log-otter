@@ -14,7 +14,7 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.0",
     "bootstrap-icons": "^1.10.2",
-    "dayjs": "^1.11.7",
+    "dayjs": "^1.11.10",
     "vue": "^3.2.45",
     "vue-json-viewer": "^3.0.4"
   },
