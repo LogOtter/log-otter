@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build & Test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest         # Run on Windows for now to use the pre-installed Cosmos Emulator
     permissions:
       id-token: write
       contents: read
@@ -34,10 +34,16 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
+      - name: Start CosmosDb Emulator
+        shell: pwsh
+        run: |
+          Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
+          Start-CosmosDbEmulator
+
       - name: Test
         run: dotnet test --no-build
         env:
-          TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
+          TEST_COSMOS_CONNECTION_STRING: "AccountEndpoint=https://127.0.0.1:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
 
       - name: Test Report
         uses: dorny/test-reporter@v1
