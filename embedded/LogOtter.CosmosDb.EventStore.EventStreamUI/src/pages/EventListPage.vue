@@ -1,8 +1,8 @@
 <script lang="ts">
-import StreamIdSearchPanel from "@/components/StreamIdSearchPanel.vue";
-import EventCard from "@/components/EventCard.vue";
-import type { Event, EventStreamsService } from "@/services/EventStreamsService";
-import isVisible from "@/helpers/IsVisible";
+import StreamIdSearchPanel from "../components/StreamIdSearchPanel.vue";
+import EventCard from "../components/EventCard.vue";
+import type { Event, EventStreamsService } from "../services/EventStreamsService";
+import isVisible from "../helpers/IsVisible";
 import { inject } from "vue";
 
 export default {

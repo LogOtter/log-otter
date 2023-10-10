@@ -1,6 +1,6 @@
 <script lang="ts">
-import isVisible from "@/helpers/IsVisible";
-import type { EventStream, EventStreamsService } from "@/services/EventStreamsService";
+import isVisible from "../helpers/IsVisible";
+import type { EventStream, EventStreamsService } from "../services/EventStreamsService";
 import { defineComponent, inject } from "vue";
 
 export default defineComponent({
