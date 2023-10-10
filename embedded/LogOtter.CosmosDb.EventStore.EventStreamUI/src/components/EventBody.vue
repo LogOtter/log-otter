@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { EventStreamsService } from "@/services/EventStreamsService";
+import type { EventStreamsService } from "../services/EventStreamsService";
 import { inject } from "vue";
 import JsonViewer from "vue-json-viewer";
 

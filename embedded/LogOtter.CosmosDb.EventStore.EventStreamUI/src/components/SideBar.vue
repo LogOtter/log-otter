@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, inject } from "vue";
-import isVisible from "@/helpers/IsVisible";
-import type { EventStreamsService, EventStream } from "@/services/EventStreamsService";
+import isVisible from "../helpers/IsVisible";
+import type { EventStreamsService, EventStream } from "../services/EventStreamsService";
 
 export default defineComponent({
   setup() {
@@ -112,7 +112,7 @@ export default defineComponent({
   </div>
   <div class="flex-column flex-shrink-0 p-3 text-bg-dark sidebar" :class="{ collapsed: !isExpanded }" ref="sidebar">
     <a href="./#" class="d-flex align-items-center text-white text-decoration-none" @click="() => (isExpanded = false)">
-      <img src="@/assets/log-otter-grayscale.svg" class="me-2" width="32" alt="LogOtter" />
+      <img src="../assets/log-otter-grayscale.svg" class="me-2" width="32" alt="LogOtter" />
       <span class="fs-5">Event Stream Viewer</span>
     </a>
     <hr />

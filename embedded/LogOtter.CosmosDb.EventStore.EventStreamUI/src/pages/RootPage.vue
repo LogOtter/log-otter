@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import EventStreamsListPage from "@/pages/EventStreamsListPage.vue";
-import EventStreamPage from "@/pages/EventStreamPage.vue";
-import EventListPage from "@/pages/EventListPage.vue";
-import NotFoundPage from "@/pages/NotFoundPage.vue";
+import EventStreamsListPage from "../pages/EventStreamsListPage.vue";
+import EventStreamPage from "../pages/EventStreamPage.vue";
+import EventListPage from "../pages/EventListPage.vue";
+import NotFoundPage from "../pages/NotFoundPage.vue";
 
 export default defineComponent({
   data() {
