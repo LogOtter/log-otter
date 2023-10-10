@@ -52,7 +52,7 @@ export class EventStreamsService {
 
   async getEvents(eventStreamName: string, streamId: string): Promise<Page<Event>> {
     return this.getEventsWithUrl(
-      `${this.baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`
+      `${this.baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`,
     );
   }
 
