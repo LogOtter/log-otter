@@ -10,7 +10,7 @@ export default defineComponent({
     search(streamId: string) {
       if (this.serviceName) {
         window.location.hash = `#/service/${encodeURIComponent(this.serviceName)}/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(
-          streamId
+          streamId,
         )}`;
       } else {
         window.location.hash = `#/${encodeURIComponent(this.eventStreamName)}/${encodeURIComponent(streamId)}`;
