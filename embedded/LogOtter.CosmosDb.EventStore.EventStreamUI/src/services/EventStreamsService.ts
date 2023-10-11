@@ -28,18 +28,16 @@ export class EventStreamsService {
       throw new Error("baseUrl required");
     }
 
-    if (!this.baseUrl.endsWith("/")) {
-      this.baseUrl += "/";
+    if (this.baseUrl.endsWith("/")) {
+      this.baseUrl = this.baseUrl.substring(0, this.baseUrl.length - 1);
     }
   }
 
   async getEventStreams(url: string | undefined = undefined): Promise<Page<EventStream>> {
     if (!url) {
-      url = `${this.baseUrl}event-streams/`;
+      url = `${this.baseUrl}/event-streams/`;
     } else {
-      if (!url.startsWith(this.baseUrl)) {
-        throw new Error("invalid url");
-      }
+      url = `${this.baseUrl}${url}`;
     }
 
     const response = await fetch(url);
@@ -52,21 +50,17 @@ export class EventStreamsService {
   }
 
   async getEvents(serviceName: string | undefined, eventStreamName: string, streamId: string): Promise<Page<Event>> {
+    return this.getEventsWithUrl(serviceName, `/event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`);
+  }
+
+  async getEventsWithUrl(serviceName: string | undefined, url: string): Promise<Page<Event>> {
     let baseUrl = this.baseUrl;
 
     if (serviceName) {
-      baseUrl += `service/${serviceName}/`;
+      baseUrl += `/service/${serviceName}`;
     }
 
-    return this.getEventsWithUrl(`${baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events`);
-  }
-
-  async getEventsWithUrl(url: string): Promise<Page<Event>> {
-    if (!url.startsWith(this.baseUrl)) {
-      throw new Error("invalid url");
-    }
-
-    const response = await fetch(url);
+    const response = await fetch(`${baseUrl}${url}`);
     const jsonResponse = await response.json();
 
     return {
@@ -79,17 +73,17 @@ export class EventStreamsService {
     let baseUrl = this.baseUrl;
 
     if (serviceName) {
-      baseUrl += `service/${serviceName}/`;
+      baseUrl += `/service/${serviceName}`;
     }
 
-    const url = `${baseUrl}event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events/${eventId}/body`;
+    const url = `${baseUrl}/event-streams/${encodeURIComponent(eventStreamName)}/streams/${encodeURIComponent(streamId)}/events/${eventId}/body`;
 
     const response = await fetch(url);
     return await response.json();
   }
 
   async getVersion(): Promise<Version> {
-    const url = `${this.baseUrl}version`;
+    const url = `${this.baseUrl}/version`;
 
     const response = await fetch(url);
     return await response.json();

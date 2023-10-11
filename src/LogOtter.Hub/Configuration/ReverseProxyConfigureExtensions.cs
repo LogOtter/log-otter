@@ -46,9 +46,7 @@ internal static class ReverseProxyConfigureExtensions
         {
             var prefix = $"/api/service/{service.Name}";
 
-            var routeConfig = CreateRouteConfig(service, prefix)
-                .WithTransformPathRemovePrefix(prefix)
-                .WithTransformRequestHeader("X-LogOtter-Hub-Path", prefix);
+            var routeConfig = CreateRouteConfig(service, prefix).WithTransformPathRemovePrefix(prefix);
 
             routes.Add(routeConfig);
         }

@@ -56,7 +56,7 @@ export default {
 
       this.loading = true;
 
-      var response = await this.eventStreamsService.getEventsWithUrl(this.nextPageUrl);
+      var response = await this.eventStreamsService.getEventsWithUrl(this.serviceName, this.nextPageUrl);
 
       for (const event of response.data) {
         this.events.push(event);

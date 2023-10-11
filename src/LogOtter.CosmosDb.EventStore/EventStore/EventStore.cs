@@ -101,7 +101,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         CancellationToken cancellationToken = default
     )
     {
-        var endPosition = numberOfEventsToRead == int.MaxValue ? int.MaxValue : startPosition + numberOfEventsToRead - 1;
+        var endPosition = numberOfEventsToRead == int.MaxValue ? int.MaxValue : startPosition + numberOfEventsToRead;
 
         var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(streamId) };
 

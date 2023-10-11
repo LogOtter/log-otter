@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using LogOtter.Hub.Configuration;
 using LogOtter.Hub.Models;
 using LogOtter.JsonHal;
@@ -71,7 +70,9 @@ public class EventStreamCache
 
             definitions.AddRange(cacheItems);
 
-            url = response.Links.GetNextHref();
+            var relativeUrl = response.Links.GetNextHref();
+
+            url = !string.IsNullOrEmpty(relativeUrl) ? $"{service.Url}{relativeUrl}" : null;
         } while (!string.IsNullOrEmpty(url));
 
         return definitions;

@@ -65,16 +65,9 @@ internal class GetEventsHandler : BaseHandler
 
         var response = new EventsResponse(events);
 
-        var logOtterHubPath = httpContext.Request.GetLogOtterHubPath();
-        var prefix = logOtterHubPath ?? httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
-
         var path = Template.Replace("{EventStreamName}", Uri.EscapeDataString(eventStreamName)).Replace("{StreamId}", Uri.EscapeDataString(streamId));
 
-        response.Links.AddPagedLinks(
-            page,
-            PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, totalEvents),
-            p => $"{prefix}{path}?page={p}"
-        );
+        response.Links.AddPagedLinks(page, PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, totalEvents), p => $"{path}?page={p}");
 
         await WriteJson(httpContext.Response, response);
     }
