@@ -37,6 +37,7 @@ jobs:
     secrets: inherit
 
   publish-hub:
+    name: Publish Hub
     uses: ./.github/workflows/publish-docker-image.yml
     permissions:
       contents: read
