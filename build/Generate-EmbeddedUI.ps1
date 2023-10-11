@@ -6,12 +6,17 @@ $solutionDirectory = Split-Path $PSScriptRoot
 
 $embeddedUISrcDirectory = Join-Path $solutionDirectory 'embedded' 'LogOtter.CosmosDb.EventStore.EventStreamUI'
 $distDirectory = Join-Path $embeddedUISrcDirectory 'dist/*'
-$outputDirectory = Join-Path $solutionDirectory 'src' 'LogOtter.CosmosDb.EventStore' 'EventStreamUI' 'wwwroot'
 
-if (Test-Path $outputDirectory) {
-  Remove-Item $outputDirectory -Force -Recurse
+$outputDirectories = @()
+$outputDirectories += Join-Path $solutionDirectory 'src' 'LogOtter.CosmosDb.EventStore' 'EventStreamUI' 'wwwroot'
+$outputDirectories += Join-Path $solutionDirectory 'src' 'LogOtter.Hub' 'wwwroot'
+
+foreach ($outputDirectory in $outputDirectories) {
+  if (Test-Path $outputDirectory) {
+    Remove-Item $outputDirectory -Force -Recurse
+  }
+  New-Item $outputDirectory -ItemType Directory | Out-Null
 }
-New-Item $outputDirectory -ItemType Directory | Out-Null
 
 Push-Location $embeddedUISrcDirectory
 
@@ -26,8 +31,12 @@ try {
   & npm run build
 
   Write-Host ''
-  Write-Host 'Copying site...'
-  Copy-Item $distDirectory $outputDirectory -Recurse
+  $count = 1
+  foreach ($outputDirectory in $outputDirectories) {
+    Write-Host "Copying site ($count/$($outputDirectories.Count))..."
+    Copy-Item $distDirectory $outputDirectory -Recurse
+    $count++
+  }
 }
 finally {
   Pop-Location

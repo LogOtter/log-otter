@@ -27,12 +27,12 @@ internal class GetEventStreamsHandler : BaseHandler
             definitions.Skip((page - 1) * EventStreamsApiMiddleware.PageSize).Take(EventStreamsApiMiddleware.PageSize).ToList()
         );
 
-        var prefix = httpContext.Request.GetHost() + Options.RoutePrefix.Value!.TrimEnd('/');
+        var path = Template;
 
         response.Links.AddPagedLinks(
             page,
             PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count),
-            p => $"{prefix}?page={p}"
+            p => $"{path}?page={p}"
         );
 
         await WriteJson(httpContext.Response, response);

@@ -15,6 +15,7 @@ export default defineComponent({
     };
   },
   props: {
+    serviceName: { type: String, required: false },
     eventStreamName: { type: String, required: true },
     streamId: { type: String, required: true },
     event: { type: Object as PropType<Event>, required: true },
@@ -62,7 +63,7 @@ export default defineComponent({
       </div>
     </div>
     <div class="card-body pt-0" v-if="expanded">
-      <event-body :event-stream-name="eventStreamName" :stream-id="streamId" :event-id="event.eventId"></event-body>
+      <event-body :service-name="serviceName" :event-stream-name="eventStreamName" :stream-id="streamId" :event-id="event.eventId"></event-body>
     </div>
   </div>
 </template>
