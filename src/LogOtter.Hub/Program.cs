@@ -1,3 +1,4 @@
+using LogOtter.Azure.AppServices.RequestMiddleware;
 using LogOtter.Hub.Configuration;
 using LogOtter.Hub.Services;
 
@@ -22,6 +23,7 @@ var app = builder.Build();
 
 app.ConfigureReverseProxy(serviceOptions);
 
+app.UseRestoreRawRequestPathMiddleware();
 app.UseCors();
 app.UseFileServer();
 app.UseRouting();

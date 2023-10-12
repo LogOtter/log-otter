@@ -5,6 +5,7 @@ using CustomerApi.Events.Movies;
 using CustomerApi.HealthChecks;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
+using LogOtter.Azure.AppServices.RequestMiddleware;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.EventStore.EventStreamApi;
@@ -84,7 +85,9 @@ if (environment.IsDevelopment())
 
 var app = builder.Build();
 
+app.UseRestoreRawRequestPathMiddleware();
 app.UseCors();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
