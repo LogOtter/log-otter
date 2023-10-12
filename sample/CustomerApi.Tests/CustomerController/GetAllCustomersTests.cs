@@ -14,8 +14,10 @@ public class GetAllCustomersTests
     public async Task Valid_ReturnsOk()
     {
         using var customerApi = new TestCustomerApi();
+
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/AnotherExistingUser"), "bobetta@bobson.co.uk", "Bobetta", "Bobson");
+        var createdTimestamp = DateTime.UtcNow;
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 
@@ -43,7 +45,7 @@ public class GetAllCustomersTests
         bob.FirstName.Should().Be("Bob");
         bob.LastName.Should().Be("Bobertson");
         bob.CustomerUri.Should().Be("/customers/ExistingUser");
-        bob.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(2)).Before(DateTimeOffset.UtcNow);
+        bob.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(2)).Before(createdTimestamp);
 
         var bobetta = customersResponse.Customers.FirstOrDefault(c => c.CustomerUri == "/customers/AnotherExistingUser");
         bobetta.Should().NotBeNull();
@@ -51,7 +53,7 @@ public class GetAllCustomersTests
         bobetta.FirstName.Should().Be("Bobetta");
         bobetta.LastName.Should().Be("Bobson");
         bobetta.CustomerUri.Should().Be("/customers/AnotherExistingUser");
-        bobetta.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTimeOffset.UtcNow);
+        bobetta.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(2)).Before(createdTimestamp);
     }
 
     [Fact]
