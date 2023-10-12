@@ -5,9 +5,11 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\LogOtter.Azure.AppServices.RequestMiddleware\LogOtter.Azure.AppServices.RequestMiddleware.csproj" />
         <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
     </ItemGroup>
 
