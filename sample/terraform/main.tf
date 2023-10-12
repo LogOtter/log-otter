@@ -77,14 +77,20 @@ resource "azurerm_linux_web_app" "customer-api" {
   https_only          = true
 
   app_settings = {
-    APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
-    ASPNETCORE_ENVIRONMENT                = "Development"
-    COSMOSDB__CONNECTIONSTRING            = azurerm_cosmosdb_account.db.primary_sql_connection_string
-    DOCKER_REGISTRY_SERVER_URL            = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME       = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD       = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
-    WEBSITE_WARMUP_PATH                   = "/health"
+    # App Service Settings
+    APPINSIGHTS_INSTRUMENTATIONKEY             = azurerm_application_insights.app-insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app-insights.connection_string
+    ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
+    DOCKER_REGISTRY_SERVER_URL                 = var.docker_registry_url
+    DOCKER_REGISTRY_SERVER_USERNAME            = var.docker_registry_username
+    DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
+    WEBSITE_WARMUP_PATH                        = "/health"
+
+    # Application Settings
+    APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
+    ASPNETCORE_ENVIRONMENT                     = "Development"
+    COSMOSDB__CONNECTIONSTRING                 = azurerm_cosmosdb_account.db.primary_sql_connection_string
   }
 
   site_config {
@@ -117,12 +123,18 @@ resource "azurerm_linux_web_app" "customer-worker" {
   https_only          = true
 
   app_settings = {
-    APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
-    DOCKER_REGISTRY_SERVER_URL            = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME       = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD       = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
-    WEBSITE_WARMUP_PATH                   = "/health"
+    # App Service Settings
+    APPINSIGHTS_INSTRUMENTATIONKEY             = azurerm_application_insights.app-insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app-insights.connection_string
+    ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
+    DOCKER_REGISTRY_SERVER_URL                 = var.docker_registry_url
+    DOCKER_REGISTRY_SERVER_USERNAME            = var.docker_registry_username
+    DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
+    WEBSITE_WARMUP_PATH                        = "/health"
+
+    # Application Settings
+    APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
   }
 
   site_config {
@@ -155,14 +167,16 @@ resource "azurerm_linux_web_app" "hub" {
   https_only          = true
 
   app_settings = {
-    ASPNETCORE_ENVIRONMENT              = "Development"
+    # App Service Settings
     DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_url
     DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_username
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
-    Hub__Services__0__Name              = "CustomerApi"
-    Hub__Services__0__Url               = "https://${azurerm_linux_web_app.customer-api.default_hostname}/logotter/api"
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
     #WEBSITE_WARMUP_PATH                 = "/health"
+
+    # Application Settings
+    Hub__Services__0__Name              = "CustomerApi"
+    Hub__Services__0__Url               = "https://${azurerm_linux_web_app.customer-api.default_hostname}/logotter/api"
   }
 
   site_config {
