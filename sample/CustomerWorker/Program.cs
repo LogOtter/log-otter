@@ -10,6 +10,8 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(
         (_, services) =>
         {
+            services.AddApplicationInsightsTelemetryWorkerService();
+
             services
                 .AddHealthChecks()
                 .AddCheck<AlwaysHealthyCheck>("StartupCheck", tags: new[] { "ready" })

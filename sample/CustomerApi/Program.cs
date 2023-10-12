@@ -19,6 +19,7 @@ var configuration = builder.Configuration;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+services.AddApplicationInsightsTelemetry();
 
 services.AddAuthentication().AddJwtBearer();
 

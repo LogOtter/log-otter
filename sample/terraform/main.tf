@@ -31,6 +31,22 @@ resource "azurerm_resource_group" "rg" {
   location = "uksouth"
 }
 
+resource "azurerm_log_analytics_workspace" "log-analytics-workspace" {
+  name                = "log-otter-log-analytics-workspace"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "azurerm_application_insights" "app-insights" {
+  name                = "log-otter-app-insights"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  workspace_id        = azurerm_log_analytics_workspace.log-analytics-workspace.id
+  application_type    = "web"
+}
+
 resource "azurerm_cosmosdb_account" "db" {
   name                = "log-otter-samples"
   location            = azurerm_resource_group.rg.location
@@ -61,13 +77,14 @@ resource "azurerm_linux_web_app" "customer-api" {
   https_only          = true
 
   app_settings = {
-    ASPNETCORE_ENVIRONMENT              = "Development"
-    COSMOSDB__CONNECTIONSTRING          = azurerm_cosmosdb_account.db.primary_sql_connection_string
-    DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    WEBSITE_WARMUP_PATH                 = "/health"
+    APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+    ASPNETCORE_ENVIRONMENT                = "Development"
+    COSMOSDB__CONNECTIONSTRING            = azurerm_cosmosdb_account.db.primary_sql_connection_string
+    DOCKER_REGISTRY_SERVER_URL            = var.docker_registry_url
+    DOCKER_REGISTRY_SERVER_USERNAME       = var.docker_registry_username
+    DOCKER_REGISTRY_SERVER_PASSWORD       = var.docker_registry_password
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
+    WEBSITE_WARMUP_PATH                   = "/health"
   }
 
   site_config {
@@ -100,11 +117,12 @@ resource "azurerm_linux_web_app" "customer-worker" {
   https_only          = true
 
   app_settings = {
-    DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    WEBSITE_WARMUP_PATH                 = "/health"
+    APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+    DOCKER_REGISTRY_SERVER_URL            = var.docker_registry_url
+    DOCKER_REGISTRY_SERVER_USERNAME       = var.docker_registry_username
+    DOCKER_REGISTRY_SERVER_PASSWORD       = var.docker_registry_password
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
+    WEBSITE_WARMUP_PATH                   = "/health"
   }
 
   site_config {
