@@ -8,6 +8,7 @@ using CustomerApi.Services;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.Testing;
+using Meziantou.Extensions.Logging.Xunit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,13 +18,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Xunit.Abstractions;
 
 namespace CustomerApi.Tests;
 
 public class TestCustomerApi : IDisposable
 {
     private readonly TestApplicationFactory _hostedApi;
-
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly bool _disableCosmosAutoProvisioning;
 
     public Uri BaseAddress => _hostedApi.Server.BaseAddress;
@@ -31,13 +33,14 @@ public class TestCustomerApi : IDisposable
     public GivenSteps Given { get; }
     public ThenSteps Then { get; }
 
-    public TestCustomerApi()
-        : this(false) { }
+    public TestCustomerApi(ITestOutputHelper testOutputHelper)
+        : this(testOutputHelper, false) { }
 
-    public TestCustomerApi(bool disableCosmosAutoProvisioning)
+    public TestCustomerApi(ITestOutputHelper testOutputHelper, bool disableCosmosAutoProvisioning)
     {
+        _testOutputHelper = testOutputHelper;
         _disableCosmosAutoProvisioning = disableCosmosAutoProvisioning;
-        _hostedApi = new TestApplicationFactory(ConfigureTestServices, ConfigureServices);
+        _hostedApi = new TestApplicationFactory(_testOutputHelper, ConfigureTestServices, ConfigureServices);
 
         Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
         Then = _hostedApi.Services.GetRequiredService<ThenSteps>();
@@ -110,11 +113,17 @@ public class TestCustomerApi : IDisposable
 
     private class TestApplicationFactory : WebApplicationFactory<Program>
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly Action<IServiceCollection> _configureServices;
         private readonly Action<IServiceCollection> _configureTestServices;
 
-        public TestApplicationFactory(Action<IServiceCollection> configureTestServices, Action<IServiceCollection> configureServices)
+        public TestApplicationFactory(
+            ITestOutputHelper testOutputHelper,
+            Action<IServiceCollection> configureTestServices,
+            Action<IServiceCollection> configureServices
+        )
         {
+            _testOutputHelper = testOutputHelper;
             _configureTestServices = configureTestServices;
             _configureServices = configureServices;
         }
@@ -128,6 +137,7 @@ public class TestCustomerApi : IDisposable
                 {
                     options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
                     options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
+                    options.Services.AddSingleton<ILoggerProvider>(_ => new XUnitLoggerProvider(_testOutputHelper));
                 });
         }
     }
