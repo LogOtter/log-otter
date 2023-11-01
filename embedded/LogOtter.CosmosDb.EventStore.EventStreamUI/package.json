@@ -16,7 +16,7 @@
     "vue-json-viewer": "^3.0.4"
   },
   "devDependencies": {
-    "@types/bootstrap": "^5.2.6",
+    "@types/bootstrap": "^5.2.8",
     "@vitejs/plugin-vue": "^4.2.3",
     "prettier": "^3.0.3",
     "sass": "^1.62.1",
