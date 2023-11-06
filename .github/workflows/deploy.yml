@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         run: terraform init -input=false
@@ -46,9 +46,8 @@ jobs:
       - name: Trigger container update
         working-directory: sample/terraform
         run: |
-          # Use terraform-bin as the wrapper created by setup-terraform does not work with output
-          customer_api_webhook=$(terraform-bin output -raw customer_api_webhook)
-          customer_worker_webhook=$(terraform-bin output -raw customer_worker_webhook)
+          customer_api_webhook=$(terraform output -raw customer_api_webhook)
+          customer_worker_webhook=$(terraform output -raw customer_worker_webhook)
 
           curl $customer_api_webhook -H "" -d ""
           curl $customer_worker_webhook -H "" -d ""
