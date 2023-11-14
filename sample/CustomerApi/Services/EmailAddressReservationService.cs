@@ -31,9 +31,8 @@ public class EmailAddressReservationService
     {
         var reservation = new EmailAddressReservation(emailAddress);
 
-        await _emailAddressReservationContainer.Container.DeleteItemAsync<EmailAddressReservation>(
-            reservation.Id,
-            new PartitionKey(reservation.PartitionKey)
-        );
+        await _emailAddressReservationContainer
+            .Container
+            .DeleteItemAsync<EmailAddressReservation>(reservation.Id, new PartitionKey(reservation.PartitionKey));
     }
 }

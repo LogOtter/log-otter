@@ -18,22 +18,24 @@ public class OverrideResponseTests
 
         serviceBuilder.HealthCheckService.ReturnsHealthStatus(status);
 
-        serviceBuilder.Endpoints.AddEndpoint(
-            "/health",
-            new SimpleHealthCheckOptions
-            {
-                ResponseWriter = async (context, report) =>
+        serviceBuilder
+            .Endpoints
+            .AddEndpoint(
+                "/health",
+                new SimpleHealthCheckOptions
                 {
-                    var json = JsonSerializer.Serialize(new { Status = report.Status.ToString() });
+                    ResponseWriter = async (context, report) =>
+                    {
+                        var json = JsonSerializer.Serialize(new { Status = report.Status.ToString() });
 
-                    var res = context.Response;
-                    res.ContentType = "application/json";
-                    res.AddHeader("X-PoweredBy", "LogOtter");
+                        var res = context.Response;
+                        res.ContentType = "application/json";
+                        res.AddHeader("X-PoweredBy", "LogOtter");
 
-                    await res.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(json));
+                        await res.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(json));
+                    }
                 }
-            }
-        );
+            );
 
         var response = serviceBuilder.EnqueueGetRequest("/health");
 

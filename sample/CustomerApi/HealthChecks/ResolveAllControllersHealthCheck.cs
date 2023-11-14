@@ -12,7 +12,8 @@ public class ResolveAllControllersHealthCheck : IHealthCheck
     {
         _serviceProvider = serviceProvider;
 
-        _controllerTypes = typeof(ResolveAllControllersHealthCheck).Assembly
+        _controllerTypes = typeof(ResolveAllControllersHealthCheck)
+            .Assembly
             .GetTypes()
             .Where(t => typeof(ControllerBase).IsAssignableFrom(t))
             .ToList();

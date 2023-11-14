@@ -50,10 +50,9 @@ public class CreateCustomerTests
 
         var customerUri = CustomerUri.Parse(location!);
 
-        await customerApi.Then.TheCustomerShouldMatch(
-            customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
-        );
+        await customerApi
+            .Then
+            .TheCustomerShouldMatch(customerUri, c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson");
     }
 
     [Fact]
