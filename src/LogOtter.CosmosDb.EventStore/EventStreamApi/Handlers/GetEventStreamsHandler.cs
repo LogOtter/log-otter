@@ -29,11 +29,9 @@ internal class GetEventStreamsHandler : BaseHandler
 
         var path = Template;
 
-        response.Links.AddPagedLinks(
-            page,
-            PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count),
-            p => $"{path}?page={p}"
-        );
+        response
+            .Links
+            .AddPagedLinks(page, PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count), p => $"{path}?page={p}");
 
         await WriteJson(httpContext.Response, response);
     }

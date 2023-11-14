@@ -36,7 +36,9 @@ public class ConcurrencyTests
                 },
                 new PartitionKey("APartition")
             );
-        (await mustPassETag.Should().ThrowAsync<InvalidOperationException>()).Which.Message
+        (await mustPassETag.Should().ThrowAsync<InvalidOperationException>())
+            .Which
+            .Message
             .Should()
             .Be("An eTag must be provided as a concurrency exception is queued");
 
