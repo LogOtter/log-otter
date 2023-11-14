@@ -1,10 +1,8 @@
 ﻿using System.Net;
-using System.Runtime.Serialization;
 using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-[Serializable]
 public class ContainerMockException : Exception
 {
     public HttpStatusCode StatusCode { get; }
@@ -25,9 +23,6 @@ public class ContainerMockException : Exception
     {
         StatusCode = statusCode;
     }
-
-    protected ContainerMockException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 
     public CosmosException ToCosmosException()
     {

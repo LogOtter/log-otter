@@ -1,9 +1,7 @@
 ﻿using System.Net;
-using System.Runtime.Serialization;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-[Serializable]
 public class UniqueConstraintViolationException : ContainerMockException
 {
     public const HttpStatusCode DefaultStatusCode = HttpStatusCode.Conflict;
@@ -16,7 +14,4 @@ public class UniqueConstraintViolationException : ContainerMockException
 
     public UniqueConstraintViolationException(string message, Exception inner)
         : base(DefaultStatusCode, message, inner) { }
-
-    protected UniqueConstraintViolationException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 }
