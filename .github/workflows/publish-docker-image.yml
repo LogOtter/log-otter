@@ -48,7 +48,7 @@ jobs:
 
       - name: (${{ inputs.project_name }}) Build for docker image
         run: |
-          dotnet publish --configuration Release -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" --output bin/docker-publish
+          dotnet publish -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" --output bin/docker-publish
         working-directory: ${{ inputs.project_path }}
 
       - name: (${{ inputs.project_name }}) Generate metadata for Docker
