@@ -6,12 +6,7 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi;
 
 internal class EventDescriptionGenerator
 {
-    private readonly ConcurrentDictionary<Type, MethodInfo?> _cache;
-
-    public EventDescriptionGenerator()
-    {
-        _cache = new ConcurrentDictionary<Type, MethodInfo?>();
-    }
+    private readonly ConcurrentDictionary<Type, MethodInfo?> _cache = new();
 
     public string GetDescription(IStorageEvent storageEvent, IEventSourceMetadata eventSourceMetadata)
     {

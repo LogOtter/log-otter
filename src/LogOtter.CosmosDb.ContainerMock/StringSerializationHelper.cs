@@ -2,14 +2,9 @@
 
 namespace LogOtter.CosmosDb.ContainerMock;
 
-internal class StringSerializationHelper
+internal class StringSerializationHelper(CosmosSerializationOptions cosmosClientOptions)
 {
-    private readonly CosmosSerializer _serializer;
-
-    public StringSerializationHelper(CosmosSerializationOptions cosmosClientOptions)
-    {
-        _serializer = new DefaultSerializer(cosmosClientOptions);
-    }
+    private readonly CosmosSerializer _serializer = new DefaultSerializer(cosmosClientOptions);
 
     public string SerializeObject<T>(T toSerialize)
     {

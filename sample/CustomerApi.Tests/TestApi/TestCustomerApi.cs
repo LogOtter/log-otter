@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.Events.Movies;
@@ -17,6 +16,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Xunit.Abstractions;
 
@@ -25,7 +25,6 @@ namespace CustomerApi.Tests;
 public class TestCustomerApi : IDisposable
 {
     private readonly TestApplicationFactory _hostedApi;
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly bool _disableCosmosAutoProvisioning;
 
     public Uri BaseAddress => _hostedApi.Server.BaseAddress;
@@ -33,14 +32,10 @@ public class TestCustomerApi : IDisposable
     public GivenSteps Given { get; }
     public ThenSteps Then { get; }
 
-    public TestCustomerApi(ITestOutputHelper testOutputHelper)
-        : this(testOutputHelper, false) { }
-
-    public TestCustomerApi(ITestOutputHelper testOutputHelper, bool disableCosmosAutoProvisioning)
+    public TestCustomerApi(ITestOutputHelper testOutputHelper, bool disableCosmosAutoProvisioning = false)
     {
-        _testOutputHelper = testOutputHelper;
         _disableCosmosAutoProvisioning = disableCosmosAutoProvisioning;
-        _hostedApi = new TestApplicationFactory(_testOutputHelper, ConfigureTestServices, ConfigureServices);
+        _hostedApi = new TestApplicationFactory(testOutputHelper, ConfigureTestServices, ConfigureServices);
 
         Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
         Then = _hostedApi.Services.GetRequiredService<ThenSteps>();
@@ -91,7 +86,7 @@ public class TestCustomerApi : IDisposable
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    SignatureValidator = (token, _) => new JwtSecurityToken(token),
+                    SignatureValidator = (token, _) => new JsonWebToken(token),
                     ValidateAudience = false,
                     ValidateIssuer = false
                 };
@@ -111,33 +106,22 @@ public class TestCustomerApi : IDisposable
         return client;
     }
 
-    private class TestApplicationFactory : WebApplicationFactory<Program>
+    private class TestApplicationFactory(
+        ITestOutputHelper testOutputHelper,
+        Action<IServiceCollection> configureTestServices,
+        Action<IServiceCollection> configureServices
+    ) : WebApplicationFactory<Program>
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-        private readonly Action<IServiceCollection> _configureServices;
-        private readonly Action<IServiceCollection> _configureTestServices;
-
-        public TestApplicationFactory(
-            ITestOutputHelper testOutputHelper,
-            Action<IServiceCollection> configureTestServices,
-            Action<IServiceCollection> configureServices
-        )
-        {
-            _testOutputHelper = testOutputHelper;
-            _configureTestServices = configureTestServices;
-            _configureServices = configureServices;
-        }
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder
-                .ConfigureTestServices(_configureTestServices)
-                .ConfigureServices(_configureServices)
+                .ConfigureTestServices(configureTestServices)
+                .ConfigureServices(configureServices)
                 .ConfigureLogging(options =>
                 {
                     options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
                     options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
-                    options.Services.AddSingleton<ILoggerProvider>(_ => new XUnitLoggerProvider(_testOutputHelper));
+                    options.Services.AddSingleton<ILoggerProvider>(_ => new XUnitLoggerProvider(testOutputHelper));
                 });
         }
     }

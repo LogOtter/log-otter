@@ -10,20 +10,11 @@ namespace CustomerApi.Controllers.Customers.Delete;
 [ApiController]
 [Route("customers")]
 [Authorize(Roles = "Customers.Delete")]
-public class DeleteCustomerController : ControllerBase
+public class DeleteCustomerController(
+    EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+    EmailAddressReservationService emailAddressReservationService
+) : ControllerBase
 {
-    private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
-    private readonly EmailAddressReservationService _emailAddressReservationService;
-
-    public DeleteCustomerController(
-        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
-        EmailAddressReservationService emailAddressReservationService
-    )
-    {
-        _customerEventRepository = customerEventRepository;
-        _emailAddressReservationService = emailAddressReservationService;
-    }
-
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,7 +27,7 @@ public class DeleteCustomerController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, includeDeleted: true);
+        var customerReadModel = await customerEventRepository.Get(customerUri.Uri, includeDeleted: true);
 
         if (customerReadModel == null)
         {
@@ -48,11 +39,11 @@ public class DeleteCustomerController : ControllerBase
             return NoContent();
         }
 
-        await _emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
+        await emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
 
         var customerDeleted = new CustomerDeleted(customerUri);
 
-        await _customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, cancellationToken, customerDeleted);
+        await customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, cancellationToken, customerDeleted);
 
         return NoContent();
     }

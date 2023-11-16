@@ -8,19 +8,12 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.EventStoreApi;
 
-public class RetrieveEventsFromEventStream
+public class RetrieveEventsFromEventStream(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public RetrieveEventsFromEventStream(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Fact]
     public async Task CanRetrieveEventStream()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
 
         var customerUri = CustomerUri.Generate();
         await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");

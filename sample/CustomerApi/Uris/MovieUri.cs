@@ -2,18 +2,13 @@
 
 namespace CustomerApi.Uris;
 
-public class MovieUri : IEquatable<MovieUri>
+public class MovieUri(string movieId) : IEquatable<MovieUri>
 {
     private static readonly Regex MovieUriRegex = new("^/movies/(?<MovieId>[0-9A-Za-z]+)$");
 
-    public string MovieId { get; }
+    public string MovieId { get; } = new Id(movieId);
 
     public string Uri => $"/movies/{MovieId}";
-
-    public MovieUri(string movieId)
-    {
-        MovieId = new Id(movieId);
-    }
 
     public bool Equals(MovieUri? other)
     {

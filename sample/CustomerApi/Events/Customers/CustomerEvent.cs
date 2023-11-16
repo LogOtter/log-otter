@@ -4,17 +4,11 @@ using Newtonsoft.Json;
 
 namespace CustomerApi.Events.Customers;
 
-public abstract class CustomerEvent : IEvent<CustomerReadModel>
+public abstract class CustomerEvent(CustomerUri customerUri, DateTimeOffset? timestamp = null) : IEvent<CustomerReadModel>
 {
-    public CustomerUri CustomerUri { get; }
+    public CustomerUri CustomerUri { get; } = customerUri;
 
-    public DateTimeOffset Timestamp { get; }
-
-    public CustomerEvent(CustomerUri customerUri, DateTimeOffset? timestamp = null)
-    {
-        CustomerUri = customerUri;
-        Timestamp = timestamp ?? DateTimeOffset.UtcNow;
-    }
+    public DateTimeOffset Timestamp { get; } = timestamp ?? DateTimeOffset.UtcNow;
 
     public string EventStreamId => CustomerUri.Uri;
 

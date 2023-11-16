@@ -1,9 +1,7 @@
 ﻿using System.Net;
-using System.Runtime.Serialization;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-[Serializable]
 public class NotFoundException : ContainerMockException
 {
     public const HttpStatusCode DefaultStatusCode = HttpStatusCode.NotFound;
@@ -16,7 +14,4 @@ public class NotFoundException : ContainerMockException
 
     public NotFoundException(string message, Exception inner)
         : base(DefaultStatusCode, message, inner) { }
-
-    protected NotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 }

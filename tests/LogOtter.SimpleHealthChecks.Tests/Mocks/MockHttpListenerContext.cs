@@ -1,14 +1,8 @@
 namespace LogOtter.SimpleHealthChecks.Tests;
 
-internal class MockHttpListenerContext : IHttpListenerContext
+internal class MockHttpListenerContext(MockHttpListenerRequest request) : IHttpListenerContext
 {
-    public MockHttpListenerContext(MockHttpListenerRequest request)
-    {
-        Request = request;
-        Response = new MockHttpListenerResponse();
-    }
+    public IHttpListenerRequest Request { get; } = request;
 
-    public IHttpListenerRequest Request { get; }
-
-    public IHttpListenerResponse Response { get; }
+    public IHttpListenerResponse Response { get; } = new MockHttpListenerResponse();
 }

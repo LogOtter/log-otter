@@ -8,21 +8,14 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerController;
 
-public class CreateCustomerTests
+public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public CreateCustomerTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public async Task Valid_ReturnsOk(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper, disableAutoProvisioning);
+        using var customerApi = new TestCustomerApi(testOutputHelper, disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -38,7 +31,7 @@ public class CreateCustomerTests
     [InlineData(false)]
     public async Task Valid_StoredCorrectly(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper, disableAutoProvisioning);
+        using var customerApi = new TestCustomerApi(testOutputHelper, disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -58,7 +51,7 @@ public class CreateCustomerTests
     [Fact]
     public async Task Invalid_DuplicateEmailAddress()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
 
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
         await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");
@@ -76,7 +69,7 @@ public class CreateCustomerTests
     [Fact]
     public async Task Valid_DeleteCustomer_DuplicateEmailAddress()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
 
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
         await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");
@@ -103,7 +96,7 @@ public class CreateCustomerTests
     [InlineData("not-an-email-address", "Bob", "Bobertson")]
     public async Task Invalid_ReturnsBadRequest(string email, string firstName, string lastName)
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -117,7 +110,7 @@ public class CreateCustomerTests
     [Fact]
     public async Task Unauthorized()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
 
         var client = customerApi.CreateClient();
         var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
@@ -130,7 +123,7 @@ public class CreateCustomerTests
     [Fact]
     public async Task Forbidden()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
 
         var client = customerApi.CreateClient(authHeader);

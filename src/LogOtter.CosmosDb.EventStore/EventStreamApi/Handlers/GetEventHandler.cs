@@ -7,32 +7,21 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
-internal class GetEventHandler : BaseHandler
+internal class GetEventHandler(
+    EventStoreCatalog eventStoreCatalog,
+    EventDescriptionGenerator eventDescriptionGenerator,
+    IOptions<EventStoreOptions> eventStoreOptions
+) : BaseHandler
 {
-    private readonly EventDescriptionGenerator _eventDescriptionGenerator;
-    private readonly EventStoreCatalog _eventStoreCatalog;
-    private readonly EventStoreOptions _eventStoreOptions;
-
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}";
-
-    public GetEventHandler(
-        EventStoreCatalog eventStoreCatalog,
-        EventDescriptionGenerator eventDescriptionGenerator,
-        IOptions<EventStoreOptions> eventStoreOptions
-    )
-    {
-        _eventStoreCatalog = eventStoreCatalog;
-        _eventDescriptionGenerator = eventDescriptionGenerator;
-        _eventStoreOptions = eventStoreOptions.Value;
-    }
 
     public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
         var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
-        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
+        var streamId = eventStoreOptions.Value.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
         var eventId = Uri.UnescapeDataString((string)routeValues["EventId"]!);
 
-        var metaData = _eventStoreCatalog.GetMetadata(eventStreamName);
+        var metaData = eventStoreCatalog.GetMetadata(eventStreamName);
 
         if (metaData == null)
         {
@@ -46,7 +35,7 @@ internal class GetEventHandler : BaseHandler
             return;
         }
 
-        var eventStore = _eventStoreCatalog.GetEventStoreReader(metaData);
+        var eventStore = eventStoreCatalog.GetEventStoreReader(metaData);
         var storageEvent = await eventStore.ReadEventFromStream(streamId, eventIdGuid);
 
         var @event = new Event(
@@ -55,7 +44,7 @@ internal class GetEventHandler : BaseHandler
             storageEvent.EventBody.GetType().Name,
             storageEvent.EventNumber,
             storageEvent.EventId,
-            _eventDescriptionGenerator.GetDescription(storageEvent, metaData),
+            eventDescriptionGenerator.GetDescription(storageEvent, metaData),
             storageEvent.CreatedOn
         );
 

@@ -10,26 +10,18 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamUI;
 
-internal class EventStreamsUIMiddleware
+internal class EventStreamsUIMiddleware(
+    RequestDelegate next,
+    IWebHostEnvironment hostEnvironment,
+    ILoggerFactory loggerFactory,
+    EventStreamsUIOptions options,
+    EventStreamsApiOptionsContainer apiOptionsContainer
+)
 {
     private const string EmbeddedFileNamespace = "LogOtter.CosmosDb.EventStore.EventStreamUI.wwwroot";
-    private readonly EventStreamsApiOptions _apiOptions;
-    private readonly PathString _rootPath;
 
-    private readonly StaticFileMiddleware _staticFileMiddleware;
-
-    public EventStreamsUIMiddleware(
-        RequestDelegate next,
-        IWebHostEnvironment hostEnvironment,
-        ILoggerFactory loggerFactory,
-        EventStreamsUIOptions options,
-        EventStreamsApiOptionsContainer apiOptionsContainer
-    )
-    {
-        _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
-        _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
-        _apiOptions = apiOptionsContainer.Options;
-    }
+    private readonly PathString _rootPath = new PathString(options.RoutePrefix).EnsurePathDoesNotEndWithSlash();
+    private readonly StaticFileMiddleware _staticFileMiddleware = CreateStaticFileMiddleware(next, hostEnvironment, loggerFactory, options);
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
@@ -55,7 +47,7 @@ internal class EventStreamsUIMiddleware
 
     private void WriteConfigJson(HttpResponse response)
     {
-        var config = new { ApiBaseUrl = _apiOptions.RoutePrefix.Value };
+        var config = new { ApiBaseUrl = apiOptionsContainer.Options.RoutePrefix.Value };
 
         response.WriteAsJsonAsync(config);
     }

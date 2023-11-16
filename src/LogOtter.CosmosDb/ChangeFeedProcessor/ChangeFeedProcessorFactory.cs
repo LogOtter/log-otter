@@ -5,18 +5,10 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb;
 
-public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
+public class ChangeFeedProcessorFactory(Database database, IOptions<CosmosDbOptions> options, IServiceScopeFactory serviceScopeFactory)
+    : IChangeFeedProcessorFactory
 {
-    private readonly Database _database;
-    private readonly ChangeFeedProcessorOptions _options;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ChangeFeedProcessorFactory(Database database, IOptions<CosmosDbOptions> options, IServiceScopeFactory serviceScopeFactory)
-    {
-        _database = database;
-        _options = options.Value.ChangeFeedProcessorOptions;
-        _serviceScopeFactory = serviceScopeFactory;
-    }
+    private readonly ChangeFeedProcessorOptions _options = options.Value.ChangeFeedProcessorOptions;
 
     public IChangeFeedProcessor CreateChangeFeedProcessor<
         TRawDocument,
@@ -28,7 +20,7 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         where TChangeFeedProcessorHandler : IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
     {
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactory.CreateScope();
 
         var changeConverter = scope.ServiceProvider.GetRequiredService<TChangeFeedChangeConverter>();
         var changeHandler = scope.ServiceProvider.GetRequiredService<TChangeFeedProcessorHandler>();
@@ -42,8 +34,8 @@ public class ChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         var autoProvisionSettings = scope.ServiceProvider.GetRequiredService<AutoProvisionSettings>();
 
         var leaseContainer = autoProvisionSettings.Enabled
-            ? _database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container
-            : _database.GetContainer(_options.LeasesContainerName);
+            ? database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container
+            : database.GetContainer(_options.LeasesContainerName);
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
 

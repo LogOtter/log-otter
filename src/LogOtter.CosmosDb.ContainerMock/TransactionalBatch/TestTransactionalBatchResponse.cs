@@ -4,22 +4,14 @@ using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 
-internal class TestTransactionalBatchResponse : TransactionalBatchResponse
+internal class TestTransactionalBatchResponse(StringSerializationHelper serializationHelper) : TransactionalBatchResponse
 {
-    private readonly List<TransactionalBatchOperationResult> _results;
-    private HttpStatusCode _statusCode;
-    private readonly StringSerializationHelper _serializationHelper;
+    private readonly List<TransactionalBatchOperationResult> _results = new();
+    private HttpStatusCode _statusCode = HttpStatusCode.OK;
 
     public override HttpStatusCode StatusCode => _statusCode;
     public override int Count => _results.Count;
     public override TransactionalBatchOperationResult this[int index] => _results[index];
-
-    public TestTransactionalBatchResponse(StringSerializationHelper serializationHelper)
-    {
-        _serializationHelper = serializationHelper;
-        _statusCode = HttpStatusCode.OK;
-        _results = new List<TransactionalBatchOperationResult>();
-    }
 
     public override IEnumerator<TransactionalBatchOperationResult> GetEnumerator()
     {
@@ -37,7 +29,7 @@ internal class TestTransactionalBatchResponse : TransactionalBatchResponse
         var streamReader = new StreamReader(result.ResourceStream);
         var json = streamReader.ReadToEnd();
 
-        var resource = _serializationHelper.DeserializeObject<T>(json);
+        var resource = serializationHelper.DeserializeObject<T>(json);
         return new TestTransactionalBatchOperationResult<T>(result, resource);
     }
 

@@ -1,9 +1,7 @@
 ﻿using System.Net;
-using System.Runtime.Serialization;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-[Serializable]
 public class ObjectAlreadyExistsException : ContainerMockException
 {
     public const HttpStatusCode DefaultStatusCode = HttpStatusCode.Conflict;
@@ -16,7 +14,4 @@ public class ObjectAlreadyExistsException : ContainerMockException
 
     public ObjectAlreadyExistsException(string message, Exception inner)
         : base(DefaultStatusCode, message, inner) { }
-
-    protected ObjectAlreadyExistsException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 }

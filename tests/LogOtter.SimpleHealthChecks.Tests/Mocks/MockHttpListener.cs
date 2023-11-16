@@ -1,9 +1,7 @@
 namespace LogOtter.SimpleHealthChecks.Tests;
 
-internal class MockHttpListener : IHttpListener
+internal class MockHttpListener(Queue<MockHttpListenerContext> contextQueue) : IHttpListener
 {
-    private readonly Queue<MockHttpListenerContext> _contextQueue;
-
     public string? Scheme { get; private set; }
 
     public string? Hostname { get; private set; }
@@ -11,11 +9,6 @@ internal class MockHttpListener : IHttpListener
     public int? Port { get; private set; }
 
     public bool IsRunning { get; private set; }
-
-    public MockHttpListener(Queue<MockHttpListenerContext> contextQueue)
-    {
-        _contextQueue = contextQueue;
-    }
 
     public void Configure(string scheme, string hostname, int port)
     {
@@ -36,7 +29,7 @@ internal class MockHttpListener : IHttpListener
 
     public Task<IHttpListenerContext> GetContextAsync()
     {
-        var context = _contextQueue.Dequeue();
+        var context = contextQueue.Dequeue();
         return Task.FromResult<IHttpListenerContext>(context);
     }
 }

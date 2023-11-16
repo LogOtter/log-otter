@@ -4,28 +4,21 @@ using System.Text;
 
 namespace LogOtter.SimpleHealthChecks;
 
-internal class HttpListenerRequestShim : IHttpListenerRequest
+internal class HttpListenerRequestShim(HttpListenerRequest request) : IHttpListenerRequest
 {
-    private readonly HttpListenerRequest _request;
+    public string HttpMethod => request.HttpMethod;
+    public Uri? Url => request.Url;
+    public IPEndPoint RemoteEndPoint => request.RemoteEndPoint;
 
-    public HttpListenerRequestShim(HttpListenerRequest request)
-    {
-        _request = request;
-    }
+    public bool IsLocal => request.IsLocal;
 
-    public string HttpMethod => _request.HttpMethod;
-    public Uri? Url => _request.Url;
-    public IPEndPoint RemoteEndPoint => _request.RemoteEndPoint;
+    public string? ContentType => request.ContentType;
 
-    public bool IsLocal => _request.IsLocal;
+    public long ContentLength64 => request.ContentLength64;
 
-    public string? ContentType => _request.ContentType;
+    public Encoding ContentEncoding => request.ContentEncoding;
 
-    public long ContentLength64 => _request.ContentLength64;
+    public NameValueCollection Headers => request.Headers;
 
-    public Encoding ContentEncoding => _request.ContentEncoding;
-
-    public NameValueCollection Headers => _request.Headers;
-
-    public Stream InputStream => _request.InputStream;
+    public Stream InputStream => request.InputStream;
 }

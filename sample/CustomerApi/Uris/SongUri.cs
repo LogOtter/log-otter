@@ -2,18 +2,13 @@
 
 namespace CustomerApi.Uris;
 
-public class SongUri : IEquatable<SongUri>
+public class SongUri(string songId) : IEquatable<SongUri>
 {
     private static readonly Regex SongUriRegex = new("^/songs/(?<SongId>[0-9A-Za-z]+)$");
 
-    public string SongId { get; }
+    public string SongId { get; } = new Id(songId);
 
     public string Uri => $"/songs/{SongId}";
-
-    public SongUri(string songId)
-    {
-        SongId = new Id(songId);
-    }
 
     public bool Equals(SongUri? other)
     {

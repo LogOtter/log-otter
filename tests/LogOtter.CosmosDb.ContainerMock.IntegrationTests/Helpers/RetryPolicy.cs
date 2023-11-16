@@ -6,16 +6,9 @@ using Polly.Contrib.WaitAndRetry;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
-public class RetryPolicy //: ICosmosRetryPolicy
+public class RetryPolicy(ILogger<RetryPolicy> logger)
 {
     private static readonly IEnumerable<TimeSpan> BackOffPolicy = Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(500), 5, fastFirst: true);
-
-    private readonly ILogger<RetryPolicy> _logger;
-
-    public RetryPolicy(ILogger<RetryPolicy> logger)
-    {
-        _logger = logger;
-    }
 
     public async Task<T> CreateAndExecutePolicyAsync<T>(string actionName, Func<Task<T>> action)
     {
@@ -30,7 +23,7 @@ public class RetryPolicy //: ICosmosRetryPolicy
                         return;
                     }
 
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "Failed to {ActionName} on retry {RetryCount} due to {ExceptionType} {StatusCode} - {ExceptionMessage}. Attempting again",
                         actionName,
                         retryCount,

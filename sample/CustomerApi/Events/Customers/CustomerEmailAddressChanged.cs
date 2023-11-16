@@ -3,17 +3,11 @@ using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
 
-public class CustomerEmailAddressChanged : CustomerEvent
+public class CustomerEmailAddressChanged(CustomerUri customerUri, string oldEmailAddress, string newEmailAddress, DateTimeOffset? timestamp = null)
+    : CustomerEvent(customerUri, timestamp)
 {
-    public string OldEmailAddress { get; }
-    public string NewEmailAddress { get; }
-
-    public CustomerEmailAddressChanged(CustomerUri customerUri, string oldEmailAddress, string newEmailAddress, DateTimeOffset? timestamp = null)
-        : base(customerUri, timestamp)
-    {
-        OldEmailAddress = oldEmailAddress;
-        NewEmailAddress = newEmailAddress;
-    }
+    public string OldEmailAddress { get; } = oldEmailAddress;
+    public string NewEmailAddress { get; } = newEmailAddress;
 
     public override void Apply(CustomerReadModel model)
     {

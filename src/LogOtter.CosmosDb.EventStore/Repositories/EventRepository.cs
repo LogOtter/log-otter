@@ -2,24 +2,17 @@
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class EventRepository<TBaseEvent, TSnapshot>
+public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> eventStore, IOptions<EventStoreOptions> options)
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventStore<TBaseEvent> _eventStore;
-    private readonly EventStoreOptions _options;
-
-    public EventRepository(EventStore<TBaseEvent> eventStore, IOptions<EventStoreOptions> options)
-    {
-        _eventStore = eventStore;
-        _options = options.Value;
-    }
+    private readonly EventStoreOptions _options = options.Value;
 
     public async Task<TSnapshot?> Get(string id, int? revision = null, bool includeDeleted = false, CancellationToken cancellationToken = default)
     {
         var streamId = _options.EscapeIdIfRequired(id);
 
-        var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, cancellationToken);
+        var eventStoreEvents = await eventStore.ReadStreamForwards(streamId, cancellationToken);
 
         var eventsSelect = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody);
 
@@ -48,7 +41,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
     public async Task<IReadOnlyCollection<TBaseEvent>> GetEventStream(string id, CancellationToken cancellationToken = default)
     {
         var streamId = _options.EscapeIdIfRequired(id);
-        var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, cancellationToken);
+        var eventStoreEvents = await eventStore.ReadStreamForwards(streamId, cancellationToken);
 
         var events = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody).ToList();
 
@@ -79,7 +72,7 @@ public class EventRepository<TBaseEvent, TSnapshot>
         var now = DateTimeOffset.Now;
         var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
-        await _eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
+        await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
         entity.Revision += events.Length;
 

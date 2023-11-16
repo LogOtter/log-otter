@@ -3,19 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace LogOtter.HttpPatch.Tests.Api.Controllers;
 
 [ApiController]
-public class PatchTestResourceController : ControllerBase
+public class PatchTestResourceController(TestDataStore dataStore) : ControllerBase
 {
-    private readonly TestDataStore _dataStore;
-
-    public PatchTestResourceController(TestDataStore dataStore)
-    {
-        _dataStore = dataStore;
-    }
-
     [HttpPatch("/test-resource/{resourceId}")]
     public IActionResult Patch(string resourceId, [FromBody] TestResourcePatchRequest request)
     {
-        var testResource = _dataStore.GetResource(resourceId);
+        var testResource = dataStore.GetResource(resourceId);
 
         if (request.Name.IsIncludedInPatch)
         {
@@ -47,7 +40,7 @@ public class PatchTestResourceController : ControllerBase
             testResource = testResource with { People = request.People.Value! };
         }
 
-        _dataStore.UpsertResource(testResource);
+        dataStore.UpsertResource(testResource);
         return Ok(testResource);
     }
 }

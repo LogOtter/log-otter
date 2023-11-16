@@ -8,19 +8,12 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerController;
 
-public class GetCustomerByIdTests
+public class GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Fact]
     public async Task Valid_ReturnsOk()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
@@ -44,7 +37,7 @@ public class GetCustomerByIdTests
     [Fact]
     public async Task NotFound()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 
@@ -58,7 +51,7 @@ public class GetCustomerByIdTests
     [Fact]
     public async Task Unauthorized()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"));
 
         var client = customerApi.CreateClient();
@@ -71,7 +64,7 @@ public class GetCustomerByIdTests
     [Fact]
     public async Task Forbidden()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"));
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
 

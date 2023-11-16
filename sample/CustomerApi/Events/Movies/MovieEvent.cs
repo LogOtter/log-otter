@@ -3,17 +3,11 @@ using LogOtter.CosmosDb.EventStore;
 
 namespace CustomerApi.Events.Movies;
 
-public abstract class MovieEvent : IEvent<MovieReadModel>
+public abstract class MovieEvent(MovieUri movieUri, DateTimeOffset? timestamp = null) : IEvent<MovieReadModel>
 {
-    public MovieUri MovieUri { get; }
+    public MovieUri MovieUri { get; } = movieUri;
 
-    public DateTimeOffset Timestamp { get; }
-
-    public MovieEvent(MovieUri movieUri, DateTimeOffset? timestamp = null)
-    {
-        MovieUri = movieUri;
-        Timestamp = timestamp ?? DateTimeOffset.UtcNow;
-    }
+    public DateTimeOffset Timestamp { get; } = timestamp ?? DateTimeOffset.UtcNow;
 
     public string EventStreamId => MovieUri.Uri;
 

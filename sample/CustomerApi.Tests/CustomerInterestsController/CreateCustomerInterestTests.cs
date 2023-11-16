@@ -8,21 +8,14 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerInterestsController;
 
-public class CreateCustomerInterestTests
+public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public async Task ValidMovie_ReturnsOk(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper, disableAutoProvisioning);
+        using var customerApi = new TestCustomerApi(testOutputHelper, disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -38,7 +31,7 @@ public class CreateCustomerInterestTests
     [InlineData(false)]
     public async Task ValidMovie_StoredCorrectly(bool disableAutoProvisioning)
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper, disableAutoProvisioning);
+        using var customerApi = new TestCustomerApi(testOutputHelper, disableAutoProvisioning);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -56,7 +49,7 @@ public class CreateCustomerInterestTests
     [Fact]
     public async Task ValidMovie_ProcessedToSearchableInterest()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -74,7 +67,7 @@ public class CreateCustomerInterestTests
     [Fact]
     public async Task ValidSong_ReturnsOk()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -88,7 +81,7 @@ public class CreateCustomerInterestTests
     [Fact]
     public async Task ValidSong_StoredCorrectly()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);
@@ -106,7 +99,7 @@ public class CreateCustomerInterestTests
     [Fact]
     public async Task ValidSong_ProcessedToSearchableInterest()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("CustomerInterests.Create");
 
         var client = customerApi.CreateClient(authHeader);

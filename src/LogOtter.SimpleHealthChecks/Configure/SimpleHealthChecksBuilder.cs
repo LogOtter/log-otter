@@ -2,15 +2,8 @@
 
 namespace LogOtter.SimpleHealthChecks;
 
-internal class SimpleHealthChecksBuilder : ISimpleHealthChecksBuilder
+internal class SimpleHealthChecksBuilder(IServiceCollection services) : ISimpleHealthChecksBuilder
 {
-    private readonly IServiceCollection _services;
-
-    public SimpleHealthChecksBuilder(IServiceCollection services)
-    {
-        _services = services;
-    }
-
     public ISimpleHealthChecksBuilder AddEndpoint(string path)
     {
         return AddEndpoint(new PathString(path), new SimpleHealthCheckOptions());
@@ -23,7 +16,7 @@ internal class SimpleHealthChecksBuilder : ISimpleHealthChecksBuilder
 
     private ISimpleHealthChecksBuilder AddEndpoint(PathString path, SimpleHealthCheckOptions options)
     {
-        _services.AddSingleton(new SimpleHealthCheckOptionsMap(path, options));
+        services.AddSingleton(new SimpleHealthCheckOptionsMap(path, options));
         return this;
     }
 }

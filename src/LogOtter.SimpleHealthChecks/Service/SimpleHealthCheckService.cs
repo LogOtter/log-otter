@@ -6,30 +6,18 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.SimpleHealthChecks;
 
-internal class SimpleHealthCheckService : BackgroundService
+internal class SimpleHealthCheckService(
+    HealthCheckService healthCheckService,
+    IHttpListenerFactory httpListenerFactory,
+    IEnumerable<SimpleHealthCheckOptionsMap> requestMaps,
+    IOptions<SimpleHealthCheckHostOptions> options,
+    ILogger<SimpleHealthCheckService> logger
+) : BackgroundService
 {
-    private static readonly byte[] OkBytes = Encoding.UTF8.GetBytes("OK");
+    private static readonly byte[] OkBytes = "OK"u8.ToArray();
 
-    private readonly HealthCheckService _healthCheckService;
-    private readonly SimpleHealthCheckHostOptions _hostOptions;
-    private readonly IHttpListener _listener;
-    private readonly ILogger<SimpleHealthCheckService> _logger;
-    private readonly IEnumerable<SimpleHealthCheckOptionsMap> _requestMaps;
-
-    public SimpleHealthCheckService(
-        HealthCheckService healthCheckService,
-        IHttpListenerFactory httpListenerFactory,
-        IEnumerable<SimpleHealthCheckOptionsMap> requestMaps,
-        IOptions<SimpleHealthCheckHostOptions> options,
-        ILogger<SimpleHealthCheckService> logger
-    )
-    {
-        _healthCheckService = healthCheckService;
-        _requestMaps = requestMaps;
-        _hostOptions = options.Value;
-        _logger = logger;
-        _listener = httpListenerFactory.Create();
-    }
+    private readonly SimpleHealthCheckHostOptions _hostOptions = options.Value;
+    private readonly IHttpListener _listener = httpListenerFactory.Create();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -38,7 +26,7 @@ internal class SimpleHealthCheckService : BackgroundService
             _listener.Configure(_hostOptions.Scheme, _hostOptions.Hostname, _hostOptions.Port);
             _listener.Start();
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "SimpleHealthCheckService started on {Scheme}://{Host}:{Port}",
                 _hostOptions.Scheme,
                 _hostOptions.Hostname,
@@ -63,7 +51,7 @@ internal class SimpleHealthCheckService : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "SimpleHealthCheckService: {Message}", e.Message);
+            logger.LogError(e, "SimpleHealthCheckService: {Message}", e.Message);
         }
     }
 
@@ -71,7 +59,7 @@ internal class SimpleHealthCheckService : BackgroundService
     {
         var request = context.Request;
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath}",
             request.RemoteEndPoint,
             request.Url!.PathAndQuery
@@ -95,7 +83,7 @@ internal class SimpleHealthCheckService : BackgroundService
             return;
         }
 
-        var options = _requestMaps
+        var options = requestMaps
             .Where(map => map.Path.StartsWithSegments(requestPath, out var remaining) && !remaining.HasValue)
             .Select(map => map.Options)
             .FirstOrDefault();
@@ -106,7 +94,7 @@ internal class SimpleHealthCheckService : BackgroundService
             return;
         }
 
-        var result = await _healthCheckService.CheckHealthAsync(options.Predicate, cancellationToken);
+        var result = await healthCheckService.CheckHealthAsync(options.Predicate, cancellationToken);
 
         if (!options.ResultStatusCodes.TryGetValue(result.Status, out var statusCode))
         {

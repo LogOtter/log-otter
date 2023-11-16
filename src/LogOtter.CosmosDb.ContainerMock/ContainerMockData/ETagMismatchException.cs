@@ -1,9 +1,7 @@
 using System.Net;
-using System.Runtime.Serialization;
 
 namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-[Serializable]
 public class ETagMismatchException : ContainerMockException
 {
     public const HttpStatusCode DefaultStatusCode = HttpStatusCode.PreconditionFailed;
@@ -16,7 +14,4 @@ public class ETagMismatchException : ContainerMockException
 
     public ETagMismatchException(string message, Exception inner)
         : base(DefaultStatusCode, message, inner) { }
-
-    protected ETagMismatchException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 }

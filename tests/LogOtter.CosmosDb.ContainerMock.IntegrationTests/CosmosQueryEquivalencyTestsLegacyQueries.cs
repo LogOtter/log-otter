@@ -6,14 +6,9 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 [Obsolete("Kept to test legacy querying until the CreateItemLinqQueryable method is removed")]
 [Collection("Integration Tests")]
-public sealed class CosmosQueryEquivalencyTestsLegacyQueries : IAsyncLifetime, IDisposable
+public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFixture testFixture) : IAsyncLifetime, IDisposable
 {
-    private readonly TestCosmos _testCosmos;
-
-    public CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFixture testFixture)
-    {
-        _testCosmos = testFixture.CreateTestCosmos();
-    }
+    private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
     public async Task InitializeAsync()
     {

@@ -6,14 +6,9 @@ using Xunit;
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 [Collection("Integration Tests")]
-public sealed class CosmosDeleteStreamTests : IAsyncLifetime, IDisposable
+public sealed class CosmosDeleteStreamTests(IntegrationTestsFixture testFixture) : IAsyncLifetime, IDisposable
 {
-    private readonly TestCosmos _testCosmos;
-
-    public CosmosDeleteStreamTests(IntegrationTestsFixture testFixture)
-    {
-        _testCosmos = testFixture.CreateTestCosmos();
-    }
+    private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
     public async Task InitializeAsync()
     {

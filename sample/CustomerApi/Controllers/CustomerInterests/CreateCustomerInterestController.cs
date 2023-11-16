@@ -10,16 +10,10 @@ namespace CustomerApi.Controllers.CustomerInterests;
 [ApiController]
 [Route("interests")]
 [Authorize(Roles = "CustomerInterests.Create")]
-public class CreateCustomerInterestController : ControllerBase
+public class CreateCustomerInterestController(CosmosContainer<Movie> movieContainer, CosmosContainer<Song> songContainer) : ControllerBase
 {
-    private readonly Container _movieContainer;
-    private readonly Container _songContainer;
-
-    public CreateCustomerInterestController(CosmosContainer<Movie> movieContainer, CosmosContainer<Song> songContainer)
-    {
-        _movieContainer = movieContainer.Container;
-        _songContainer = songContainer.Container;
-    }
+    private readonly Container _movieContainer = movieContainer.Container;
+    private readonly Container _songContainer = songContainer.Container;
 
     [HttpPost("movies")]
     [ProducesResponseType(StatusCodes.Status201Created)]

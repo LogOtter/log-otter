@@ -3,21 +3,14 @@ using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
 
-public class CustomerCreated : CustomerEvent
+public class CustomerCreated(CustomerUri customerUri, string emailAddress, string firstName, string lastName, DateTimeOffset? timestamp = null)
+    : CustomerEvent(customerUri, timestamp)
 {
-    public string EmailAddress { get; }
+    public string EmailAddress { get; } = emailAddress;
 
-    public string FirstName { get; }
+    public string FirstName { get; } = firstName;
 
-    public string LastName { get; }
-
-    public CustomerCreated(CustomerUri customerUri, string emailAddress, string firstName, string lastName, DateTimeOffset? timestamp = null)
-        : base(customerUri, timestamp)
-    {
-        EmailAddress = emailAddress;
-        FirstName = firstName;
-        LastName = lastName;
-    }
+    public string LastName { get; } = lastName;
 
     public override void Apply(CustomerReadModel model)
     {

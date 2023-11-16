@@ -15,33 +15,22 @@ namespace LogOtter.CosmosDb.EventStore;
 /// If you are working with lots of data, the <see cref="SnapshotRepository{TBaseEvent, TSnapshot}"/> is almost definitely a better choice
 /// Requirements for large amounts of immediately consistent data should be stored in an immediate state store, not an event sourced system.
 /// </summary>
-public class HybridRepository<TBaseEvent, TSnapshot>
+public class HybridRepository<TBaseEvent, TSnapshot>(
+    EventStore<TBaseEvent> eventStore,
+    EventRepository<TBaseEvent, TSnapshot> eventRepository,
+    SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
+    SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
+    IFeedIteratorFactory feedIteratorFactory,
+    IOptions<EventStoreOptions> options
+)
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventRepository<TBaseEvent, TSnapshot> _eventRepository;
-    private readonly EventStore<TBaseEvent> _eventStore;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly EventStoreOptions _options;
-    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
-    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver;
-
-    public HybridRepository(
-        EventStore<TBaseEvent> eventStore,
-        EventRepository<TBaseEvent, TSnapshot> eventRepository,
-        SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
-        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory,
-        IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options
-    )
-    {
-        _eventStore = eventStore;
-        _eventRepository = eventRepository;
-        _snapshotRepository = snapshotRepository;
-        _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();
-        _feedIteratorFactory = feedIteratorFactory;
-        _options = options.Value;
-    }
+    private readonly EventStoreOptions _options = options.Value;
+    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<
+        TBaseEvent,
+        TSnapshot
+    >();
 
     public async IAsyncEnumerable<TSnapshot?> QuerySnapshotsWithCatchupExpensivelyAsync(
         string partitionKey,
@@ -50,11 +39,11 @@ public class HybridRepository<TBaseEvent, TSnapshot>
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
-        var query = _snapshotRepository.CreateSnapshotQuery(partitionKey, includeDeleted);
+        var query = snapshotRepository.CreateSnapshotQuery(partitionKey, includeDeleted);
 
         query = applyQuery(query);
 
-        using var feedIterator = _feedIteratorFactory.GetFeedIterator(query);
+        using var feedIterator = feedIteratorFactory.GetFeedIterator(query);
 
         while (feedIterator.HasMoreResults)
         {
@@ -76,7 +65,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
     )
     {
         var streamId = _options.EscapeIdIfRequired(id);
-        var snapshot = await _snapshotRepository.GetSnapshot(id, partitionKey, includeDeleted, cancellationToken);
+        var snapshot = await snapshotRepository.GetSnapshot(id, partitionKey, includeDeleted, cancellationToken);
 
         return await ApplyNewEvents(snapshot, streamId, includeDeleted, cancellationToken);
     }
@@ -88,7 +77,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
         params TBaseEvent[] events
     )
     {
-        var snapshot = await _eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
+        var snapshot = await eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
 
         try
         {
@@ -96,7 +85,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
 
-            await _snapshotRepository.ApplyEventsToSnapshot(id, partitionKey, eventsToUpdate, cancellationToken);
+            await snapshotRepository.ApplyEventsToSnapshot(id, partitionKey, eventsToUpdate, cancellationToken);
         }
         catch
         {
@@ -116,7 +105,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>
     {
         var startPosition = snapshot?.Revision + 1 ?? 1;
 
-        var eventStoreEvents = await _eventStore.ReadStreamForwards(streamId, startPosition, int.MaxValue, cancellationToken);
+        var eventStoreEvents = await eventStore.ReadStreamForwards(streamId, startPosition, int.MaxValue, cancellationToken);
 
         var events = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody).ToList();
 

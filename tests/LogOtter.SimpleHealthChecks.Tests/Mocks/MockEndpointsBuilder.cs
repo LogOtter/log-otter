@@ -2,12 +2,7 @@ namespace LogOtter.SimpleHealthChecks.Tests;
 
 internal class MockEndpointsBuilder : ISimpleHealthChecksBuilder
 {
-    public IList<SimpleHealthCheckOptionsMap> Maps { get; }
-
-    public MockEndpointsBuilder()
-    {
-        Maps = new List<SimpleHealthCheckOptionsMap>();
-    }
+    public IList<SimpleHealthCheckOptionsMap> Maps { get; } = new List<SimpleHealthCheckOptionsMap>();
 
     public ISimpleHealthChecksBuilder AddEndpoint(string path)
     {

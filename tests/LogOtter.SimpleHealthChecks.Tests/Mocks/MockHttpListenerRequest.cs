@@ -6,12 +6,7 @@ namespace LogOtter.SimpleHealthChecks.Tests;
 
 internal class MockHttpListenerRequest : IHttpListenerRequest
 {
-    private readonly MemoryStream _inputStream;
-
-    public MockHttpListenerRequest()
-    {
-        _inputStream = new MemoryStream();
-    }
+    private readonly MemoryStream _inputStream = new();
 
     public string HttpMethod { get; init; } = "";
     public Uri? Url { get; init; }

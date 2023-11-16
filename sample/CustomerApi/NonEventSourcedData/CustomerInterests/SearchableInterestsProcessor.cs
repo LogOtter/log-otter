@@ -3,14 +3,10 @@ using Microsoft.Azure.Cosmos;
 
 namespace CustomerApi.NonEventSourcedData.CustomerInterests;
 
-public class SearchableInterestsProcessor : IChangeFeedProcessorChangeHandler<CustomerInterest>
+public class SearchableInterestsProcessor(CosmosContainer<SearchableInterest> searchableInterestContainer)
+    : IChangeFeedProcessorChangeHandler<CustomerInterest>
 {
-    private readonly Container _searchableInterestContainer;
-
-    public SearchableInterestsProcessor(CosmosContainer<SearchableInterest> searchableInterestContainer)
-    {
-        _searchableInterestContainer = searchableInterestContainer.Container;
-    }
+    private readonly Container _searchableInterestContainer = searchableInterestContainer.Container;
 
     public async Task ProcessChanges(IReadOnlyCollection<CustomerInterest> changes, CancellationToken cancellationToken)
     {

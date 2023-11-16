@@ -8,19 +8,12 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.MovieController;
 
-public class MovieTests
+public class MovieTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public MovieTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Fact]
     public async Task Valid_ReturnsOkWhenUsingEventStream()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
@@ -38,7 +31,7 @@ public class MovieTests
     [Fact]
     public async Task Valid_ReturnsNotFoundWhenUsingSnapshotThatIsNotEnabled()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
@@ -52,7 +45,7 @@ public class MovieTests
     [Fact]
     public async Task Valid_ReturnsOkWhenUsingHybridAndSnapshotIsNotEnabled()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
 
@@ -70,7 +63,7 @@ public class MovieTests
     [Fact]
     public async Task Valid_SavesSnapshotWhenUsingHybridRepoToApply()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var client = customerApi.CreateClient();
 
         var response = await client.PostAsJsonAsync("/movies/create-hybrid", new { name = "Hot Fuzz" });
@@ -88,7 +81,7 @@ public class MovieTests
     [Fact]
     public async Task Valid_ReturnsOkWhenUsingHybridToQueryLatestChanges()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovieWithAProjectedSnapshot(movieUri, "The Matrix");
         await customerApi.Given.AnExistingMovieNameIsChangedButNotProjected(movieUri, "The Matrix Reloaded");
@@ -107,7 +100,7 @@ public class MovieTests
     [Fact]
     public async Task Valid_ReturnsStreamChanges()
     {
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovie(movieUri, "The Matrix");
         await customerApi.Given.AnExistingMovieNameIsChangedButNotProjected(movieUri, "The Matrix Reloaded");

@@ -6,27 +6,17 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-public class SnapshotRepository<TBaseEvent, TSnapshot>
+public class SnapshotRepository<TBaseEvent, TSnapshot>(
+    CosmosContainer<TSnapshot> snapshotContainer,
+    EventStore<TBaseEvent> eventStore,
+    IFeedIteratorFactory feedIteratorFactory,
+    IOptions<EventStoreOptions> options
+)
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly EventStore<TBaseEvent> _eventStore;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
-    private readonly EventStoreOptions _options;
-    private readonly Container _snapshotContainer;
-
-    public SnapshotRepository(
-        CosmosContainer<TSnapshot> snapshotContainer,
-        EventStore<TBaseEvent> eventStore,
-        IFeedIteratorFactory feedIteratorFactory,
-        IOptions<EventStoreOptions> options
-    )
-    {
-        _feedIteratorFactory = feedIteratorFactory;
-        _snapshotContainer = snapshotContainer.Container;
-        _eventStore = eventStore;
-        _options = options.Value;
-    }
+    private readonly EventStoreOptions _options = options.Value;
+    private readonly Container _snapshotContainer = snapshotContainer.Container;
 
     public async Task<int> CountSnapshotsAsync(
         string partitionKey,
@@ -72,7 +62,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
 
         var projectedQuery = applyQuery(query);
 
-        using var feedIterator = _feedIteratorFactory.GetFeedIterator(projectedQuery);
+        using var feedIterator = feedIteratorFactory.GetFeedIterator(projectedQuery);
 
         while (feedIterator.HasMoreResults)
         {
@@ -104,7 +94,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>
 
         if (orderedEvents.First().EventNumber != startingRevision || orderedEvents.Last().EventNumber != endRevision)
         {
-            var allEvents = await _eventStore.ReadStreamForwards(streamId, startingRevision, int.MaxValue, cancellationToken);
+            var allEvents = await eventStore.ReadStreamForwards(streamId, startingRevision, int.MaxValue, cancellationToken);
 
             orderedEvents = allEvents.Select(Event<TBaseEvent>.FromStorageEvent).OrderBy(e => e.EventNumber).ToList();
         }

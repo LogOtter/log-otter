@@ -3,82 +3,40 @@ using System.ComponentModel.DataAnnotations;
 namespace LogOtter.HttpPatch;
 
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
-public abstract class OptionallyPatchedValidationAttribute : Attribute
+public abstract class OptionallyPatchedValidationAttribute(ValidationAttribute validationAttribute) : Attribute
 {
-    public ValidationAttribute ValidationAttribute { get; }
-
-    protected OptionallyPatchedValidationAttribute(ValidationAttribute validationAttribute)
-    {
-        ValidationAttribute = validationAttribute;
-    }
+    public ValidationAttribute ValidationAttribute { get; } = validationAttribute;
 }
 
-public sealed class MinLengthIfPatchedAttribute : OptionallyPatchedValidationAttribute
+public sealed class MinLengthIfPatchedAttribute(int minLength) : OptionallyPatchedValidationAttribute(new MinLengthAttribute(minLength))
 {
-    public int MinLength { get; }
-
-    public MinLengthIfPatchedAttribute(int minLength)
-        : base(new MinLengthAttribute(minLength))
-    {
-        MinLength = minLength;
-    }
+    public int MinLength { get; } = minLength;
 }
 
-public sealed class MaxLengthIfPatchedAttribute : OptionallyPatchedValidationAttribute
+public sealed class MaxLengthIfPatchedAttribute(int maxLength) : OptionallyPatchedValidationAttribute(new MaxLengthAttribute(maxLength))
 {
-    public int MaxLength { get; }
-
-    public MaxLengthIfPatchedAttribute(int maxLength)
-        : base(new MaxLengthAttribute(maxLength))
-    {
-        MaxLength = maxLength;
-    }
+    public int MaxLength { get; } = maxLength;
 }
 
-public sealed class RequiredIfPatchedAttribute : OptionallyPatchedValidationAttribute
+public sealed class RequiredIfPatchedAttribute() : OptionallyPatchedValidationAttribute(new RequiredAttribute());
+
+public sealed class RangeIfPatchedAttribute(double minimum, double maximum)
+    : OptionallyPatchedValidationAttribute(new RangeAttribute(minimum, maximum))
 {
-    public RequiredIfPatchedAttribute()
-        : base(new RequiredAttribute()) { }
+    public double Minimum { get; } = minimum;
+
+    public double Maximum { get; } = maximum;
 }
 
-public sealed class RangeIfPatchedAttribute : OptionallyPatchedValidationAttribute
+public sealed class EmailAddressIfPatchedAttribute() : OptionallyPatchedValidationAttribute(new EmailAddressAttribute());
+
+public sealed class StringLengthIfPatchedAttribute(int maximumLength) : OptionallyPatchedValidationAttribute(new StringLengthAttribute(maximumLength))
 {
-    public double Minimum { get; }
-
-    public double Maximum { get; }
-
-    public RangeIfPatchedAttribute(double minimum, double maximum)
-        : base(new RangeAttribute(minimum, maximum))
-    {
-        Minimum = minimum;
-        Maximum = maximum;
-    }
+    public int MaximumLength { get; } = maximumLength;
 }
 
-public sealed class EmailAddressIfPatchedAttribute : OptionallyPatchedValidationAttribute
+public sealed class RegularExpressionIfPatchedAttribute(string pattern)
+    : OptionallyPatchedValidationAttribute(new RegularExpressionAttribute(pattern))
 {
-    public EmailAddressIfPatchedAttribute()
-        : base(new EmailAddressAttribute()) { }
-}
-
-public sealed class StringLengthIfPatchedAttribute : OptionallyPatchedValidationAttribute
-{
-    public int MaximumLength { get; }
-
-    public StringLengthIfPatchedAttribute(int maximumLength)
-        : base(new StringLengthAttribute(maximumLength))
-    {
-        MaximumLength = maximumLength;
-    }
-}
-
-public sealed class RegularExpressionIfPatchedAttribute : OptionallyPatchedValidationAttribute
-{
-    public string Pattern { get; }
-
-    public RegularExpressionIfPatchedAttribute(string pattern)
-        : base(new RegularExpressionAttribute(pattern))
-    {
-        Pattern = pattern;
-    }
+    public string Pattern { get; } = pattern;
 }

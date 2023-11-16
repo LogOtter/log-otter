@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.SimpleHealthChecks;
 
-public record SimpleHealthCheckHostOptions
+public class SimpleHealthCheckHostOptions
 {
     public string Hostname { get; set; } = "+";
     public int Port { get; set; } = 80;

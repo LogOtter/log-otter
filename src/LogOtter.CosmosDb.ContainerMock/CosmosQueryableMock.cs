@@ -3,14 +3,9 @@ using System.Linq.Expressions;
 
 namespace LogOtter.CosmosDb.ContainerMock;
 
-public class CosmosQueryableMock<T> : IOrderedQueryable<T>, IQueryProvider
+public class CosmosQueryableMock<T>(IQueryable<T> partition) : IOrderedQueryable<T>, IQueryProvider
 {
-    private EnumerableQuery<T> _underlying;
-
-    public CosmosQueryableMock(IQueryable<T> partition)
-    {
-        _underlying = new EnumerableQuery<T>(partition.Expression);
-    }
+    private EnumerableQuery<T> _underlying = new(partition.Expression);
 
     public IEnumerator<T> GetEnumerator()
     {

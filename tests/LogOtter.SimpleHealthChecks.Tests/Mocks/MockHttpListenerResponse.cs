@@ -5,14 +5,8 @@ namespace LogOtter.SimpleHealthChecks.Tests;
 
 internal class MockHttpListenerResponse : IHttpListenerResponse
 {
-    private readonly MemoryStream _outputStream;
+    private readonly MemoryStream _outputStream = new();
     private bool _responseClosed;
-
-    public MockHttpListenerResponse()
-    {
-        _outputStream = new MemoryStream();
-        Headers = new WebHeaderCollection();
-    }
 
     public int StatusCode { get; set; }
 
@@ -22,7 +16,7 @@ internal class MockHttpListenerResponse : IHttpListenerResponse
 
     public long ContentLength64 { get; set; }
 
-    public WebHeaderCollection Headers { get; set; }
+    public WebHeaderCollection Headers { get; set; } = new();
 
     public Stream OutputStream => _outputStream;
 
