@@ -4,21 +4,10 @@ using Newtonsoft.Json;
 
 namespace LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 
-public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
+internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock containerMock, StringSerializationHelper serializationHelper)
+    : Microsoft.Azure.Cosmos.TransactionalBatch
 {
-    private readonly Queue<Action<TestTransactionalBatchResponse>> _actions;
-    private readonly ContainerMock _containerMock;
-    private readonly PartitionKey _partitionKey;
-    private readonly StringSerializationHelper _serializationHelper;
-
-    internal TestTransactionalBatch(PartitionKey partitionKey, ContainerMock containerMock, StringSerializationHelper serializationHelper)
-    {
-        _partitionKey = partitionKey;
-        _containerMock = containerMock;
-        _serializationHelper = serializationHelper;
-
-        _actions = new Queue<Action<TestTransactionalBatchResponse>>();
-    }
+    private readonly Queue<Action<TestTransactionalBatchResponse>> _actions = new();
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch CreateItem<T>(T item, TransactionalBatchItemRequestOptions? requestOptions = null)
     {
@@ -26,11 +15,11 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
         _actions.Enqueue(response =>
         {
-            var bytes = Encoding.UTF8.GetBytes(_serializationHelper.SerializeObject(item));
+            var bytes = Encoding.UTF8.GetBytes(serializationHelper.SerializeObject(item));
 
             using var ms = new MemoryStream(bytes);
 
-            var itemResponse = _containerMock.CreateItemStreamAsync(ms, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
+            var itemResponse = containerMock.CreateItemStreamAsync(ms, partitionKey, itemRequestOptions).GetAwaiter().GetResult();
 
             response.AddResult(itemResponse, item);
         });
@@ -44,7 +33,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
         _actions.Enqueue(response =>
         {
-            var itemResponse = _containerMock.ReadItemStreamAsync(id, _partitionKey, itemRequestOptions).GetAwaiter().GetResult();
+            var itemResponse = containerMock.ReadItemStreamAsync(id, partitionKey, itemRequestOptions).GetAwaiter().GetResult();
 
             response.AddResult(itemResponse);
         });
@@ -62,9 +51,9 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
         CancellationToken cancellationToken = default
     )
     {
-        var snapshot = _containerMock.CreateSnapshot();
+        var snapshot = containerMock.CreateSnapshot();
 
-        var response = new TestTransactionalBatchResponse(_serializationHelper);
+        var response = new TestTransactionalBatchResponse(serializationHelper);
 
         while (_actions.Any())
         {
@@ -87,7 +76,7 @@ public class TestTransactionalBatch : Microsoft.Azure.Cosmos.TransactionalBatch
 
         if (!response.IsSuccessStatusCode)
         {
-            _containerMock.RestoreSnapshot(snapshot);
+            containerMock.RestoreSnapshot(snapshot);
         }
 
         return Task.FromResult<TransactionalBatchResponse>(response);

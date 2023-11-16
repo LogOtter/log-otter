@@ -3,14 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LogOtter.CosmosDb.Testing;
 
-public class TestCosmosDbBuilder : ITestCosmosDbBuilder
+public class TestCosmosDbBuilder(IServiceCollection services) : ITestCosmosDbBuilder
 {
-    public TestCosmosDbBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
-
-    public IServiceCollection Services { get; }
+    public IServiceCollection Services { get; } = services;
 
     public ITestCosmosDbBuilder WithPreProvisionedContainer<TDocument>(
         string containerName,

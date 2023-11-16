@@ -10,21 +10,14 @@ using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerController;
 
-public class PatchCustomerTests
+public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public PatchCustomerTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Fact]
     public async Task Valid_ReturnsOk()
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
@@ -40,7 +33,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         var existingCustomer = await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
@@ -65,7 +58,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite", "Customers.Create");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk");
 
@@ -100,7 +93,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
         var client = customerApi.CreateClient(authHeader);
@@ -131,7 +124,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         var existingCustomer = await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
         var previousRevision = existingCustomer.Revision;
@@ -159,7 +152,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
@@ -178,7 +171,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 
         var client = customerApi.CreateClient();
@@ -193,7 +186,7 @@ public class PatchCustomerTests
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(_testOutputHelper);
+        using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
         await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
 

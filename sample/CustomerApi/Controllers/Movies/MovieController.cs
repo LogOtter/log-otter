@@ -8,23 +8,12 @@ namespace CustomerApi.Controllers.Movies;
 
 [ApiController]
 [Route("movies")]
-public class MovieController : ControllerBase
+public class MovieController(
+    EventRepository<MovieEvent, MovieReadModel> movieEventRepository,
+    SnapshotRepository<MovieEvent, MovieReadModel> movieSnapshotRepository,
+    HybridRepository<MovieEvent, MovieReadModel> movieHybridRepository
+) : ControllerBase
 {
-    private readonly EventRepository<MovieEvent, MovieReadModel> _movieEventRepository;
-    private readonly SnapshotRepository<MovieEvent, MovieReadModel> _movieSnapshotRepository;
-    private readonly HybridRepository<MovieEvent, MovieReadModel> _movieHybridRepository;
-
-    public MovieController(
-        EventRepository<MovieEvent, MovieReadModel> movieEventRepository,
-        SnapshotRepository<MovieEvent, MovieReadModel> movieSnapshotRepository,
-        HybridRepository<MovieEvent, MovieReadModel> movieHybridRepository
-    )
-    {
-        _movieEventRepository = movieEventRepository;
-        _movieSnapshotRepository = movieSnapshotRepository;
-        _movieHybridRepository = movieHybridRepository;
-    }
-
     [HttpGet("{movieId}/by-event", Name = "Get a movie from the event store")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -32,7 +21,7 @@ public class MovieController : ControllerBase
     public async Task<ActionResult<MovieQueryResponse>> GetByEvent(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
-        var movie = await _movieEventRepository.Get(movieUri.Uri, cancellationToken: cancellationToken);
+        var movie = await movieEventRepository.Get(movieUri.Uri, cancellationToken: cancellationToken);
 
         if (movie != null)
         {
@@ -49,7 +38,7 @@ public class MovieController : ControllerBase
     public async Task<ActionResult<MovieHistoryResponse>> GetMovieHistory(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
-        var movieEvents = await _movieEventRepository.GetEventStream(movieUri.Uri, cancellationToken: cancellationToken);
+        var movieEvents = await movieEventRepository.GetEventStream(movieUri.Uri, cancellationToken: cancellationToken);
 
         if (movieEvents.Count > 0)
         {
@@ -67,7 +56,7 @@ public class MovieController : ControllerBase
     public async Task<ActionResult<MovieQueryResponse>> GetBySnapshot(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
-        var movie = await _movieSnapshotRepository.GetSnapshot(movieUri.Uri, MovieReadModel.StaticPartitionKey, cancellationToken: cancellationToken);
+        var movie = await movieSnapshotRepository.GetSnapshot(movieUri.Uri, MovieReadModel.StaticPartitionKey, cancellationToken: cancellationToken);
 
         if (movie != null)
         {
@@ -84,7 +73,7 @@ public class MovieController : ControllerBase
     public async Task<ActionResult<MovieQueryResponse>> GetByHybrid(string movieId, CancellationToken cancellationToken)
     {
         var movieUri = new MovieUri(movieId);
-        var movie = await _movieHybridRepository.GetSnapshotWithCatchupExpensivelyAsync(
+        var movie = await movieHybridRepository.GetSnapshotWithCatchupExpensivelyAsync(
             movieUri.Uri,
             MovieReadModel.StaticPartitionKey,
             cancellationToken: cancellationToken
@@ -106,7 +95,7 @@ public class MovieController : ControllerBase
     {
         var movieUri = new MovieUri(movieId);
 
-        var movies = await _movieHybridRepository
+        var movies = await movieHybridRepository
             .QuerySnapshotsWithCatchupExpensivelyAsync(
                 MovieReadModel.StaticPartitionKey,
                 q => q.Where(m => m.MovieUri.Uri == movieUri.Uri),
@@ -132,7 +121,7 @@ public class MovieController : ControllerBase
         var movieUri = MovieUri.Generate();
 
         var movieCreated = new MovieAdded(movieUri, request.Name);
-        var movie = await _movieHybridRepository.ApplyEventsAndUpdateSnapshotImmediately(movieUri.Uri, 0, cancellationToken, movieCreated);
+        var movie = await movieHybridRepository.ApplyEventsAndUpdateSnapshotImmediately(movieUri.Uri, 0, cancellationToken, movieCreated);
 
         return Created(movieUri.Uri, new MovieQueryResponse(movieUri, movie.Name));
     }

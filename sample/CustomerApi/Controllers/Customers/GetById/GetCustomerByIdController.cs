@@ -9,15 +9,8 @@ namespace CustomerApi.Controllers.Customers.GetById;
 [ApiController]
 [Route("customers")]
 [Authorize(Roles = "Customers.Read,Customers.ReadWrite")]
-public class GetCustomerByIdController : ControllerBase
+public class GetCustomerByIdController(EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository) : ControllerBase
 {
-    private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
-
-    public GetCustomerByIdController(EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository)
-    {
-        _customerEventRepository = customerEventRepository;
-    }
-
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -30,7 +23,7 @@ public class GetCustomerByIdController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, cancellationToken: cancellationToken);
+        var customerReadModel = await customerEventRepository.Get(customerUri.Uri, cancellationToken: cancellationToken);
 
         if (customerReadModel == null)
         {

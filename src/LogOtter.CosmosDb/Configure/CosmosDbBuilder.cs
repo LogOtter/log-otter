@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LogOtter.CosmosDb;
 
-public class CosmosDbBuilder
+public class CosmosDbBuilder(IServiceCollection serviceCollection)
 {
     private static readonly MethodInfo RegisterCosmosContainerMethod = typeof(CosmosDbBuilder).GetMethod(
         nameof(RegisterCosmosContainer),
@@ -22,18 +22,10 @@ public class CosmosDbBuilder
         BindingFlags.Instance | BindingFlags.NonPublic
     )!;
 
-    private readonly IList<string> _changeFeedProcessors;
-    private readonly IDictionary<Type, string> _containers;
+    private readonly IList<string> _changeFeedProcessors = new List<string>();
+    private readonly IDictionary<Type, string> _containers = new Dictionary<Type, string>();
 
-    public CosmosDbBuilder(IServiceCollection serviceCollection)
-    {
-        _containers = new Dictionary<Type, string>();
-        _changeFeedProcessors = new List<string>();
-
-        Services = serviceCollection;
-    }
-
-    internal IServiceCollection Services { get; }
+    internal IServiceCollection Services { get; } = serviceCollection;
 
     public CosmosDbBuilder WithAutoProvisioning()
     {

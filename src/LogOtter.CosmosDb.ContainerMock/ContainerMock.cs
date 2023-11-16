@@ -19,7 +19,7 @@ public class ContainerMock : Container
     private readonly string _partitionKeyPath;
 
     private readonly StringSerializationHelper _serializationHelper;
-    private CosmosSerializationOptions _cosmosSerializationOptions;
+    private readonly CosmosSerializationOptions _cosmosSerializationOptions;
 
     public override string Id { get; }
     public override Conflicts? Conflicts => null;

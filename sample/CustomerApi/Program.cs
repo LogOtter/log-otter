@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.Events.Movies;

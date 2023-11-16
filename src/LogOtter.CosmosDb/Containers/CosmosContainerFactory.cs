@@ -2,15 +2,8 @@ using Microsoft.Azure.Cosmos;
 
 namespace LogOtter.CosmosDb;
 
-public class CosmosContainerFactory : ICosmosContainerFactory
+public class CosmosContainerFactory(Database database) : ICosmosContainerFactory
 {
-    private readonly Database _database;
-
-    public CosmosContainerFactory(Database database)
-    {
-        _database = database;
-    }
-
     public async Task<Container> CreateContainerIfNotExistsAsync(
         string containerName,
         string partitionKeyPath,
@@ -32,13 +25,13 @@ public class CosmosContainerFactory : ICosmosContainerFactory
             containerProperties.IndexingPolicy = indexingPolicy;
         }
 
-        var containerResponse = await _database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
+        var containerResponse = await database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
 
         return containerResponse.Container;
     }
 
     public Container GetContainer(string containerName)
     {
-        return _database.GetContainer(containerName);
+        return database.GetContainer(containerName);
     }
 }

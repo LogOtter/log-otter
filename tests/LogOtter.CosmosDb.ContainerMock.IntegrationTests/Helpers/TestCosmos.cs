@@ -7,32 +7,23 @@ using Polly.Contrib.WaitAndRetry;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
-public sealed class TestCosmos : IDisposable
+public sealed class TestCosmos(CosmosClient client, CosmosClientOptions cosmosClientOptions) : IDisposable
 {
     private static readonly IEnumerable<TimeSpan> BackOffPolicy = Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(500), 5, fastFirst: true);
-
-    private readonly CosmosClient _client;
-    private readonly CosmosClientOptions _cosmosClientOptions;
 
     private Container? _realContainer;
     private Container? _testContainer;
 
-    public TestCosmos(CosmosClient client, CosmosClientOptions cosmosClientOptions)
-    {
-        _client = client;
-        _cosmosClientOptions = cosmosClientOptions;
-    }
-
     public void Dispose()
     {
-        _client.Dispose();
+        client.Dispose();
     }
 
     public async Task SetupAsync(string partitionKeyPath, UniqueKeyPolicy? uniqueKeyPolicy = null)
     {
         var response = await CreateCosmosContainer(partitionKeyPath, uniqueKeyPolicy);
         _realContainer = response.Container;
-        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy, cosmosSerializationOptions: _cosmosClientOptions.SerializerOptions);
+        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy, cosmosSerializationOptions: cosmosClientOptions.SerializerOptions);
     }
 
     public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(
@@ -605,7 +596,7 @@ public sealed class TestCosmos : IDisposable
         var dbNameIndex = new Random().Next(1, 10);
         var dbName = typeof(TestCosmos).Assembly.GetName().Name + "_" + dbNameIndex.ToString("00");
 
-        var database = (await _client.CreateDatabaseIfNotExistsAsync(dbName, throughput: null)).Database;
+        var database = (await client.CreateDatabaseIfNotExistsAsync(dbName, throughput: null)).Database;
 
         var containerProperties = new ContainerProperties
         {

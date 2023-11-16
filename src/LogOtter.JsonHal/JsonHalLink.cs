@@ -1,15 +1,9 @@
 ﻿namespace LogOtter.JsonHal;
 
-public sealed class JsonHalLink : IEquatable<JsonHalLink>
+public sealed class JsonHalLink(string type, string href) : IEquatable<JsonHalLink>
 {
-    public string Type { get; }
-    public string Href { get; }
-
-    public JsonHalLink(string type, string href)
-    {
-        Type = type;
-        Href = href;
-    }
+    public string Type { get; } = type;
+    public string Href { get; } = href;
 
     public bool Equals(JsonHalLink? other)
     {

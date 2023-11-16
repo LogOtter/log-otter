@@ -6,12 +6,7 @@ namespace LogOtter.JsonHal;
 [JsonConverter(typeof(JsonHalLinkCollectionConverter))]
 public sealed class JsonHalLinkCollection : IReadOnlyCollection<JsonHalLink>
 {
-    private readonly List<JsonHalLink> _links;
-
-    public JsonHalLinkCollection()
-    {
-        _links = new List<JsonHalLink>();
-    }
+    private readonly List<JsonHalLink> _links = new();
 
     public int Count => _links.Count;
 

@@ -11,20 +11,11 @@ namespace CustomerApi.Controllers.Customers.Create;
 [ApiController]
 [Route("customers")]
 [Authorize(Roles = "Customers.Create")]
-public class CreateCustomerController : ControllerBase
+public class CreateCustomerController(
+    EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+    EmailAddressReservationService emailAddressReservationService
+) : ControllerBase
 {
-    private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
-    private readonly EmailAddressReservationService _emailAddressReservationService;
-
-    public CreateCustomerController(
-        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
-        EmailAddressReservationService emailAddressReservationService
-    )
-    {
-        _customerEventRepository = customerEventRepository;
-        _emailAddressReservationService = emailAddressReservationService;
-    }
-
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,7 +26,7 @@ public class CreateCustomerController : ControllerBase
     {
         try
         {
-            await _emailAddressReservationService.ReserveEmailAddress(customerData.EmailAddress);
+            await emailAddressReservationService.ReserveEmailAddress(customerData.EmailAddress);
         }
         catch (EmailAddressInUseException)
         {
@@ -46,7 +37,7 @@ public class CreateCustomerController : ControllerBase
 
         var customerCreated = new CustomerCreated(customerUri, customerData.EmailAddress, customerData.FirstName, customerData.LastName);
 
-        var customer = await _customerEventRepository.ApplyEvents(customerUri.Uri, 0, cancellationToken, customerCreated);
+        var customer = await customerEventRepository.ApplyEvents(customerUri.Uri, 0, cancellationToken, customerCreated);
 
         return Created(customerUri.Uri, new CustomerResponse(customer));
     }

@@ -5,16 +5,10 @@ namespace LogOtter.Hub.Models;
 
 public record EventStreamDefinition(string Name, string TypeName, string ServiceName);
 
-public class EventStreamsResponse
+public class EventStreamsResponse(IList<EventStreamDefinition> definitions)
 {
-    public IList<EventStreamDefinition> Definitions { get; }
+    public IList<EventStreamDefinition> Definitions { get; } = definitions;
 
     [JsonPropertyName("_links")]
-    public JsonHalLinkCollection Links { get; }
-
-    public EventStreamsResponse(IList<EventStreamDefinition> definitions)
-    {
-        Definitions = definitions;
-        Links = new JsonHalLinkCollection();
-    }
+    public JsonHalLinkCollection Links { get; } = new();
 }

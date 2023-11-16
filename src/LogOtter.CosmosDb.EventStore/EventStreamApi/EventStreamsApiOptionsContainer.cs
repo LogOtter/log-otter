@@ -2,12 +2,7 @@
 
 internal class EventStreamsApiOptionsContainer
 {
-    public EventStreamsApiOptions Options { get; private set; }
-
-    public EventStreamsApiOptionsContainer()
-    {
-        Options = new EventStreamsApiOptions();
-    }
+    public EventStreamsApiOptions Options { get; private set; } = new();
 
     internal void UpdateOptions(EventStreamsApiOptions options)
     {

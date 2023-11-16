@@ -4,12 +4,7 @@ namespace LogOtter.SimpleHealthChecks;
 
 internal class HttpListenerShim : IHttpListener
 {
-    private readonly HttpListener _httpListener;
-
-    public HttpListenerShim()
-    {
-        _httpListener = new HttpListener();
-    }
+    private readonly HttpListener _httpListener = new();
 
     public void Configure(string scheme, string hostname, int port)
     {

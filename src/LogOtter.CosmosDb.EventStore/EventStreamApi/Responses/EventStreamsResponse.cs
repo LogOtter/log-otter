@@ -3,16 +3,10 @@ using LogOtter.JsonHal;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 
-internal class EventStreamsResponse
+internal class EventStreamsResponse(IList<EventStreamDefinition> definitions)
 {
-    public IList<EventStreamDefinition> Definitions { get; }
+    public IList<EventStreamDefinition> Definitions { get; } = definitions;
 
     [JsonPropertyName("_links")]
-    public JsonHalLinkCollection Links { get; }
-
-    public EventStreamsResponse(IList<EventStreamDefinition> definitions)
-    {
-        Definitions = definitions;
-        Links = new JsonHalLinkCollection();
-    }
+    public JsonHalLinkCollection Links { get; } = new();
 }

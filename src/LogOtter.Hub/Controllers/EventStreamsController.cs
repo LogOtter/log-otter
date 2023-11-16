@@ -8,22 +8,16 @@ namespace LogOtter.Hub.Controllers;
 
 [ApiController]
 [Route("api/event-streams")]
-public class EventStreamsController : Controller
+public class EventStreamsController(EventStreamCache eventStreamCache) : Controller
 {
     private const int PageSize = 20;
-    private readonly EventStreamCache _eventStreamCache;
-
-    public EventStreamsController(EventStreamCache eventStreamCache)
-    {
-        _eventStreamCache = eventStreamCache;
-    }
 
     [HttpGet(Name = "GetEventStreams")]
     public async Task<ActionResult<EventStreamsResponse>> GetAll([FromQuery] [Range(1, int.MaxValue)] int? page)
     {
         var currentPage = page ?? 1;
 
-        var definitions = await _eventStreamCache.GetEventStreamDefinitions();
+        var definitions = await eventStreamCache.GetEventStreamDefinitions();
 
         var response = new EventStreamsResponse(definitions.Skip((currentPage - 1) * PageSize).Take(PageSize).ToList());
 
@@ -36,7 +30,7 @@ public class EventStreamsController : Controller
     [HttpGet("{eventStreamName}")]
     public async Task<ActionResult<EventStreamDefinition?>> Get([FromRoute] string eventStreamName)
     {
-        var definition = await _eventStreamCache.GetEventStreamDefinition(eventStreamName);
+        var definition = await eventStreamCache.GetEventStreamDefinition(eventStreamName);
 
         if (definition == null)
         {

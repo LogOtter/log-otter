@@ -2,16 +2,9 @@
 
 namespace LogOtter.SimpleHealthChecks;
 
-internal class HttpListenerContextShim : IHttpListenerContext
+internal class HttpListenerContextShim(HttpListenerContext context) : IHttpListenerContext
 {
-    private readonly HttpListenerContext _context;
+    public IHttpListenerRequest Request => new HttpListenerRequestShim(context.Request);
 
-    public HttpListenerContextShim(HttpListenerContext context)
-    {
-        _context = context;
-    }
-
-    public IHttpListenerRequest Request => new HttpListenerRequestShim(_context.Request);
-
-    public IHttpListenerResponse Response => new HttpListenerResponseShim(_context.Response);
+    public IHttpListenerResponse Response => new HttpListenerResponseShim(context.Response);
 }

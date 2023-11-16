@@ -3,28 +3,19 @@ using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
 
-public class CustomerNameChanged : CustomerEvent
+public class CustomerNameChanged(
+    CustomerUri customerUri,
+    string oldFirstName,
+    string newFirstName,
+    string oldLastName,
+    string newLastName,
+    DateTimeOffset? timestamp = null
+) : CustomerEvent(customerUri, timestamp)
 {
-    public string OldFirstName { get; }
-    public string OldLastName { get; }
-    public string NewFirstName { get; }
-    public string NewLastName { get; }
-
-    public CustomerNameChanged(
-        CustomerUri customerUri,
-        string oldFirstName,
-        string newFirstName,
-        string oldLastName,
-        string newLastName,
-        DateTimeOffset? timestamp = null
-    )
-        : base(customerUri, timestamp)
-    {
-        OldFirstName = oldFirstName;
-        NewFirstName = newFirstName;
-        OldLastName = oldLastName;
-        NewLastName = newLastName;
-    }
+    public string OldFirstName { get; } = oldFirstName;
+    public string OldLastName { get; } = oldLastName;
+    public string NewFirstName { get; } = newFirstName;
+    public string NewLastName { get; } = newLastName;
 
     public override void Apply(CustomerReadModel model)
     {

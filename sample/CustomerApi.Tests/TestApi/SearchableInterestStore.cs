@@ -13,14 +13,9 @@ using Microsoft.Azure.Cosmos;
 
 namespace CustomerApi.Tests;
 
-public class SearchableInterestStore
+public class SearchableInterestStore(CosmosContainer<SearchableInterest> searchableInterestContainer)
 {
-    private readonly Container _searchableInterestContainer;
-
-    public SearchableInterestStore(CosmosContainer<SearchableInterest> searchableInterestContainer)
-    {
-        _searchableInterestContainer = searchableInterestContainer.Container;
-    }
+    private readonly Container _searchableInterestContainer = searchableInterestContainer.Container;
 
     public async Task ThenTheSearchableInterestShouldMatch(string id, Expression<Func<SearchableInterest, bool>> matchFunc)
     {

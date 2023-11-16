@@ -2,18 +2,13 @@
 
 namespace CustomerApi.Uris;
 
-public class CustomerUri : IEquatable<CustomerUri>
+public class CustomerUri(string customerId) : IEquatable<CustomerUri>
 {
     private static readonly Regex CustomerUriRegex = new("^/customers/(?<CustomerId>[0-9A-Za-z]+)$");
 
-    public string CustomerId { get; }
+    public string CustomerId { get; } = new Id(customerId);
 
     public string Uri => $"/customers/{CustomerId}";
-
-    public CustomerUri(string customerId)
-    {
-        CustomerId = new Id(customerId);
-    }
 
     public bool Equals(CustomerUri? other)
     {

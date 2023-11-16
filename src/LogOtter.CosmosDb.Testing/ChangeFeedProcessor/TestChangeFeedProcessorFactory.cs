@@ -3,15 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LogOtter.CosmosDb.Testing;
 
-public class TestChangeFeedProcessorFactory : IChangeFeedProcessorFactory
+public class TestChangeFeedProcessorFactory(IServiceScopeFactory serviceScopeFactory) : IChangeFeedProcessorFactory
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public TestChangeFeedProcessorFactory(IServiceScopeFactory serviceScopeFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactory;
-    }
-
     public IChangeFeedProcessor CreateChangeFeedProcessor<
         TRawDocument,
         TDocument,
@@ -22,7 +15,7 @@ public class TestChangeFeedProcessorFactory : IChangeFeedProcessorFactory
         where TChangeFeedChangeConverter : IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument>
         where TChangeFeedProcessorHandler : IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument>
     {
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactory.CreateScope();
 
         var container = scope.ServiceProvider.GetRequiredService<CosmosContainer<TDocument>>();
         var changeConverter = scope.ServiceProvider.GetRequiredService<TChangeFeedChangeConverter>();

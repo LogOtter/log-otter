@@ -2,24 +2,16 @@
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
-public sealed class CosmosEquivalencyException : Exception
+public sealed class CosmosEquivalencyException(Exception? realException, Exception? testException, object? realValue, object? testValue)
+    : Exception(FormatMessage(realException, testException, realValue, testValue))
 {
-    public Exception? RealException { get; }
+    public Exception? RealException { get; } = realException;
 
-    public Exception? TestException { get; }
+    public Exception? TestException { get; } = testException;
 
-    public object? RealValue { get; }
+    public object? RealValue { get; } = realValue;
 
-    public object? TestValue { get; }
-
-    public CosmosEquivalencyException(Exception? realException, Exception? testException, object? realValue, object? testValue)
-        : base(FormatMessage(realException, testException, realValue, testValue))
-    {
-        RealException = realException;
-        TestException = testException;
-        RealValue = realValue;
-        TestValue = testValue;
-    }
+    public object? TestValue { get; } = testValue;
 
     private static string FormatMessage(Exception? realException, Exception? testException, object? realValue, object? testValue)
     {

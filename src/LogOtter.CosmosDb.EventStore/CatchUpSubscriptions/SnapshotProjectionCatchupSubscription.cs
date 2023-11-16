@@ -3,24 +3,18 @@ using Microsoft.Extensions.Logging;
 
 namespace LogOtter.CosmosDb.EventStore;
 
-internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : ICatchupSubscription<TBaseEvent>
+internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>(
+    SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
+    ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> logger,
+    SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory
+) : ICatchupSubscription<TBaseEvent>
     where TBaseEvent : class, IEvent<TSnapshot>
     where TSnapshot : class, ISnapshot, new()
 {
-    private readonly ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> _logger;
-    private readonly SnapshotRepository<TBaseEvent, TSnapshot> _snapshotRepository;
-    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver;
-
-    public SnapshotProjectionCatchupSubscription(
-        SnapshotRepository<TBaseEvent, TSnapshot> snapshotRepository,
-        ILogger<SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot>> logger,
-        SnapshotPartitionKeyResolverFactory snapshotPartitionKeyResolverFactory
-    )
-    {
-        _snapshotRepository = snapshotRepository;
-        _logger = logger;
-        _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<TBaseEvent, TSnapshot>();
-    }
+    private readonly Func<TBaseEvent, string> _snapshotPartitionKeyResolver = snapshotPartitionKeyResolverFactory.GetResolver<
+        TBaseEvent,
+        TSnapshot
+    >();
 
     public async Task ProcessEvents(IReadOnlyCollection<Event<TBaseEvent>> events, CancellationToken cancellationToken)
     {
@@ -33,7 +27,7 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Snapshot Projection: Error applying events to snapshot for stream ID {StreamId}. Starting revision was {StartRevision}. Attempting to update to {EndRevision}",
                     eventsForStream.Key,
@@ -50,6 +44,6 @@ internal class SnapshotProjectionCatchupSubscription<TBaseEvent, TSnapshot> : IC
         var partitionKey = _snapshotPartitionKeyResolver(events.First().Body);
         var streamId = events.Key;
 
-        await _snapshotRepository.ApplyEventsToSnapshot(streamId, partitionKey, events.ToList(), cancellationToken);
+        await snapshotRepository.ApplyEventsToSnapshot(streamId, partitionKey, events.ToList(), cancellationToken);
     }
 }

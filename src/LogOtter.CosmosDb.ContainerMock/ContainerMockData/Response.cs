@@ -1,13 +1,7 @@
 ﻿namespace LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
-internal class Response
+internal class Response(ContainerItem item, bool isUpdate)
 {
-    public ContainerItem Item { get; }
-    public bool IsUpdate { get; }
-
-    public Response(ContainerItem item, bool isUpdate)
-    {
-        Item = item;
-        IsUpdate = isUpdate;
-    }
+    public ContainerItem Item { get; } = item;
+    public bool IsUpdate { get; } = isUpdate;
 }

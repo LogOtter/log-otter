@@ -3,76 +3,47 @@ using Microsoft.Extensions.Logging;
 
 namespace LogOtter.CosmosDb;
 
-internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : IChangeFeedProcessor
+internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
+    string name,
+    Container documentContainer,
+    Container leaseContainer,
+    bool enabled,
+    int? batchSize,
+    DateTime? activationDate,
+    ChangeFeedProcessorOptions options,
+    IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
+    IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
+    ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger
+) : IChangeFeedProcessor
 {
-    private readonly DateTime? _activationDate;
-    private readonly int _batchSize;
-    private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
-    private readonly Container _documentContainer;
-    private readonly bool _enabled;
-    private readonly TimeSpan _errorDelay;
-    private readonly IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> _feedChangeConverter;
+    private readonly int _batchSize = batchSize ?? options.DefaultBatchSize;
+    private readonly TimeSpan _errorDelay = options.ErrorDelay;
 
-    private readonly TimeSpan _fullBatchDelay;
-    private readonly string _instanceName;
-    private readonly Container _leaseContainer;
-    private readonly ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> _logger;
-    private readonly string _name;
+    private readonly TimeSpan _fullBatchDelay = options.FullBatchDelay;
+    private readonly string _instanceName = Environment.MachineName;
     private ChangeFeedProcessor? _changeFeedProcessor;
-
-    public ChangeFeedProcessor(
-        string name,
-        Container documentContainer,
-        Container leaseContainer,
-        bool enabled,
-        int? batchSize,
-        DateTime? activationDate,
-        ChangeFeedProcessorOptions options,
-        IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> feedChangeConverter,
-        IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
-        ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>> logger
-    )
-    {
-        _name = name;
-        _documentContainer = documentContainer;
-        _leaseContainer = leaseContainer;
-        _enabled = enabled;
-        _batchSize = batchSize ?? options.DefaultBatchSize;
-        _activationDate = activationDate;
-        _feedChangeConverter = feedChangeConverter;
-        _changeHandler = changeHandler;
-        _logger = logger;
-
-        _fullBatchDelay = options.FullBatchDelay;
-        _errorDelay = options.ErrorDelay;
-        _instanceName = Environment.MachineName;
-    }
 
     public async Task Start()
     {
-        if (!_enabled)
+        if (!enabled)
         {
-            _logger.LogInformation(
-                "Not starting change feed processor {Name} (Instance: {InstanceName}) because it is disabled",
-                _name,
-                _instanceName
-            );
+            logger.LogInformation("Not starting change feed processor {Name} (Instance: {InstanceName}) because it is disabled", name, _instanceName);
             return;
         }
 
-        _changeFeedProcessor = _documentContainer
-            .GetChangeFeedProcessorBuilder<TRawDocument>(_name, OnChanges)
+        _changeFeedProcessor = documentContainer
+            .GetChangeFeedProcessorBuilder<TRawDocument>(name, OnChanges)
             .WithErrorNotification(OnError)
             .WithInstanceName(_instanceName)
-            .WithLeaseContainer(_leaseContainer)
+            .WithLeaseContainer(leaseContainer)
             .WithLeaseConfiguration(TimeSpan.FromMinutes(1))
-            .WithStartTime(_activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
+            .WithStartTime(activationDate?.ToUniversalTime() ?? DateTime.MinValue.ToUniversalTime())
             .WithMaxItems(_batchSize)
             .Build();
 
         await _changeFeedProcessor.StartAsync();
 
-        _logger.LogInformation("Started change feed processor {Name} (Instance: {InstanceName})", _name, _instanceName);
+        logger.LogInformation("Started change feed processor {Name} (Instance: {InstanceName})", name, _instanceName);
     }
 
     public async Task Stop()
@@ -87,7 +58,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
 
     private Task OnError(string leaseToken, Exception exception)
     {
-        _logger.LogError(exception, "Error for change feed processor {Name} (Instance: {InstanceName})", _name, _instanceName);
+        logger.LogError(exception, "Error for change feed processor {Name} (Instance: {InstanceName})", name, _instanceName);
 
         return Task.CompletedTask;
     }
@@ -96,14 +67,14 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> : I
     {
         try
         {
-            var convertedChanges = changes.Select(_feedChangeConverter.ConvertChange).ToList().AsReadOnly();
+            var convertedChanges = changes.Select(feedChangeConverter.ConvertChange).ToList().AsReadOnly();
 
-            await _changeHandler.ProcessChanges(convertedChanges, cancellationToken);
+            await changeHandler.ProcessChanges(convertedChanges, cancellationToken);
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Processed batch of {BatchSize} changes for change feed processor {Name} (Instance: {InstanceName})",
                 changes.Count,
-                _name,
+                name,
                 _instanceName
             );
 

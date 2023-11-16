@@ -1,6 +1,6 @@
 ﻿namespace LogOtter.CosmosDb.EventStore.EventStreamUI;
 
-public record EventStreamsUIOptions
+public class EventStreamsUIOptions
 {
     public string RoutePrefix { get; set; } = "/logotter";
 }

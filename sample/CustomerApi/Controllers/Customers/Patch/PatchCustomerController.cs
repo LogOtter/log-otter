@@ -11,20 +11,11 @@ namespace CustomerApi.Controllers.Customers.Patch;
 [ApiController]
 [Route("customers")]
 [Authorize(Roles = "Customers.ReadWrite")]
-public class PatchCustomerController : ControllerBase
+public class PatchCustomerController(
+    EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
+    EmailAddressReservationService emailAddressReservationService
+) : ControllerBase
 {
-    private readonly EventRepository<CustomerEvent, CustomerReadModel> _customerEventRepository;
-    private readonly EmailAddressReservationService _emailAddressReservationService;
-
-    public PatchCustomerController(
-        EventRepository<CustomerEvent, CustomerReadModel> customerEventRepository,
-        EmailAddressReservationService emailAddressReservationService
-    )
-    {
-        _customerEventRepository = customerEventRepository;
-        _emailAddressReservationService = emailAddressReservationService;
-    }
-
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,7 +33,7 @@ public class PatchCustomerController : ControllerBase
 
         var customerUri = new CustomerUri(customerId);
 
-        var customerReadModel = await _customerEventRepository.Get(customerUri.Uri, cancellationToken: cancellationToken);
+        var customerReadModel = await customerEventRepository.Get(customerUri.Uri, cancellationToken: cancellationToken);
 
         if (customerReadModel == null)
         {
@@ -57,8 +48,8 @@ public class PatchCustomerController : ControllerBase
                 new CustomerEmailAddressChanged(customerUri, customerReadModel.EmailAddress, request.EmailAddress.Value!, DateTimeOffset.UtcNow)
             );
 
-            await _emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
-            await _emailAddressReservationService.ReserveEmailAddress(request.EmailAddress.Value!);
+            await emailAddressReservationService.ReleaseEmailAddress(customerReadModel.EmailAddress);
+            await emailAddressReservationService.ReserveEmailAddress(request.EmailAddress.Value!);
         }
 
         if (
@@ -86,7 +77,7 @@ public class PatchCustomerController : ControllerBase
             return Ok(new CustomerResponse(customerReadModel));
         }
 
-        var updatedCustomer = await _customerEventRepository.ApplyEvents(
+        var updatedCustomer = await customerEventRepository.ApplyEvents(
             customerUri.Uri,
             customerReadModel.Revision,
             cancellationToken,

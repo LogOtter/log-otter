@@ -7,35 +7,17 @@ using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
-internal class GetEventBodyHandler : BaseHandler
+internal class GetEventBodyHandler(EventStoreCatalog eventStoreCatalog, IOptions<EventStoreOptions> eventStoreOptions) : BaseHandler
 {
-    private readonly ICosmosContainerFactory _containerFactory;
-    private readonly EventStoreCatalog _eventStoreCatalog;
-    private readonly EventStoreOptions _eventStoreOptions;
-    private readonly IFeedIteratorFactory _feedIteratorFactory;
-
     public override string Template => "/event-streams/{EventStreamName}/streams/{StreamId}/events/{EventId}/body";
-
-    public GetEventBodyHandler(
-        EventStoreCatalog eventStoreCatalog,
-        IFeedIteratorFactory feedIteratorFactory,
-        ICosmosContainerFactory containerFactory,
-        IOptions<EventStoreOptions> eventStoreOptions
-    )
-    {
-        _eventStoreCatalog = eventStoreCatalog;
-        _feedIteratorFactory = feedIteratorFactory;
-        _containerFactory = containerFactory;
-        _eventStoreOptions = eventStoreOptions.Value;
-    }
 
     public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
         var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
-        var streamId = _eventStoreOptions.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
+        var streamId = eventStoreOptions.Value.EscapeIdIfRequired(Uri.UnescapeDataString((string)routeValues["StreamId"]!));
         var eventId = Uri.UnescapeDataString((string)routeValues["EventId"]!);
 
-        var metaData = _eventStoreCatalog.GetMetadata(eventStreamName);
+        var metaData = eventStoreCatalog.GetMetadata(eventStreamName);
 
         if (metaData == null)
         {
@@ -49,7 +31,7 @@ internal class GetEventBodyHandler : BaseHandler
             return;
         }
 
-        var eventStore = _eventStoreCatalog.GetEventStoreReader(metaData);
+        var eventStore = eventStoreCatalog.GetEventStoreReader(metaData);
         var storageEvent = await eventStore.ReadEventFromStream(streamId, eventIdGuid);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.OK;

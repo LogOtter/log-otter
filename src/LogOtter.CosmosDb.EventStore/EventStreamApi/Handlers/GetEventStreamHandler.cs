@@ -5,22 +5,15 @@ using Microsoft.AspNetCore.Routing;
 
 namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
-internal class GetEventStreamHandler : BaseHandler
+internal class GetEventStreamHandler(EventStoreCatalog eventStoreCatalog) : BaseHandler
 {
-    private readonly EventStoreCatalog _eventStoreCatalog;
-
     public override string Template => "/event-streams/{EventStreamName}";
-
-    public GetEventStreamHandler(EventStoreCatalog eventStoreCatalog)
-    {
-        _eventStoreCatalog = eventStoreCatalog;
-    }
 
     public override async Task HandleRequest(HttpContext httpContext, RouteValueDictionary routeValues)
     {
         var eventStreamName = Uri.UnescapeDataString((string)routeValues["EventStreamName"]!);
 
-        var definition = _eventStoreCatalog.GetDefinition(eventStreamName);
+        var definition = eventStoreCatalog.GetDefinition(eventStreamName);
 
         if (definition == null)
         {

@@ -13,33 +13,24 @@ namespace CustomerApi.Controllers.Customers.Get;
 [ApiController]
 [Route("customers")]
 [Authorize(Roles = "Customers.Read,Customers.ReadWrite")]
-public class GetAllCustomersController : ControllerBase
+public class GetAllCustomersController(
+    SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository,
+    IOptions<PageOptions> pageOptions
+) : ControllerBase
 {
-    private readonly SnapshotRepository<CustomerEvent, CustomerReadModel> _customerSnapshotRepository;
-    private readonly IOptions<PageOptions> _pageOptions;
-
-    public GetAllCustomersController(
-        SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository,
-        IOptions<PageOptions> pageOptions
-    )
-    {
-        _customerSnapshotRepository = customerSnapshotRepository;
-        _pageOptions = pageOptions;
-    }
-
     [HttpGet(Name = "GetAllCustomers")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CustomersResponse>> GetAll([FromQuery] [Range(1, int.MaxValue)] int? page, CancellationToken cancellationToken)
     {
         var currentPage = page.GetValueOrDefault(1);
-        var pageSize = _pageOptions.Value.PageSize;
+        var pageSize = pageOptions.Value.PageSize;
 
-        var totalCount = await _customerSnapshotRepository.CountSnapshotsAsync(
+        var totalCount = await customerSnapshotRepository.CountSnapshotsAsync(
             CustomerReadModel.StaticPartitionKey,
             cancellationToken: cancellationToken
         );
 
-        var customerQuery = _customerSnapshotRepository.QuerySnapshots(
+        var customerQuery = customerSnapshotRepository.QuerySnapshots(
             CustomerReadModel.StaticPartitionKey,
             query => query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).Page(currentPage, pageSize),
             cancellationToken: cancellationToken

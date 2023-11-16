@@ -2,7 +2,7 @@
 
 namespace CustomerApi.Services;
 
-public class EmailAddressReservation
+public class EmailAddressReservation(string emailAddress)
 {
     public static readonly string StaticPartitionKey = "EmailAddress";
 
@@ -11,10 +11,5 @@ public class EmailAddressReservation
 
     [JsonProperty("partitionKey")]
     public string PartitionKey => StaticPartitionKey;
-    public string EmailAddress { get; set; }
-
-    public EmailAddressReservation(string emailAddress)
-    {
-        EmailAddress = emailAddress;
-    }
+    public string EmailAddress { get; } = emailAddress;
 }
