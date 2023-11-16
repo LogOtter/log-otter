@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using CustomerApi.Configuration;
 using CustomerApi.Events.Customers;
 using CustomerApi.Events.Movies;
@@ -17,6 +16,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Xunit.Abstractions;
 
@@ -91,7 +91,7 @@ public class TestCustomerApi : IDisposable
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    SignatureValidator = (token, _) => new JwtSecurityToken(token),
+                    SignatureValidator = (token, _) => new JsonWebToken(token),
                     ValidateAudience = false,
                     ValidateIssuer = false
                 };
