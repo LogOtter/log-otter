@@ -5,6 +5,9 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>79fdfe97-46a6-4803-84be-e9426f8866de</UserSecretsId>
+        <Title>Customer API</Title>
+        <Description>Sample API showing how to use LogOtter</Description>
+        <ContainerRepository>logotter/customer-api</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>

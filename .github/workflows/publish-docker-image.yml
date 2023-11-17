@@ -46,24 +46,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: (${{ inputs.project_name }}) Build for docker image
+      - name: (${{ inputs.project_name }}) Publish docker image
         run: |
-          dotnet publish -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" --output bin/docker-publish
+          dotnet publish -t:PublishContainer -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" -p:ContainerImageTag="${{ inputs.version }}" -p:ContainerRegistry="ghcr.io"
         working-directory: ${{ inputs.project_path }}
-
-      - name: (${{ inputs.project_name }}) Generate metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/logotter/${{ inputs.project_name }}
-          labels: |
-            org.opencontainers.image.title=${{ inputs.project_title }}
-            org.opencontainers.image.description=${{ inputs.project_description }}
-
-      - name: (${{ inputs.project_name }}) Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          context: ${{ inputs.project_path }}
-          tags: ghcr.io/logotter/${{ inputs.project_name }}:${{ inputs.version }}
-          labels: ${{ steps.meta.outputs.labels }}

@@ -5,6 +5,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Title>Customer Worker</Title>
+        <Description>Sample Worker showing how to use LogOtter</Description>
+        <ContainerRepository>logotter/customer-worker</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>

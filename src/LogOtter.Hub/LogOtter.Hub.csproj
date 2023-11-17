@@ -6,6 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <IsPackable>false</IsPackable>
+        <Title>LogOtter Hub</Title>
+        <Description>Hub combining event streams from multiple LogOtter services</Description>
+        <ContainerRepository>logotter/hub</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>
