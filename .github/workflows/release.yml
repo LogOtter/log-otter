@@ -50,7 +50,7 @@ jobs:
           path: .nupkgs/
 
       - name: Upload artifacts to release
-        uses: AButler/upload-release-assets@v2.0.2
+        uses: AButler/upload-release-assets@v3.0
         with:
           files: ".nupkgs/*.nupkg"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
