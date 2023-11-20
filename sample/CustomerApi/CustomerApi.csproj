@@ -13,10 +13,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
