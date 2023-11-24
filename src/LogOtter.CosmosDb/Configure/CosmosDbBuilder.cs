@@ -27,10 +27,10 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
 
     internal IServiceCollection Services { get; } = serviceCollection;
 
-    public CosmosDbBuilder WithAutoProvisioning()
+    public CosmosDbBuilder WithAutoProvisioning(int? databaseThroughput = null)
     {
         Services.RemoveAll<AutoProvisionSettings>();
-        Services.AddSingleton(_ => new AutoProvisionSettings(true));
+        Services.AddSingleton(_ => new AutoProvisionSettings(true, databaseThroughput));
         return this;
     }
 

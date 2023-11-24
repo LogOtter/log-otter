@@ -30,7 +30,7 @@ services.AddSingleton<EmailAddressReservationService>();
 
 services
     .AddCosmosDb()
-    .WithAutoProvisioning()
+    .WithAutoProvisioning(databaseThroughput: 1000)
     .AddContainer<SearchableInterest>("SearchableInterest")
     .AddContainer<EmailAddressReservation>(
         "EmailAddressReservations",
