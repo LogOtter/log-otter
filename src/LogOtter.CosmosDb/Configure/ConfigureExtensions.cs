@@ -44,7 +44,11 @@ public static class ConfigureExtensions
             var autoProvisionSettings = sp.GetRequiredService<AutoProvisionSettings>();
 
             var database = autoProvisionSettings.Enabled
-                ? client.CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId).GetAwaiter().GetResult().Database
+                ? client
+                    .CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId, autoProvisionSettings.Throughput)
+                    .GetAwaiter()
+                    .GetResult()
+                    .Database
                 : client.GetDatabase(cosmosDbOptions.DatabaseId);
 
             return database;
