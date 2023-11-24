@@ -90,6 +90,7 @@ resource "azurerm_linux_web_app" "customer-api" {
     DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
     WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
     WEBSITE_WARMUP_PATH                        = "/health"
+    WEBSITES_PORT                              = 8080
 
     # Application Settings
     APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
@@ -136,6 +137,7 @@ resource "azurerm_linux_web_app" "customer-worker" {
     DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
     WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
     WEBSITE_WARMUP_PATH                        = "/health"
+    WEBSITES_PORT                              = 8080
 
     # Application Settings
     APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
@@ -177,6 +179,7 @@ resource "azurerm_linux_web_app" "hub" {
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
     #WEBSITE_WARMUP_PATH                 = "/health"
+    WEBSITES_PORT                       = 8080
 
     # Application Settings
     Hub__Services__0__Name              = "CustomerApi"
