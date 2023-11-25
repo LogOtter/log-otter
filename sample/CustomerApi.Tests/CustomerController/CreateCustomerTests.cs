@@ -94,13 +94,13 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
     [InlineData("bob@bobertson.co.uk", "Bob", null)]
     [InlineData("bob@bobertson.co.uk", "Bob", "")]
     [InlineData("not-an-email-address", "Bob", "Bobertson")]
-    public async Task Invalid_ReturnsBadRequest(string email, string firstName, string lastName)
+    public async Task Invalid_ReturnsBadRequest(string? email, string? firstName, string? lastName)
     {
         using var customerApi = new TestCustomerApi(testOutputHelper);
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
 
         var client = customerApi.CreateClient(authHeader);
-        var request = new CreateCustomerRequest(email, firstName, lastName);
+        var request = new CreateCustomerRequest(email!, firstName!, lastName!);
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
