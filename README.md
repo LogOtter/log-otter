@@ -30,3 +30,26 @@ These libraries have been inspired by work from:
 - [Simple Event Store](https://github.com/ASOS/SimpleEventStore)
 - [Cosmos Test Helpers](https://github.com/boomin-engineering/cosmos-test-helpers/)
 - [HttpPatch](https://github.com/boomin-engineering/http-patch)
+
+## Contributors
+
+A big thank you to everyone who has contributed to the project:
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AButler"><img src="https://avatars.githubusercontent.com/u/1628649?v=4?s=100" width="100px;" alt="Andrew Butler"/><br /><sub><b>Andrew Butler</b></sub></a><br /><a href="https://github.com/LogOtter/log-otter/commits?author=AButler" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/NeilMountford"><img src="https://avatars.githubusercontent.com/u/2104393?v=4?s=100" width="100px;" alt="Neil Mountford"/><br /><sub><b>Neil Mountford</b></sub></a><br /><a href="https://github.com/LogOtter/log-otter/commits?author=NeilMountford" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/PeterStephenson"><img src="https://avatars.githubusercontent.com/u/1678740?v=4?s=100" width="100px;" alt="Peter Stephenson"/><br /><sub><b>Peter Stephenson</b></sub></a><br /><a href="https://github.com/LogOtter/log-otter/commits?author=PeterStephenson" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/dependabot"><img src="https://avatars.githubusercontent.com/in/29110?v=4?s=100" width="100px;" alt="dependabot[bot]"/><br /><sub><b>dependabot[bot]</b></sub></a><br /><a href="https://github.com/LogOtter/log-otter/commits?author=dependabot[bot]" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
