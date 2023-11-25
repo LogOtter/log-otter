@@ -13,37 +13,64 @@ public class RestoreRawRequestPathMiddleware(RequestDelegate next, ILogger<Resto
     {
         var request = context.Request;
 
-        if (!request.Headers.TryGetValue(UnencodedUrlHeaderName, out var unencodedUrlHeader) || !unencodedUrlHeader.Any())
+        if (!TryGetUnencodedUrlFromHeader(request, out var unencodedUrl))
         {
             await next(context);
             return;
         }
 
-        var unencodedPath = unencodedUrlHeader.First();
-        if (!ValidHeader(request.Path, unencodedPath))
+        if (!ValidHeader(request, unencodedUrl))
         {
             logger.LogWarning(
                 "Mismatch between request path '{RequestPath}' and X-Waws-Unencoded-Url header '{UnencodedHeaderPath}'",
-                request.Path,
-                unencodedPath
+                request.Path + request.QueryString,
+                unencodedUrl
             );
             await next(context);
             return;
         }
 
-        request.Path = new PathString(unencodedPath);
+        request.Path = new PathString(unencodedUrl.Path);
         await next(context);
     }
 
-    private static bool ValidHeader(string pathInUrl, string? unencodedPath)
+    private static bool ValidHeader(HttpRequest request, PathAndQuery unencodedUrl)
     {
-        if (unencodedPath == null)
+        var encodedPath = Regex.Replace(WebUtility.UrlDecode(unencodedUrl.Path), "/+", "/");
+
+        return string.Equals(request.Path, encodedPath, StringComparison.Ordinal)
+            && string.Equals(request.QueryString.ToString(), unencodedUrl.Query, StringComparison.Ordinal);
+    }
+
+    private static bool TryGetUnencodedUrlFromHeader(HttpRequest request, out PathAndQuery unencodedUrl)
+    {
+        if (!request.Headers.TryGetValue(UnencodedUrlHeaderName, out var unencodedUrlHeader) || !unencodedUrlHeader.Any())
         {
+            unencodedUrl = new PathAndQuery("", "");
             return false;
         }
 
-        var encodedPath = Regex.Replace(WebUtility.UrlDecode(unencodedPath), "/+", "/");
+        var rawUnencodedUrl = unencodedUrlHeader.First();
 
-        return string.Equals(pathInUrl, encodedPath, StringComparison.Ordinal);
+        if (rawUnencodedUrl == null)
+        {
+            unencodedUrl = new PathAndQuery("", "");
+        }
+        else if (!rawUnencodedUrl.Contains("?"))
+        {
+            unencodedUrl = new PathAndQuery(rawUnencodedUrl, "");
+        }
+        else
+        {
+            var parts = rawUnencodedUrl.Split("?", 2);
+            unencodedUrl = new PathAndQuery(parts[0], "?" + parts[1]);
+        }
+
+        return true;
+    }
+
+    private record PathAndQuery(string Path, string Query)
+    {
+        public override string ToString() => $"{Path}{Query}";
     }
 }
