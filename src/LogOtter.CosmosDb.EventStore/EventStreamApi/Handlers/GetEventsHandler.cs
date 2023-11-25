@@ -33,7 +33,7 @@ internal class GetEventsHandler(
         var totalEvents = await eventStore.ReadStreamEventCount(streamId);
         var storageEvents = await eventStore.ReadStreamForwards(
             streamId,
-            (page - 1) * EventStreamsApiMiddleware.PageSize,
+            (page - 1) * EventStreamsApiMiddleware.PageSize + 1,
             EventStreamsApiMiddleware.PageSize
         );
 
