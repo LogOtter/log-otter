@@ -72,13 +72,10 @@ public class EventStore<TBaseEvent> : IEventStoreReader
                 batch.CreateItem(cosmosDbStorageEvent, batchRequestOptions);
             }
 
-            // ReSharper disable once UnusedVariable
-            var batchResponse =
+            using var batchResponse =
                 firstEventNumber == 1
                     ? await CreateEvents(batch, cancellationToken)
                     : await CreateEventsOnlyIfPreviousEventExists(batch, streamId, firstEventNumber - 1, cancellationToken);
-
-            //_loggingOptions.OnSuccess(ResponseInformation.FromWriteResponse(nameof(AppendToStream), batchResponse));
         }
         catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict || ex.Headers["x-ms-substatus"] == "409" || ex.SubStatusCode == 409)
         {
@@ -118,7 +115,6 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         while (feedIterator.HasMoreResults)
         {
             var response = await feedIterator.ReadNextAsync(cancellationToken);
-            //_loggingOptions.OnSuccess(ResponseInformation.FromReadResponse(nameof(ReadStreamForwards), response));
 
             foreach (var resource in response.Resource)
             {
@@ -167,7 +163,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
 
     private static async Task<TransactionalBatchResponse> CreateEvents(TransactionalBatch batch, CancellationToken cancellationToken)
     {
-        using var batchResponse = await batch.ExecuteAsync(cancellationToken);
+        var batchResponse = await batch.ExecuteAsync(cancellationToken);
 
         if (!batchResponse.IsSuccessStatusCode)
         {
@@ -188,7 +184,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
 
         batch.ReadItem($"{streamId}:{previousEventNumber}", requestOptions);
 
-        using var batchResponse = await batch.ExecuteAsync(cancellationToken);
+        var batchResponse = await batch.ExecuteAsync(cancellationToken);
 
         if (!batchResponse.IsSuccessStatusCode)
         {
