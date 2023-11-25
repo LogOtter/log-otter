@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj" />
+      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.EventStore\LogOtter.CosmosDb.EventStore.csproj" />
+      <ProjectReference Include="..\..\src\LogOtter.CosmosDb.Testing\LogOtter.CosmosDb.Testing.csproj" />
+    </ItemGroup>
+
+</Project>

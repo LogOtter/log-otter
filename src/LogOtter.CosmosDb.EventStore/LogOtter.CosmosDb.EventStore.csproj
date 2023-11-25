@@ -24,6 +24,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="LogOtter.CosmosDb.EventStore.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <EmbeddedResource Include="EventStreamUI/**/*" />
     </ItemGroup>
 
