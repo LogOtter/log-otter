@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.Azure.AppServices.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.Azure.AppServices.RequestMiddleware.Tests", "tests\LogOtter.Azure.AppServices.RequestMiddleware.Tests\LogOtter.Azure.AppServices.RequestMiddleware.Tests.csproj", "{1A71BF97-DF7F-4831-9AE2-B128B64D120F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogOtter.CosmosDb.EventStore.Tests", "tests\LogOtter.CosmosDb.EventStore.Tests\LogOtter.CosmosDb.EventStore.Tests.csproj", "{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +144,10 @@ Global
 		{1A71BF97-DF7F-4831-9AE2-B128B64D120F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A71BF97-DF7F-4831-9AE2-B128B64D120F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A71BF97-DF7F-4831-9AE2-B128B64D120F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5E67A3CB-9089-4AA1-802C-B8CF9DFEEF58} = {3013166D-3A9F-4979-B741-08D4288F5D28}
@@ -155,5 +161,6 @@ Global
 		{386BFF2D-6ABD-4CB8-9EE2-06452AD033C7} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
 		{419538EA-A140-42FF-BD11-0E30306D262B} = {3013166D-3A9F-4979-B741-08D4288F5D28}
 		{1A71BF97-DF7F-4831-9AE2-B128B64D120F} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
+		{0B65F1F3-38DA-47C3-8490-5670C1B8EAE2} = {C015BF56-68E3-4B5C-82CB-846AE27C42C0}
 	EndGlobalSection
 EndGlobal
