@@ -6,6 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <IsPackable>false</IsPackable>
+        <Title>LogOtter Hub</Title>
+        <Description>Hub combining event streams from multiple LogOtter services</Description>
+        <ContainerRepository>logotter/hub</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,10 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Yarp.ReverseProxy" />
     </ItemGroup>
 

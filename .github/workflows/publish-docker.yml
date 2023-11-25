@@ -15,9 +15,6 @@ jobs:
       contents: read
       packages: write
     with:
-      project_name: customer-api
-      project_title: Customer API
-      project_description: Sample API showing how to use LogOtter
       project_path: sample/CustomerApi
       version: ${{ inputs.version }}
     secrets: inherit
@@ -29,9 +26,6 @@ jobs:
       contents: read
       packages: write
     with:
-      project_name: customer-worker
-      project_title: Customer Worker
-      project_description: Sample Worker showing how to use LogOtter
       project_path: sample/CustomerWorker
       version: ${{ inputs.version }}
     secrets: inherit
@@ -43,9 +37,6 @@ jobs:
       contents: read
       packages: write
     with:
-      project_name: hub
-      project_title: LogOtter Hub
-      project_description: Hub combining event streams from multiple LogOtter services
       project_path: src/LogOtter.Hub
       version: ${{ inputs.version }}
     secrets: inherit

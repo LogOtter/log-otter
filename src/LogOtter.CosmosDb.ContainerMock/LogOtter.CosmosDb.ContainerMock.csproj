@@ -12,10 +12,6 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Azure.Cosmos" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
