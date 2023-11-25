@@ -9,7 +9,7 @@ public class TestEventProjection : ISnapshot
     public int Revision { get; set; }
 
     [JsonProperty("id")]
-    public required string Id { get; init; }
+    public string Id { get; init; } = default!;
 
     [JsonProperty("partitionKey")]
     public string PartitionKey => StaticPartitionKey;
