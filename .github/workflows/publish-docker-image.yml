@@ -3,15 +3,6 @@ name: Build Docker Image
 on:
   workflow_call:
     inputs:
-      project_name:
-        required: true
-        type: string
-      project_title:
-        required: true
-        type: string
-      project_description:
-        required: true
-        type: string
       project_path:
         required: true
         type: string
@@ -21,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: (${{ inputs.project_name }}) Publish Docker Image
+    name: (${{ inputs.project_path }}) Publish Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,7 +37,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: (${{ inputs.project_name }}) Publish docker image
+      - name: (${{ inputs.project_path }}) Publish docker image
         run: |
           dotnet publish -t:PublishContainer -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" -p:ContainerImageTag="${{ inputs.version }}" -p:ContainerRegistry="ghcr.io"
         working-directory: ${{ inputs.project_path }}
