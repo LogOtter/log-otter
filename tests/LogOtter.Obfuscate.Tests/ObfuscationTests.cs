@@ -21,7 +21,7 @@ public class ObfuscationTests
     [InlineData("bob.bobertson@10.0.0.1", "****")]
     [InlineData("bob.bobertson@gmail.com", "bo****n@gmail.com")]
     [InlineData("hello world", "****")]
-    public void ObfuscateEmail(string email, string expectedOutput)
+    public void ObfuscateEmail(string? email, string? expectedOutput)
     {
         var actualOutput = Obfuscate.Email(email);
 
@@ -45,7 +45,7 @@ public class ObfuscationTests
     [InlineData("Bobby", "Bobertson", "Bo**** Bo****")]
     [InlineData("Bob", "May", "B**** M****")]
     [InlineData("Bobby", "May", "Bo**** M****")]
-    public void ObfuscateName(string firstName, string lastName, string expectedOutput)
+    public void ObfuscateName(string? firstName, string? lastName, string? expectedOutput)
     {
         var actualOutput = Obfuscate.Name(firstName, lastName);
 
@@ -64,7 +64,7 @@ public class ObfuscationTests
     [InlineData("foo", "****")]
     [InlineData("01234", "****")]
     [InlineData("0123456789", "****")]
-    public void ObfuscatePhone(string phoneNumber, string expectedOutput)
+    public void ObfuscatePhone(string? phoneNumber, string? expectedOutput)
     {
         var actualOutput = Obfuscate.Phone(phoneNumber);
 
