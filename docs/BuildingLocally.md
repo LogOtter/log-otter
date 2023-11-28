@@ -2,7 +2,7 @@
 
 ## Dependencies
 
-* [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+* [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 * [Docker](https://www.docker.com/products/docker-desktop/)
 
 ## Authentication
