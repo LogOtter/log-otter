@@ -4,12 +4,21 @@ on:
   release:
     types: ["published"]
 
-permissions:
-  contents: write
-
 jobs:
   build:
+    name: Build & Test
+    uses: ./.github/workflows/build-test.yml
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+    secrets: inherit
+
+  release:
+    name: Publish release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -27,14 +36,6 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore
-
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-        env:
-          TEST_COSMOS_CONNECTION_STRING: ${{ secrets.TEST_COSMOS_CONNECTION_STRING }}
 
       - name: Pack
         run: dotnet pack -p:VersionPrefix="${{ env.version_3 }}" --version-suffix "${{ env.version_suffix }}"
