@@ -1,6 +1,4 @@
-﻿> ⚠️ Warning: LogOtter is still in beta and there are likely to be breaking changes prior to a v1 release. Use at your own peril!
-
-# SimpleHealthChecks
+﻿# SimpleHealthChecks
 
 A library to expose health checks over HTTP for use in worker services without using the `Microsoft.NET.Sdk.Web` SDK.
 

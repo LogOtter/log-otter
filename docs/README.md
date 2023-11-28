@@ -1,6 +1,7 @@
 ﻿# Documentation
 
 ## Usage
+* [Azure AppService RequestMiddleware](../src/LogOtter.Azure.AppServices.RequestMiddleware/README.md)
 * [CosmosDb](../src/LogOtter.CosmosDb/README.md)
 * [CosmosDb ContainerMock](../src/LogOtter.CosmosDb.ContainerMock/README.md)
 * [CosmosDb EventStore](../src/LogOtter.CosmosDb.EventStore/README.md)

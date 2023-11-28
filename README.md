@@ -1,6 +1,4 @@
-﻿> ⚠️ Warning: LogOtter is still in beta and there are likely to be breaking changes prior to a v1 release. Use at your own peril!
-
-# Log Otter
+﻿# Log Otter
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/LogOtter/log-otter/main.yml)](https://github.com/LogOtter/log-otter/actions/workflows/main.yml)
 [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/LogOtter/log-otter?include_prereleases)](https://github.com/LogOtter/log-otter/releases)
@@ -11,6 +9,7 @@ and the tools to test them.
 
 This repository contains:
 
+- Azure AppService RequestMiddleware ([docs](src/LogOtter.Azure.AppServices.RequestMiddleware))
 - CosmosDB library ([docs](src/LogOtter.CosmosDb))
 - Event Store library ([docs](src/LogOtter.CosmosDb.EventStore))
 - ShortGuid ([docs](src/LogOtter.ShortGuid))
