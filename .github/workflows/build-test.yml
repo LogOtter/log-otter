@@ -2,9 +2,6 @@ name: Build & Test
 
 on:
   workflow_call:
-    secrets:
-      TEST_COSMOS_CONNECTION_STRING:
-        required: true
 
 jobs:
   build:
