@@ -86,11 +86,13 @@ jobs:
   tag-latest:
     name: Tag Hub latest release
     runs-on: ubuntu-latest
-    needs: version
+    needs:
+      - version
+      - publish-hub
     steps:
       - name: Get latest release
         id: latest-release
-        uses: thebritican/fetch-latest-release@v1
+        uses: gregziegan/fetch-latest-release@v2.0.0
 
       - name: Login to the Container Registry
         if: format('refs/tags/{0}', steps.latest-release.outputs.tag_name) == ${{ github.ref }}
