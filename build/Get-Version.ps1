@@ -6,7 +6,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 function Write-GitHubOutput([string]$Name, [string]$Value) {
-  Write-Output "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+  Write-Output "$Name=$Value" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 }
 
 $tagNameRegex = '^refs/tags/(?<TagName>\S+)$'
