@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: (${{ inputs.project_path }}) Publish Docker Image
+    name: Publish Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -37,7 +37,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: (${{ inputs.project_path }}) Publish docker image
+      - name: Publish docker image
         run: |
           dotnet publish -t:PublishContainer -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" -p:ContainerImageTag="${{ inputs.version }}" -p:ContainerRegistry="ghcr.io"
         working-directory: ${{ inputs.project_path }}
