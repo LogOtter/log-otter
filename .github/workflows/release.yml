@@ -89,6 +89,9 @@ jobs:
     needs:
       - version
       - publish-hub
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Get latest release
         id: latest-release
