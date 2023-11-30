@@ -107,9 +107,11 @@ jobs:
 
       - name: Tag latest release
         if: format('refs/tags/{0}', steps.latest-release.outputs.tag_name) == ${{ github.ref }}
-        uses: javajawa/remote-docker-tag@v1
+        uses: airbone95/ghcr-retag@v0.2
         with:
-          registry: ghcr.io
-          repository: logotter/hub
-          existing-tag: ${{ needs.version.outputs.version_full }}
+          ghcr_repo: logotter/hub
+          ghcr_username: ${{ github.actor }}
+          ghcr_password: ${{ secrets.GITHUB_TOKEN }}
+          old-tag: ${{ needs.version.outputs.version_full }}
           new-tag: latest
+
