@@ -112,6 +112,6 @@ jobs:
           ghcr_repo: logotter/hub
           ghcr_username: ${{ github.actor }}
           ghcr_password: ${{ secrets.GITHUB_TOKEN }}
-          old-tag: ${{ needs.version.outputs.version_full }}
-          new-tag: latest
+          old_tag: ${{ needs.version.outputs.version_full }}
+          new_tag: latest
 
