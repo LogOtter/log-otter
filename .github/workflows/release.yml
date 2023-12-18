@@ -58,7 +58,7 @@ jobs:
         working-directory: .nupkgs
 
       - name: Upload artifact to action
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nupkgs
           path: .nupkgs/
