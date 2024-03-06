@@ -314,7 +314,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
     }
 
     [Fact]
-    public async Task GivenAQueryUsingFirstOrDefaultWhenExecutingThenBothShouldError()
+    public async Task GivenAQueryUsingFirstOrDefaultWhenExecutingThenBothShouldMatch()
     {
         await _testCosmos.GivenAnExistingItem(
             new TestModel
@@ -327,11 +327,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        var realResultsAction = new Func<TestModel?>(() => realResults.FirstOrDefault());
-        var testResultsAction = new Func<TestModel?>(() => testResults.FirstOrDefault());
-
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResults.Count().Should().Be(1);
+        realResults.Should().BeEquivalentTo(testResults);
     }
 
     [Fact]
