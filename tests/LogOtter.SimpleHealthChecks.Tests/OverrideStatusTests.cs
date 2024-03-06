@@ -16,20 +16,18 @@ public class OverrideStatusTests
 
         serviceBuilder.HealthCheckService.ReturnsHealthStatus(status);
 
-        serviceBuilder
-            .Endpoints
-            .AddEndpoint(
-                "/health",
-                new SimpleHealthCheckOptions
+        serviceBuilder.Endpoints.AddEndpoint(
+            "/health",
+            new SimpleHealthCheckOptions
+            {
+                ResultStatusCodes =
                 {
-                    ResultStatusCodes =
-                    {
-                        [HealthStatus.Healthy] = 230,
-                        [HealthStatus.Degraded] = 231,
-                        [HealthStatus.Unhealthy] = 520
-                    }
+                    [HealthStatus.Healthy] = 230,
+                    [HealthStatus.Degraded] = 231,
+                    [HealthStatus.Unhealthy] = 520
                 }
-            );
+            }
+        );
 
         var response = serviceBuilder.EnqueueGetRequest("/health");
 

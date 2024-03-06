@@ -10,12 +10,12 @@ public class DeserializeTests
     public void Deserialize_NextOnly()
     {
         var json = """
-        {
-            "next": {
-                "href": "/foo/next"
+            {
+                "next": {
+                    "href": "/foo/next"
+                }
             }
-        }
-        """;
+            """;
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
@@ -29,12 +29,12 @@ public class DeserializeTests
     public void Deserialize_SelfOnly()
     {
         var json = """
-        {
-            "self": {
-                "href": "/foo/self"
+            {
+                "self": {
+                    "href": "/foo/self"
+                }
             }
-        }
-        """;
+            """;
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
@@ -48,15 +48,15 @@ public class DeserializeTests
     public void Deserialize_SelfAndNext()
     {
         var json = """
-        {
-            "self": {
-                "href": "/foo/self"
-            },
-            "next": {
-                "href": "/foo/next"
+            {
+                "self": {
+                    "href": "/foo/self"
+                },
+                "next": {
+                    "href": "/foo/next"
+                }
             }
-        }
-        """;
+            """;
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
@@ -71,14 +71,14 @@ public class DeserializeTests
     public void Deserialize_MultiLinkType()
     {
         var json = """
-        {
-            "related": [{
-                "href": "/foo/related1"
-            }, {
-                "href": "/foo/related2"
-            }] 
-        }
-        """;
+            {
+                "related": [{
+                    "href": "/foo/related1"
+                }, {
+                    "href": "/foo/related2"
+                }] 
+            }
+            """;
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 

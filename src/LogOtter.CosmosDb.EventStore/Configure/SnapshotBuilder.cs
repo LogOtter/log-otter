@@ -21,21 +21,20 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
         ThroughputProperties? throughputProperties = null
     )
     {
-        _mutateMetadata(
-            md =>
-                md with
+        _mutateMetadata(md =>
+            md with
+            {
+                SnapshotMetadata = md.SnapshotMetadata! with
                 {
-                    SnapshotMetadata = md.SnapshotMetadata! with
-                    {
-                        AutoProvisionMetadata = new AutoProvisionMetadata(
-                            partitionKeyPath,
-                            uniqueKeyPolicy,
-                            defaultTimeToLive,
-                            indexingPolicy,
-                            throughputProperties
-                        )
-                    }
+                    AutoProvisionMetadata = new AutoProvisionMetadata(
+                        partitionKeyPath,
+                        uniqueKeyPolicy,
+                        defaultTimeToLive,
+                        indexingPolicy,
+                        throughputProperties
+                    )
                 }
+            }
         );
         return this;
     }

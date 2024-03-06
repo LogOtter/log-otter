@@ -64,9 +64,10 @@ public class EventStreamCache
                 break;
             }
 
-            var cacheItems = response
-                .Definitions
-                .Select(d => new EventStreamCacheItem(new EventStreamDefinition(d.Name, d.TypeName, service.Name), service));
+            var cacheItems = response.Definitions.Select(d => new EventStreamCacheItem(
+                new EventStreamDefinition(d.Name, d.TypeName, service.Name),
+                service
+            ));
 
             definitions.AddRange(cacheItems);
 
