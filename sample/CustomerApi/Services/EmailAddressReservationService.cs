@@ -24,8 +24,9 @@ public class EmailAddressReservationService(CosmosContainer<EmailAddressReservat
     {
         var reservation = new EmailAddressReservation(emailAddress);
 
-        await emailAddressReservationContainer
-            .Container
-            .DeleteItemAsync<EmailAddressReservation>(reservation.Id, new PartitionKey(reservation.PartitionKey));
+        await emailAddressReservationContainer.Container.DeleteItemAsync<EmailAddressReservation>(
+            reservation.Id,
+            new PartitionKey(reservation.PartitionKey)
+        );
     }
 }

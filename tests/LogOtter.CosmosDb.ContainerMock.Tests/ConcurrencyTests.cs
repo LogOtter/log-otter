@@ -37,9 +37,7 @@ public class ConcurrencyTests
                 new PartitionKey("APartition")
             );
         (await mustPassETag.Should().ThrowAsync<InvalidOperationException>())
-            .Which
-            .Message
-            .Should()
+            .Which.Message.Should()
             .Be("An eTag must be provided as a concurrency exception is queued");
 
         // First update should fail as if the document has been modified by another process

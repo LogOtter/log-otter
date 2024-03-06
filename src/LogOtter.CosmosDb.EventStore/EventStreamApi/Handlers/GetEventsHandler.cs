@@ -38,18 +38,15 @@ internal class GetEventsHandler(
         );
 
         var events = storageEvents
-            .Select(
-                e =>
-                    new Event(
-                        e.EventId.ToString(),
-                        e.StreamId,
-                        e.EventBody.GetType().Name,
-                        e.EventNumber,
-                        e.EventId,
-                        eventDescriptionGenerator.GetDescription(e, metadata),
-                        e.CreatedOn
-                    )
-            )
+            .Select(e => new Event(
+                e.EventId.ToString(),
+                e.StreamId,
+                e.EventBody.GetType().Name,
+                e.EventNumber,
+                e.EventId,
+                eventDescriptionGenerator.GetDescription(e, metadata),
+                e.CreatedOn
+            ))
             .ToList();
 
         var response = new EventsResponse(events);

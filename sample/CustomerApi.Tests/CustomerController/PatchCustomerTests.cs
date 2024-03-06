@@ -41,16 +41,14 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { FirstName = "Bobby" };
         await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        await customerApi
-            .Then
-            .TheCustomerShouldMatch(
-                customerUri,
-                c =>
-                    c.EmailAddress == "bob@bobertson.co.uk"
-                    && c.FirstName == "Bobby"
-                    && c.LastName == "Bobertson"
-                    && c.Revision == existingCustomer.Revision + 1
-            );
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c =>
+                c.EmailAddress == "bob@bobertson.co.uk"
+                && c.FirstName == "Bobby"
+                && c.LastName == "Bobertson"
+                && c.Revision == existingCustomer.Revision + 1
+        );
     }
 
     [Fact]
@@ -139,12 +137,10 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        await customerApi
-            .Then
-            .TheCustomerShouldMatch(
-                customerUri,
-                c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson" && c.Revision == previousRevision
-            );
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson" && c.Revision == previousRevision
+        );
     }
 
     [Fact]
@@ -161,9 +157,10 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        await customerApi
-            .Then
-            .TheCustomerShouldMatch(customerUri, c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson");
+        await customerApi.Then.TheCustomerShouldMatch(
+            customerUri,
+            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+        );
     }
 
     [Fact]

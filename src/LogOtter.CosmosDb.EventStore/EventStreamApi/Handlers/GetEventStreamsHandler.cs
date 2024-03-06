@@ -22,9 +22,11 @@ internal class GetEventStreamsHandler(EventStoreCatalog eventStoreCatalog) : Bas
 
         var path = Template;
 
-        response
-            .Links
-            .AddPagedLinks(page, PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count), p => $"{path}?page={p}");
+        response.Links.AddPagedLinks(
+            page,
+            PageHelpers.CalculatePageCount(EventStreamsApiMiddleware.PageSize, definitions.Count),
+            p => $"{path}?page={p}"
+        );
 
         await WriteJson(httpContext.Response, response);
     }
