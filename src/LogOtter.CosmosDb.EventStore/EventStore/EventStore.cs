@@ -34,12 +34,12 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     async Task<IStorageEvent> IEventStoreReader.ReadEventFromStream(string streamId, Guid eventId, CancellationToken cancellationToken) =>
         (await ReadEventFromStream(streamId, eventId, cancellationToken));
 
-    public Task AppendToStream(string streamId, int expectedVersion, params EventData<TBaseEvent>[] events)
+    public async Task AppendToStream(string streamId, int expectedVersion, params EventData<TBaseEvent>[] events)
     {
-        return AppendToStream(streamId, expectedVersion, default, events);
+        await AppendToStream(streamId, expectedVersion, default, events);
     }
 
-    public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData<TBaseEvent>[] events)
+    public async Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData<TBaseEvent>[] events)
     {
         var storageEvents = new List<StorageEvent<TBaseEvent>>();
         var eventVersion = expectedVersion;
@@ -49,7 +49,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
             storageEvents.Add(new StorageEvent<TBaseEvent>(streamId, @event, ++eventVersion));
         }
 
-        return AppendToStreamInternal(streamId, storageEvents, cancellationToken);
+        await AppendToStreamInternal(streamId, storageEvents, cancellationToken);
     }
 
     private async Task AppendToStreamInternal(
