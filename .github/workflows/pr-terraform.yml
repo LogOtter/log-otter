@@ -62,7 +62,9 @@ jobs:
         if: success() || failure()
         env:
           VALIDATE_OUTPUT: '${{ steps.validate.outputs.stdout }}'
+          VALIDATE_OUTPUT_ERROR: '${{ steps.validate.outputs.stderr }}'
           PLAN_OUTPUT: '${{ steps.plan.outputs.stdout }}'
+          PLAN_OUTPUT_ERROR: '${{ steps.plan.outputs.stderr }}'
         with:
           script: |
             const script = require('./build/Create-TerraformPullRequestComment.js');

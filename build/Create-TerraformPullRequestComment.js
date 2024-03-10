@@ -9,6 +9,17 @@
     return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
   });
 
+  const outputBlock = (stdout, stderr) => {
+    let result = '```\n' + (stdout ? stdout : '(No output)') + '\n```';
+
+    if(stderr) {
+      result += '\n**Errors:**\n';
+      result += '```\n' + stderr + '\n```';
+    }
+
+    return result;
+  }
+
   const statusIcon = (status) => {
     switch(status) {
       case 'success':
@@ -28,9 +39,7 @@
 #### ${statusIcon(outcome.validate)} Terraform Validation 🤖
 <details><summary>Validation Output</summary>
 
-\`\`\`\n
-${process.env.VALIDATE_OUTPUT}
-\`\`\`
+${outputBlock(process.env.VALIDATE_OUTPUT, process.env.VALIDATE_OUTPUT_ERROR)}
 
 </details>
 
@@ -38,9 +47,7 @@ ${process.env.VALIDATE_OUTPUT}
 
 <details><summary>Show Plan</summary>
 
-\`\`\`\n
-${process.env.PLAN_OUTPUT}
-\`\`\`
+${outputBlock(process.env.PLAN_OUTPUT, process.env.PLAN_OUTPUT_ERROR)}
 
 </details>
 
