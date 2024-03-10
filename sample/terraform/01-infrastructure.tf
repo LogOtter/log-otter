@@ -30,6 +30,11 @@ resource "acme_certificate" "certificate" {
 
   dns_challenge {
     provider = "azuredns"
+
+    config = {
+      AZURE_RESOURCE_GROUP = azurerm_resource_group.rg.name
+      AZURE_ZONE_NAME      = azurerm_dns_zone.sample-domain.name
+    }
   }
 }
 
