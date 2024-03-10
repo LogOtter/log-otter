@@ -15,5 +15,5 @@ trim_trailing_whitespace = false
 [*.{csproj,props}]
 indent_size = 4
 
-[*.{appxmanifest,asax,ascx,aspx,axaml,build,c,c++,cc,cginc,compute,cp,cpp,cs,cshtml,cu,cuh,cxx,dtd,fs,fsi,fsscript,fsx,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,hxx,inc,inl,ino,ipp,ixx,master,ml,mli,mpp,mq4,mq5,mqh,nuspec,paml,razor,resw,resx,shader,skin,tpp,usf,ush,vb,xaml,xamlx,xoml,xsd}]
+[*.{appxmanifest,asax,ascx,aspx,axaml,build,c,c++,cc,cginc,compute,conf,cp,cpp,cs,cshtml,cu,cuh,cxx,dtd,fs,fsi,fsscript,fsx,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,hxx,inc,inl,ino,ipp,ixx,master,ml,mli,mpp,mq4,mq5,mqh,nuspec,paml,razor,resw,resx,shader,skin,tpp,usf,ush,vb,xaml,xamlx,xoml,xsd}]
 indent_size = 4

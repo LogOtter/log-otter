@@ -6,16 +6,13 @@ on:
       project_path:
         required: true
         type: string
-      project_name:
-        required: true
-        type: string
       version:
         required: true
         type: string
 
 jobs:
   build:
-    name: Publish Docker Image
+    name: Publish DotNet Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,6 +20,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Generate variables
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Login to the Container Registry
         uses: docker/login-action@v3
@@ -32,8 +38,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish docker image
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: user/app:latest
-          context: ${{ inputs.project_path }}
+        run: |
+          dotnet publish -t:PublishContainer -p:VersionPrefix="${{ inputs.version }}" -p:InformationalVersion="${{ inputs.version }}+${{ steps.vars.outputs.sha_short }}" -p:ContainerImageTag="${{ inputs.version }}" -p:ContainerRegistry="ghcr.io"
+        working-directory: ${{ inputs.project_path }}

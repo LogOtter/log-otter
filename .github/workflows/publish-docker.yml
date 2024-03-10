@@ -10,7 +10,7 @@ on:
 jobs:
   publish-customer-api:
     name: Publish Customer API
-    uses: ./.github/workflows/publish-docker-image.yml
+    uses: ./.github/workflows/publish-dotnet-docker-image.yml
     permissions:
       contents: read
       packages: write
@@ -21,7 +21,7 @@ jobs:
 
   publish-customer-worker:
     name: Publish Customer Worker
-    uses: ./.github/workflows/publish-docker-image.yml
+    uses: ./.github/workflows/publish-dotnet-docker-image.yml
     permissions:
       contents: read
       packages: write
@@ -32,11 +32,22 @@ jobs:
 
   publish-hub:
     name: Publish Hub
-    uses: ./.github/workflows/publish-docker-image.yml
+    uses: ./.github/workflows/publish-dotnet-docker-image.yml
     permissions:
       contents: read
       packages: write
     with:
       project_path: src/LogOtter.Hub
+      version: ${{ inputs.version }}
+    secrets: inherit
+
+  publish-ingress:
+    name: Publish Ingress
+    uses: ./.github/workflows/publish-docker-image.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      project_path: sample/Ingress
       version: ${{ inputs.version }}
     secrets: inherit

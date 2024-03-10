@@ -1,0 +1,61 @@
+﻿name: Terraform on Pull Request
+
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - sample/terraform/**
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: Check Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check -no-color
+        continue-on-error: true
+        working-directory: sample/terraform
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -no-color -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false
+        working-directory: sample/terraform
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+
+      - name: Create PR comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./build/Create-TerraformPullRequestComment.js');
+            script({github, context});

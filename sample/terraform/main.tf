@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.43.0"
+      version = "~> 3.94.0"
     }
   }
 
@@ -65,145 +65,153 @@ resource "azurerm_cosmosdb_account" "db" {
   }
 }
 
-resource "azurerm_service_plan" "service-plan" {
-  name                = "log-otter-samples-service-plan"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  os_type             = "Linux"
-  sku_name            = "F1"
+resource "azurerm_container_app_environment" "container-app-environment" {
+  name                       = "log-otter-sample-container-app-environment"
+  location                   = azurerm_resource_group.rg.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.log-analytics-workspace.id
 }
 
-resource "azurerm_linux_web_app" "customer-api" {
-  name                = "log-otter-customer-api"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_service_plan.service-plan.location
-  service_plan_id     = azurerm_service_plan.service-plan.id
-  https_only          = true
+resource "azurerm_container_app" "customer-api" {
+  name                         = "customer-api"
+  container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
 
-  app_settings = {
-    # App Service Settings
-    APPINSIGHTS_INSTRUMENTATIONKEY             = azurerm_application_insights.app-insights.instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app-insights.connection_string
-    ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
-    DOCKER_REGISTRY_SERVER_URL                 = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME            = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
-    WEBSITE_WARMUP_PATH                        = "/health"
-    WEBSITES_PORT                              = 8080
+  template {
+    container {
+      name   = "customer-api"
+      image  = "ghcr.io/logotter/customer-api:${var.container_tag_name}"
+      cpu    = 0.25
+      memory = "0.5Gi"
+      env    = {
+        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+        ASPNETCORE_ENVIRONMENT                = "Development"
+        COSMOSDB__CONNECTIONSTRING            = azurerm_cosmosdb_account.db.primary_sql_connection_string
+      }
 
-    # Application Settings
-    APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
-    ASPNETCORE_ENVIRONMENT                     = "Development"
-    COSMOSDB__CONNECTIONSTRING                 = azurerm_cosmosdb_account.db.primary_sql_connection_string
-  }
+      liveness_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
+      }
 
-  site_config {
-    always_on     = false
-    http2_enabled = true
-    application_stack {
-      docker_image     = "ghcr.io/logotter/customer-api"
-      docker_image_tag = var.container_tag_name
+      readiness_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
+      }
+
+      startup_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
+      }
     }
   }
 
-  logs {
-    application_logs {
-      file_system_level = "Information"
-    }
-    http_logs {
-      file_system {
-        retention_in_days = 30
-        retention_in_mb   = 35
+  ingress {
+    target_port = 8080
+  }
+}
+
+resource "azurerm_container_app" "customer-worker" {
+  name                         = "customer-worker"
+  container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
+
+  template {
+    container {
+      name   = "customer-worker"
+      image  = "ghcr.io/logotter/customer-worker:${var.container_tag_name}"
+      cpu    = 0.25
+      memory = "0.5Gi"
+      env    = {
+        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+      }
+
+      liveness_probe {
+        port      = 80
+        transport = "HTTP"
+        path      = "/health"
+      }
+
+      readiness_probe {
+        port      = 80
+        transport = "HTTP"
+        path      = "/health"
+      }
+
+      startup_probe {
+        port      = 80
+        transport = "HTTP"
+        path      = "/health"
       }
     }
   }
 }
 
-resource "azurerm_linux_web_app" "customer-worker" {
-  name                = "log-otter-customer-worker"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_service_plan.service-plan.location
-  service_plan_id     = azurerm_service_plan.service-plan.id
-  https_only          = true
+resource "azurerm_container_app" "hub" {
+  name                         = "hub"
+  container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
 
-  app_settings = {
-    # App Service Settings
-    APPINSIGHTS_INSTRUMENTATIONKEY             = azurerm_application_insights.app-insights.instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING      = azurerm_application_insights.app-insights.connection_string
-    ApplicationInsightsAgent_EXTENSION_VERSION = "~3"
-    DOCKER_REGISTRY_SERVER_URL                 = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME            = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD            = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE        = "false"
-    WEBSITE_WARMUP_PATH                        = "/health"
-    WEBSITES_PORT                              = 8080
+  template {
+    container {
+      name   = "hub"
+      image  = "ghcr.io/logotter/hub:${var.container_tag_name}"
+      cpu    = 0.25
+      memory = "0.5Gi"
+      env    = {
+        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+        Hub__Services__0__Name                = "CustomerApi"
+        Hub__Services__0__Url                 = "http://customer-api/logotter/api"
+      }
 
-    # Application Settings
-    APPLICATIONINSIGHTS__CONNECTIONSTRING      = azurerm_application_insights.app-insights.connection_string
-  }
+      liveness_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
+      }
 
-  site_config {
-    always_on     = false
-    http2_enabled = true
-    application_stack {
-      docker_image     = "ghcr.io/logotter/customer-worker"
-      docker_image_tag = var.container_tag_name
-    }
-  }
+      readiness_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
+      }
 
-  logs {
-    application_logs {
-      file_system_level = "Information"
-    }
-    http_logs {
-      file_system {
-        retention_in_days = 30
-        retention_in_mb   = 35
+      startup_probe {
+        port      = 8080
+        transport = "HTTP"
+        path      = "/health"
       }
     }
+  }
+
+  ingress {
+    target_port = 8080
   }
 }
 
-resource "azurerm_linux_web_app" "hub" {
-  name                = "log-otter-hub"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_service_plan.service-plan.location
-  service_plan_id     = azurerm_service_plan.service-plan.id
-  https_only          = true
+resource "azurerm_container_app" "ingress" {
+  name                         = "ingress"
+  container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
 
-  app_settings = {
-    # App Service Settings
-    DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_url
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_password
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    #WEBSITE_WARMUP_PATH                 = "/health"
-    WEBSITES_PORT                       = 8080
-
-    # Application Settings
-    Hub__Services__0__Name              = "CustomerApi"
-    Hub__Services__0__Url               = "https://${azurerm_linux_web_app.customer-api.default_hostname}/logotter/api"
-  }
-
-  site_config {
-    always_on     = false
-    http2_enabled = true
-    application_stack {
-      docker_image     = "ghcr.io/logotter/hub"
-      docker_image_tag = var.container_tag_name
+  template {
+    container {
+      name   = "hub"
+      image  = "ghcr.io/logotter/ingress:${var.container_tag_name}"
+      cpu    = 0.25
+      memory = "0.5Gi"
     }
   }
 
-  logs {
-    application_logs {
-      file_system_level = "Information"
-    }
-    http_logs {
-      file_system {
-        retention_in_days = 30
-        retention_in_mb   = 35
-      }
-    }
+  ingress {
+    target_port      = 80
+    external_enabled = true
   }
 }

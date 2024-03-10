@@ -1,5 +1,9 @@
 name: Deploy
 
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
 on:
   workflow_call:
     inputs:
@@ -26,30 +30,19 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init -input=false
+        run: terraform init -no-color -input=false
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Terraform Plan
-        run: terraform plan -out tfplan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -input=false
+        run: terraform plan -out tfplan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Terraform Apply
-        run: terraform apply -input=false tfplan
+        run: terraform apply -input=false -no-color tfplan
         working-directory: sample/terraform
-        env:
-          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
-
-      - name: Trigger container update
-        working-directory: sample/terraform
-        run: |
-          customer_api_webhook=$(terraform output -raw customer_api_webhook)
-          customer_worker_webhook=$(terraform output -raw customer_worker_webhook)
-
-          curl $customer_api_webhook -H "" -d ""
-          curl $customer_worker_webhook -H "" -d ""
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
