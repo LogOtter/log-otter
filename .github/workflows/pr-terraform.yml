@@ -41,14 +41,14 @@ jobs:
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate -no-color
+        run: terraform validate -no-color 2>&1
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
+        run: terraform plan -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false 2>&1
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
