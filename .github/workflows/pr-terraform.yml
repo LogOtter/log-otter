@@ -48,10 +48,14 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
+        run: terraform plan -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+          ARM_CLIENT_ID: ${{ secrets.AZURERM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURERM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURERM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURERM_TENANT_ID }}
 
       - name: Create PR comment
         uses: actions/github-script@v6

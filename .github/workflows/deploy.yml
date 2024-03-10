@@ -36,10 +36,14 @@ jobs:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
 
       - name: Terraform Plan
-        run: terraform plan -out tfplan -var="azurerm_client_secret=${{ secrets.AZURERM_CLIENT_SECRET }}" -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
+        run: terraform plan -out tfplan -var="docker_registry_password=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" -var="container_tag_name=${{ inputs.version }}" -no-color -input=false
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+          ARM_CLIENT_ID: ${{ secrets.AZURERM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURERM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURERM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURERM_TENANT_ID }}
 
       - name: Terraform Apply
         run: terraform apply -input=false -no-color tfplan
