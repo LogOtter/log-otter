@@ -1,4 +1,4 @@
-﻿module.exports = async ({github, context}) => {
+﻿module.exports = async ({github, context, outcome}) => {
   const {data: comments} = await github.rest.issues.listComments({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -9,28 +9,28 @@
     return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
   });
 
-  const output = `#### Terraform Format and Style 🖌 \`${{steps.fmt.outcome}}\`
-#### Terraform Initialization ⚙️ \`${{steps.init.outcome}}\`
-#### Terraform Validation 🤖 \`${{steps.validate.outcome}}\`
+  const output = `#### Terraform Format and Style 🖌 \`${outcome.fmt ? '✅' : '❌'}\`
+#### Terraform Initialization ⚙️ \`${outcome.init ? '✅' : '❌'}\`
+#### Terraform Validation 🤖 \`${outcome.validate.result ? '✅' : '❌'}\`
 <details><summary>Validation Output</summary>
 
 \`\`\`\n
-${{steps.validate.outputs.stdout}}
+${outcome.validate.stdout}
 \`\`\`
 
 </details>
 
-#### Terraform Plan 📖 \`${{steps.plan.outcome}}\`
+#### Terraform Plan 📖 \`${outcome.plan.result ? '✅' : '❌'}\`
 
 <details><summary>Show Plan</summary>
 
 \`\`\`\n
-${{steps.plan.outputs.stdout}}
+${outcome.plan.stdout}
 \`\`\`
 
 </details>
 
-*Pusher: @${{github.actor}}*, Last Updated: ${{new Date().toISOString()}}`;
+*Pusher: @${github.actor}*, Last Updated: ${new Date().toISOString()}`;
 
   if (botComment) {
     github.rest.issues.updateComment({

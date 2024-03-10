@@ -58,4 +58,16 @@ jobs:
         with:
           script: |
             const script = require('./build/Create-TerraformPullRequestComment.js');
-            script({github, context});
+            const outcome = {
+              fmt: '${{ steps.fmt.outcome }}' === 'success',
+              init: '${{ steps.init.outcome }}' === 'success',
+              validate: {
+                result: '${{ steps.validate.outcome }}' === 'success',
+                stdout: '${{ steps.validate.stdout }}'
+              },
+              plan: {
+                result: '${{ steps.plan.outcome }}' === 'success',
+                stdout: '${{ steps.plan.stdout }}'
+              }
+            };
+            script({github, context, outcome});
