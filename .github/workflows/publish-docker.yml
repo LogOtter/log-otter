@@ -48,6 +48,7 @@ jobs:
       contents: read
       packages: write
     with:
+      project_name: ingress
       project_path: sample/Ingress
       version: ${{ inputs.version }}
     secrets: inherit
