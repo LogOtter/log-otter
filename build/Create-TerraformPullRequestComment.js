@@ -9,9 +9,23 @@
     return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
   });
 
-  const output = `#### ${outcome.fmt ? '✅' : '❌'} Terraform Format and Style 🖌
-#### ${outcome.init ? '✅' : '❌'} Terraform Initialization ⚙️
-#### ${outcome.validate ? '✅' : '❌'} Terraform Validation 🤖
+  const statusIcon = (status) => {
+    switch(status) {
+      case 'success':
+        return '✅';
+      case 'failure':
+        return '❌';
+      case 'cancelled':
+      case 'skipped':
+        return '✖️';
+      default:
+        return '❔';
+    }
+  }
+
+  const output = `#### ${statusIcon(outcome.fmt)} Terraform Format and Style 🖌
+#### ${statusIcon(outcome.init)} Terraform Initialization ⚙️
+#### ${statusIcon(outcome.validate)} Terraform Validation 🤖
 <details><summary>Validation Output</summary>
 
 \`\`\`\n
@@ -20,7 +34,7 @@ ${process.env.VALIDATE_OUTPUT}
 
 </details>
 
-#### ${outcome.plan ? '✅' : '❌'} Terraform Plan 📖
+#### ${statusIcon(outcome.plan)} Terraform Plan 📖
 
 <details><summary>Show Plan</summary>
 

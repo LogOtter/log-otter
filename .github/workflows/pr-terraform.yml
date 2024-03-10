@@ -55,6 +55,7 @@ jobs:
 
       - name: Create PR comment
         uses: actions/github-script@v6
+        if: success() || failure()
         env:
           VALIDATE_OUTPUT: '${{ steps.validate.outputs.stdout }}'
           PLAN_OUTPUT: '${{ steps.plan.outputs.stdout }}'
@@ -62,9 +63,9 @@ jobs:
           script: |
             const script = require('./build/Create-TerraformPullRequestComment.js');
             const outcome = {
-              fmt: '${{ steps.fmt.outcome }}' === 'success',
-              init: '${{ steps.init.outcome }}' === 'success',
-              validate: '${{ steps.validate.outcome }}' === 'success',
-              plan: '${{ steps.plan.outcome }}' === 'success'
+              fmt: '${{ steps.fmt.outcome }}',
+              init: '${{ steps.init.outcome }}',
+              validate: '${{ steps.validate.outcome }}',
+              plan: '${{ steps.plan.outcome }}'
             };
             script({github, context, outcome});
