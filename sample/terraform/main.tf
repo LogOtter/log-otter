@@ -127,6 +127,7 @@ resource "azurerm_container_app" "customer-api" {
     target_port = 8080
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 }
@@ -222,6 +223,7 @@ resource "azurerm_container_app" "hub" {
     target_port = 8080
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 }
@@ -246,6 +248,7 @@ resource "azurerm_container_app" "ingress" {
     external_enabled = true
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 }
