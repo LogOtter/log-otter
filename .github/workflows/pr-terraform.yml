@@ -41,7 +41,7 @@ jobs:
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate -no-color -input=false
+        run: terraform validate -no-color
         working-directory: sample/terraform
         env:
           ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
