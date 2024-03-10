@@ -11,21 +11,21 @@
 
   const output = `#### ${outcome.fmt ? '✅' : '❌'} Terraform Format and Style 🖌
 #### ${outcome.init ? '✅' : '❌'} Terraform Initialization ⚙️
-#### ${outcome.validate.result ? '✅' : '❌'} Terraform Validation 🤖
+#### ${outcome.validate ? '✅' : '❌'} Terraform Validation 🤖
 <details><summary>Validation Output</summary>
 
 \`\`\`\n
-${outcome.validate.stdout}
+${process.env.VALIDATE_OUTPUT}
 \`\`\`
 
 </details>
 
-#### ${outcome.plan.result ? '✅' : '❌'} Terraform Plan 📖
+#### ${outcome.plan ? '✅' : '❌'} Terraform Plan 📖
 
 <details><summary>Show Plan</summary>
 
 \`\`\`\n
-${outcome.plan.stdout}
+${process.env.PLAN_OUTPUT}
 \`\`\`
 
 </details>
