@@ -78,7 +78,7 @@ resource "azurerm_container_app_environment" "container-app-environment" {
 }
 
 resource "azurerm_container_app_environment_certificate" "container-app-certificate" {
-  name                         = "*.${azurerm_dns_zone.sample-domain.name}"
+  name                         = "wildcard-certificate"
   container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
   certificate_blob_base64      = acme_certificate.certificate.certificate_p12
   certificate_password         = acme_certificate.certificate.certificate_p12_password
