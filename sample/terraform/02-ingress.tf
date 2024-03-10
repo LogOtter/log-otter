@@ -35,21 +35,21 @@ resource "azurerm_container_app" "ingress" {
 }
 
 resource "azurerm_container_app_custom_domain" "root" {
-  name                                     = azurerm_dns_zone.sample-domain.name
+  name                                     = azurerm_dns_a_record.root.fqdn
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.container-app-certificate.id
   certificate_binding_type                 = "SniEnabled"
 }
 
 resource "azurerm_container_app_custom_domain" "api" {
-  name                                     = "api.${azurerm_dns_zone.sample-domain.name}"
+  name                                     = azurerm_dns_a_record.api.fqdn
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.container-app-certificate.id
   certificate_binding_type                 = "SniEnabled"
 }
 
 resource "azurerm_container_app_custom_domain" "admin" {
-  name                                     = "admin.${azurerm_dns_zone.sample-domain.name}"
+  name                                     = azurerm_dns_a_record.admin.fqdn
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.container-app-certificate.id
   certificate_binding_type                 = "SniEnabled"
