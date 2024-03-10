@@ -1,4 +1,4 @@
-﻿module.exports = ({github, context}) => {
+﻿module.exports = async ({github, context}) => {
   const {data: comments} = await github.rest.issues.listComments({
     owner: context.repo.owner,
     repo: context.repo.repo,
