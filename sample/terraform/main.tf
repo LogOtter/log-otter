@@ -31,6 +31,65 @@ resource "azurerm_resource_group" "rg" {
   location = "uksouth"
 }
 
+resource "azurerm_dns_zone" "sample-domain" {
+  name                = "sample.logotter.co.uk"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_dns_cname_record" "www-cname" {
+  name                = "@"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record              = azurerm_container_app.ingress.latest_revision_fqdn
+}
+
+resource "azurerm_dns_txt_record" "www-cname" {
+  name                = "asuid.www"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record {
+    value = azurerm_container_app.ingress.custom_domain_verification_id
+  }
+}
+
+resource "azurerm_dns_cname_record" "api-cname" {
+  name                = "api"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record              = azurerm_container_app.ingress.latest_revision_fqdn
+}
+
+resource "azurerm_dns_txt_record" "api-cname" {
+  name                = "asuid.api"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record {
+    value = azurerm_container_app.ingress.custom_domain_verification_id
+  }
+}
+
+resource "azurerm_dns_cname_record" "admin-cname" {
+  name                = "admin"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record              = azurerm_container_app.ingress.latest_revision_fqdn
+}
+
+resource "azurerm_dns_txt_record" "admin-cname" {
+  name                = "asuid.admin"
+  zone_name           = azurerm_dns_zone.sample-domain.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 3600
+  record {
+    value = azurerm_container_app.ingress.custom_domain_verification_id
+  }
+}
+
 resource "azurerm_log_analytics_workspace" "log-analytics-workspace" {
   name                = "log-otter-log-analytics-workspace"
   location            = azurerm_resource_group.rg.location
@@ -126,7 +185,7 @@ resource "azurerm_container_app" "customer-api" {
   ingress {
     target_port = 8080
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }
@@ -222,7 +281,7 @@ resource "azurerm_container_app" "hub" {
   ingress {
     target_port = 8080
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }
@@ -247,8 +306,27 @@ resource "azurerm_container_app" "ingress" {
     target_port      = 80
     external_enabled = true
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
+    /*
+    Note: Cannot use Azure managed certs in Terraform yet
+
+    custom_domain {
+      certificate_id           = ""
+      name                     = "sample.logotter.co.uk"
+      certificate_binding_type = "SniEnabled"
+    }
+    custom_domain {
+      certificate_id           = ""
+      name                     = "api.sample.logotter.co.uk"
+      certificate_binding_type = "SniEnabled"
+    }
+    custom_domain {
+      certificate_id           = ""
+      name                     = "admin.sample.logotter.co.uk"
+      certificate_binding_type = "SniEnabled"
+    }
+    */
   }
 }
