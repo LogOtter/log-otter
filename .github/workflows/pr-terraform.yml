@@ -63,11 +63,11 @@ jobs:
               init: '${{ steps.init.outcome }}' === 'success',
               validate: {
                 result: '${{ steps.validate.outcome }}' === 'success',
-                stdout: '${{ steps.validate.stdout }}'
+                stdout: '${{ steps.validate.outputs.stdout }}'
               },
               plan: {
                 result: '${{ steps.plan.outcome }}' === 'success',
-                stdout: '${{ steps.plan.stdout }}'
+                stdout: '${{ steps.plan.outputs.stdout }}'
               }
             };
             script({github, context, outcome});

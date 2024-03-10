@@ -9,9 +9,9 @@
     return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
   });
 
-  const output = `#### Terraform Format and Style 🖌 \`${outcome.fmt ? '✅' : '❌'}\`
-#### Terraform Initialization ⚙️ \`${outcome.init ? '✅' : '❌'}\`
-#### Terraform Validation 🤖 \`${outcome.validate.result ? '✅' : '❌'}\`
+  const output = `#### ${outcome.fmt ? '✅' : '❌'} Terraform Format and Style 🖌
+#### ${outcome.init ? '✅' : '❌'} Terraform Initialization ⚙️
+#### ${outcome.validate.result ? '✅' : '❌'} Terraform Validation 🤖
 <details><summary>Validation Output</summary>
 
 \`\`\`\n
@@ -20,7 +20,7 @@ ${outcome.validate.stdout}
 
 </details>
 
-#### Terraform Plan 📖 \`${outcome.plan.result ? '✅' : '❌'}\`
+#### ${outcome.plan.result ? '✅' : '❌'} Terraform Plan 📖
 
 <details><summary>Show Plan</summary>
 
@@ -30,7 +30,8 @@ ${outcome.plan.stdout}
 
 </details>
 
-*Pusher: @${github.actor}*, Last Updated: ${new Date().toISOString()}`;
+*Pusher:* @${context.actor}
+*Last Updated:* \`${new Date().toISOString()}\``;
 
   if (botComment) {
     github.rest.issues.updateComment({
