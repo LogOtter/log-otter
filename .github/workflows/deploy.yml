@@ -13,7 +13,13 @@ on:
     secrets:
       ARM_ACCESS_KEY:
         required: true
+      AZURERM_CLIENT_ID:
+        required: true
       AZURERM_CLIENT_SECRET:
+        required: true
+      AZURERM_SUBSCRIPTION_ID:
+        required: true
+      AZURERM_TENANT_ID:
         required: true
       DOCKER_REGISTRY_PASSWORD:
         required: true
