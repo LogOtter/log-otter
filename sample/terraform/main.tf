@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.43.0"
+      version = "~> 3.94.0"
     }
   }
 
@@ -53,13 +53,16 @@ resource "azurerm_cosmosdb_account" "db" {
   resource_group_name = azurerm_resource_group.rg.name
   offer_type          = "Standard"
   enable_free_tier    = true
+
   capacity {
     total_throughput_limit = 1000
   }
+
   geo_location {
     location          = azurerm_resource_group.rg.location
     failover_priority = 0
   }
+
   consistency_policy {
     consistency_level = "Session"
   }
@@ -84,10 +87,20 @@ resource "azurerm_container_app" "customer-api" {
       image  = "ghcr.io/logotter/customer-api:${var.container_tag_name}"
       cpu    = 0.25
       memory = "0.5Gi"
-      env    = {
-        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
-        ASPNETCORE_ENVIRONMENT                = "Development"
-        COSMOSDB__CONNECTIONSTRING            = azurerm_cosmosdb_account.db.primary_sql_connection_string
+
+      env {
+        name  = "APPLICATIONINSIGHTS__CONNECTIONSTRING"
+        value = azurerm_application_insights.app-insights.connection_string
+      }
+
+      env {
+        name  = "ASPNETCORE_ENVIRONMENT"
+        value = "Development"
+      }
+
+      env {
+        name  = "COSMOSDB__CONNECTIONSTRING"
+        value = azurerm_cosmosdb_account.db.primary_sql_connection_string
       }
 
       liveness_probe {
@@ -112,6 +125,9 @@ resource "azurerm_container_app" "customer-api" {
 
   ingress {
     target_port = 8080
+    traffic_weight {
+      percentage = 100
+    }
   }
 }
 
@@ -127,8 +143,10 @@ resource "azurerm_container_app" "customer-worker" {
       image  = "ghcr.io/logotter/customer-worker:${var.container_tag_name}"
       cpu    = 0.25
       memory = "0.5Gi"
-      env    = {
-        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
+
+      env {
+        name  = "APPLICATIONINSIGHTS__CONNECTIONSTRING"
+        value = azurerm_application_insights.app-insights.connection_string
       }
 
       liveness_probe {
@@ -164,10 +182,20 @@ resource "azurerm_container_app" "hub" {
       image  = "ghcr.io/logotter/hub:${var.container_tag_name}"
       cpu    = 0.25
       memory = "0.5Gi"
-      env    = {
-        APPLICATIONINSIGHTS__CONNECTIONSTRING = azurerm_application_insights.app-insights.connection_string
-        Hub__Services__0__Name                = "CustomerApi"
-        Hub__Services__0__Url                 = "http://customer-api/logotter/api"
+
+      env {
+        name  = "APPLICATIONINSIGHTS__CONNECTIONSTRING"
+        value = azurerm_application_insights.app-insights.connection_string
+      }
+
+      env {
+        name  = "Hub__Services__0__Name"
+        value = "CustomerApi"
+      }
+
+      env {
+        name  = "Hub__Services__0__Url"
+        value = "http://customer-api/logotter/api"
       }
 
       liveness_probe {
@@ -192,6 +220,9 @@ resource "azurerm_container_app" "hub" {
 
   ingress {
     target_port = 8080
+    traffic_weight {
+      percentage = 100
+    }
   }
 }
 
@@ -213,5 +244,8 @@ resource "azurerm_container_app" "ingress" {
   ingress {
     target_port      = 80
     external_enabled = true
+    traffic_weight {
+      percentage = 100
+    }
   }
 }
