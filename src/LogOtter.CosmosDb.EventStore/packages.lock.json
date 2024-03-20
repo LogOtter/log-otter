@@ -4,9 +4,9 @@
     "net8.0": {
       "Microsoft.Extensions.FileProviders.Embedded": {
         "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "16//LHoOSFEfEUua8C/4dM9Ypzmn6LKC3E2pp/Jq6ielcTmx56iGyk8NTb3HBP4zXL0qUWy63y0Dh6sMLIeAYQ==",
+        "requested": "[8.0.3, )",
+        "resolved": "8.0.3",
+        "contentHash": "YipqKixNktNlKij9BGUIBIVj4bXj3lOcvVoe12D3OVVrjFI8atExKU4HLGOJGOi5wCP4APD4cq4mIro38/cJTw==",
         "dependencies": {
           "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0"
         }

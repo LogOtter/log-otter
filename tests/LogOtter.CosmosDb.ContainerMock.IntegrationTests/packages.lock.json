@@ -49,11 +49,11 @@
       },
       "Testcontainers.CosmosDb": {
         "type": "Direct",
-        "requested": "[3.7.0, )",
-        "resolved": "3.7.0",
-        "contentHash": "Y2Plccyei75dax+E2FXvc++mHbh0ySzifzYv8y4SkUlXteaZFlWQzgzMJXtXPz2DHZb9AQ7V5J/kWan48uOtbw==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "LDJu5HWb6EflKnIjx/omvX/aN32gLoQws0o+bxDUeDUbCQ4W8MdSCI1dEQzK2PoFpDeasPqBQTBP7jzR/qPamw==",
         "dependencies": {
-          "Testcontainers": "3.7.0"
+          "Testcontainers": "3.8.0"
         }
       },
       "xunit": {
@@ -99,11 +99,6 @@
           "System.Threading.Tasks.Extensions": "4.5.2"
         }
       },
-      "BouncyCastle.Cryptography": {
-        "type": "Transitive",
-        "resolved": "2.2.1",
-        "contentHash": "A6Zr52zVqJKt18ZBsTnX0qhG0kwIQftVAjLmszmkiR/trSp8H+xj1gUOzk7XHwaKgyREMSV1v9XaKrBUeIOdvQ=="
-      },
       "Docker.DotNet": {
         "type": "Transitive",
         "resolved": "3.125.15",
@@ -124,8 +119,8 @@
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
+        "resolved": "1.0.0",
+        "contentHash": "K63Y4hORbBcKLWH5wnKgzyn7TOfYzevIEwIedQHBIkmkEBA9SCqgvom+XTuE+fAFGvINGkhFItaZ2dvMGdT5iw=="
       },
       "Microsoft.Bcl.HashCode": {
         "type": "Transitive",
@@ -258,8 +253,8 @@
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg=="
+        "resolved": "4.6.0",
+        "contentHash": "HxozeSlipUK7dAroTYwIcGwKDeOVpQnJlpVaOkBz7CM4TsE5b/tKlQBZecTjh6FzcSbxndYaxxpsBMz+wMJeyw=="
       },
       "System.Security.AccessControl": {
         "type": "Transitive",
@@ -282,20 +277,13 @@
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "Vg8eB5Tawm1IFqj4TVK1czJX89rhFxJo9ELqc/Eiq0eXy13RK00eubyU6TJE6y+GQXjyV5gSfiewDUZjQgSE0w==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        }
+        "resolved": "4.7.2",
+        "contentHash": "iTUgB/WtrZ1sWZs84F2hwyQhiRH6QNjQv2DkwrH+WP6RoFga2Q1m3f9/Q7FG8cck8AdHitQkmkXSY8qylcDmuA=="
       },
       "System.Text.Json": {
         "type": "Transitive",
-        "resolved": "6.0.9",
-        "contentHash": "2j16oUgtIzl7Xtk7demG0i/v5aU/ZvULcAnJvPb63U3ZhXJ494UYcxuEj5Fs49i3XDrk5kU/8I+6l9zRCw3cJw==",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
-          "System.Text.Encodings.Web": "6.0.0"
-        }
+        "resolved": "4.6.0",
+        "contentHash": "4F8Xe+JIkVoDJ8hDAZ7HqLkjctN/6WItJIzQaifBwClC7wmoLSda/Sv2i6i1kycqDb3hWF4JCVbpAweyOKHEUA=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -317,17 +305,14 @@
       },
       "Testcontainers": {
         "type": "Transitive",
-        "resolved": "3.7.0",
-        "contentHash": "Nn9/mVOiYEC1mdE0Kr2xQfVAV9mssLedalC6OnC59kHOudx2IhVgenHc983LIdMIhsYF9ywVnyW7HrJE7qVuJg==",
+        "resolved": "3.8.0",
+        "contentHash": "R0+4VTGtFm+Q50+dP7Rm+ZB6thjKdBF3mGYbh5dEf/qt+r35MdFx8tMsE0VIbtaqgJMsOSD06CUZB2wPqBe2cw==",
         "dependencies": {
-          "BouncyCastle.Cryptography": "2.2.1",
           "Docker.DotNet": "3.125.15",
           "Docker.DotNet.X509": "3.125.15",
-          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.4",
           "SSH.NET": "2023.0.0",
-          "SharpZipLib": "1.4.2",
-          "System.Text.Json": "6.0.9"
+          "SharpZipLib": "1.4.2"
         }
       },
       "Validation": {
