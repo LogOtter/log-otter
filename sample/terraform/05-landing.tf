@@ -7,7 +7,7 @@ resource "azurerm_dns_a_record" "root" {
 }
 
 resource "azurerm_dns_txt_record" "root" {
-  name                = "asuid.www"
+  name                = "asuid"
   zone_name           = azurerm_dns_zone.sample-domain.name
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = 3600
