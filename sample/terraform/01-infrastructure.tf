@@ -24,8 +24,8 @@ resource "acme_registration" "reg" {
 
 resource "acme_certificate" "certificate" {
   account_key_pem           = acme_registration.reg.account_key_pem
-  common_name               = azurerm_dns_zone.sample-domain.name
-  subject_alternative_names = ["*.${azurerm_dns_zone.sample-domain.name}"]
+  common_name               = "*.${azurerm_dns_zone.sample-domain.name}"
+  subject_alternative_names = [azurerm_dns_zone.sample-domain.name]
   certificate_p12_password  = random_password.certificate-password.result
 
   dns_challenge {
