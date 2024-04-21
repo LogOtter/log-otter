@@ -72,7 +72,7 @@ resource "azurerm_dns_txt_record" "admin" {
 
 resource "acme_certificate" "root" {
   account_key_pem          = acme_registration.reg.account_key_pem
-  common_name              = azurerm_dns_a_record.root.fqdn
+  common_name              = trimsuffix(azurerm_dns_a_record.root.fqdn, ".")
   certificate_p12_password = random_password.certificate-password.result
 
   dns_challenge {
@@ -87,7 +87,7 @@ resource "acme_certificate" "root" {
 
 resource "acme_certificate" "api" {
   account_key_pem          = acme_registration.reg.account_key_pem
-  common_name              = azurerm_dns_a_record.api.fqdn
+  common_name              = trimsuffix(azurerm_dns_a_record.api.fqdn, ".")
   certificate_p12_password = random_password.certificate-password.result
 
   dns_challenge {
@@ -102,7 +102,7 @@ resource "acme_certificate" "api" {
 
 resource "acme_certificate" "admin" {
   account_key_pem          = acme_registration.reg.account_key_pem
-  common_name              = azurerm_dns_a_record.admin.fqdn
+  common_name              = trimsuffix(azurerm_dns_a_record.admin.fqdn, ".")
   certificate_p12_password = random_password.certificate-password.result
 
   dns_challenge {
@@ -137,21 +137,21 @@ resource "azurerm_container_app_environment_certificate" "admin" {
 }
 
 resource "azurerm_container_app_custom_domain" "root" {
-  name                                     = azurerm_dns_a_record.root.fqdn
+  name                                     = trimsuffix(azurerm_dns_a_record.root.fqdn, ".")
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.root.id
   certificate_binding_type                 = "SniEnabled"
 }
 
 resource "azurerm_container_app_custom_domain" "api" {
-  name                                     = azurerm_dns_a_record.api.fqdn
+  name                                     = trimsuffix(azurerm_dns_a_record.api.fqdn, ".")
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.api.id
   certificate_binding_type                 = "SniEnabled"
 }
 
 resource "azurerm_container_app_custom_domain" "admin" {
-  name                                     = azurerm_dns_a_record.admin.fqdn
+  name                                     = trimsuffix(azurerm_dns_a_record.admin.fqdn, ".")
   container_app_id                         = azurerm_container_app.ingress.id
   container_app_environment_certificate_id = azurerm_container_app_environment_certificate.admin.id
   certificate_binding_type                 = "SniEnabled"
