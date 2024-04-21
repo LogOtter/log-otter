@@ -1,21 +1,3 @@
-resource "azurerm_dns_a_record" "admin" {
-  name                = "admin"
-  zone_name           = azurerm_dns_zone.sample-domain.name
-  resource_group_name = azurerm_resource_group.rg.name
-  ttl                 = 3600
-  records             = [azurerm_container_app_environment.container-app-environment.static_ip_address]
-}
-
-resource "azurerm_dns_txt_record" "admin" {
-  name                = "asuid.admin"
-  zone_name           = azurerm_dns_zone.sample-domain.name
-  resource_group_name = azurerm_resource_group.rg.name
-  ttl                 = 3600
-  record {
-    value = azurerm_container_app.ingress.custom_domain_verification_id
-  }
-}
-
 resource "azurerm_container_app" "hub" {
   name                         = "hub"
   container_app_environment_id = azurerm_container_app_environment.container-app-environment.id

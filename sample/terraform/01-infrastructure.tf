@@ -22,22 +22,6 @@ resource "acme_registration" "reg" {
   email_address   = "acme@logotter.co.uk"
 }
 
-resource "acme_certificate" "certificate" {
-  account_key_pem           = acme_registration.reg.account_key_pem
-  common_name               = "*.${azurerm_dns_zone.sample-domain.name}"
-  subject_alternative_names = [azurerm_dns_zone.sample-domain.name]
-  certificate_p12_password  = random_password.certificate-password.result
-
-  dns_challenge {
-    provider = "azuredns"
-
-    config = {
-      AZURE_RESOURCE_GROUP = azurerm_resource_group.rg.name
-      AZURE_ZONE_NAME      = azurerm_dns_zone.sample-domain.name
-    }
-  }
-}
-
 resource "azurerm_log_analytics_workspace" "log-analytics-workspace" {
   name                = "log-otter-log-analytics-workspace"
   location            = azurerm_resource_group.rg.location
@@ -80,11 +64,4 @@ resource "azurerm_container_app_environment" "container-app-environment" {
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log-analytics-workspace.id
-}
-
-resource "azurerm_container_app_environment_certificate" "container-app-certificate" {
-  name                         = "wildcard-certificate"
-  container_app_environment_id = azurerm_container_app_environment.container-app-environment.id
-  certificate_blob_base64      = acme_certificate.certificate.certificate_p12
-  certificate_password         = acme_certificate.certificate.certificate_p12_password
 }
