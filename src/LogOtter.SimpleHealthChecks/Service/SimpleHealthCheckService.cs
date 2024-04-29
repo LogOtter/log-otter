@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using System.Web;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -61,7 +62,10 @@ internal class SimpleHealthCheckService(
 
         if (!string.Equals(request.HttpMethod, "GET", StringComparison.InvariantCultureIgnoreCase))
         {
-            logger.LogWarning("SimpleHealthCheckService received a request using {HttpMethod} instead of GET", request.HttpMethod);
+            logger.LogWarning(
+                "SimpleHealthCheckService received a request using {HttpMethod} instead of GET",
+                HttpUtility.UrlEncode(request.HttpMethod)
+            );
             response.StatusCode = 404;
             return;
         }
@@ -86,7 +90,7 @@ internal class SimpleHealthCheckService(
             logger.LogWarning(
                 "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath} which was not mapped",
                 request.RemoteEndPoint,
-                request.Url!.PathAndQuery
+                request.Url!.PathAndQuery.Replace(Environment.NewLine, " ")
             );
             response.StatusCode = 404;
             return;
