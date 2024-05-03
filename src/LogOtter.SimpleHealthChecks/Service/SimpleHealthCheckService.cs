@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Web;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -58,17 +58,14 @@ internal class SimpleHealthCheckService(
     private async Task ProcessHealthCheck(IHttpListenerContext context, CancellationToken cancellationToken)
     {
         var request = context.Request;
-
-        logger.LogInformation(
-            "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath}",
-            request.RemoteEndPoint,
-            request.Url!.PathAndQuery
-        );
-
         var response = context.Response;
 
         if (!string.Equals(request.HttpMethod, "GET", StringComparison.InvariantCultureIgnoreCase))
         {
+            logger.LogWarning(
+                "SimpleHealthCheckService received a request using {HttpMethod} instead of GET",
+                HttpUtility.UrlEncode(request.HttpMethod)
+            );
             response.StatusCode = 404;
             return;
         }
@@ -90,6 +87,11 @@ internal class SimpleHealthCheckService(
 
         if (options == null)
         {
+            logger.LogWarning(
+                "SimpleHealthCheckService received a request from {Endpoint} to {RequestPath} which was not mapped",
+                request.RemoteEndPoint,
+                request.Url!.PathAndQuery.Replace(Environment.NewLine, " ")
+            );
             response.StatusCode = 404;
             return;
         }
@@ -98,10 +100,10 @@ internal class SimpleHealthCheckService(
 
         if (!options.ResultStatusCodes.TryGetValue(result.Status, out var statusCode))
         {
-            var message =
-                $"No status code mapping found for {nameof(HealthStatus)} value: {result.Status}."
-                + $"{nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain"
-                + $"an entry for {result.Status}.";
+            var message = $"""
+                No status code mapping found for {nameof(HealthStatus)} value: {result.Status}.
+                {nameof(SimpleHealthCheckOptions)}.{nameof(SimpleHealthCheckOptions.ResultStatusCodes)} must contain an entry for {result.Status}.
+                """;
 
             throw new InvalidOperationException(message);
         }
