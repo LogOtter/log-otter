@@ -4,7 +4,7 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="Azure.Identity" Version="1.11.2"/>
+        <PackageVersion Include="Azure.Identity" Version="1.11.3"/>
         <PackageVersion Include="Bogus" Version="35.5.0"/>
         <PackageVersion Include="FluentAssertions" Version="6.12.0"/>
         <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.7"/>
