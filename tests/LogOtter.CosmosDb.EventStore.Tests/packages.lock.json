@@ -496,7 +496,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Identity": "[1.11.3, )",
-          "Microsoft.Azure.Cosmos": "[3.39.1, )",
+          "Microsoft.Azure.Cosmos": "[3.40.0, )",
           "Microsoft.Extensions.DependencyInjection": "[8.0.0, )",
           "Microsoft.Extensions.Hosting": "[8.0.0, )",
           "Microsoft.Extensions.Logging": "[8.0.0, )",
@@ -506,7 +506,7 @@
       "logotter.cosmosdb.containermock": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Azure.Cosmos": "[3.39.1, )"
+          "Microsoft.Azure.Cosmos": "[3.40.0, )"
         }
       },
       "logotter.cosmosdb.eventstore": {
@@ -514,7 +514,7 @@
         "dependencies": {
           "LogOtter.CosmosDb": "[1.0.0, )",
           "LogOtter.JsonHal": "[1.0.0, )",
-          "Microsoft.Extensions.FileProviders.Embedded": "[8.0.4, )"
+          "Microsoft.Extensions.FileProviders.Embedded": "[8.0.5, )"
         }
       },
       "logotter.cosmosdb.testing": {
@@ -545,9 +545,9 @@
       },
       "Microsoft.Azure.Cosmos": {
         "type": "CentralTransitive",
-        "requested": "[3.39.1, )",
-        "resolved": "3.39.1",
-        "contentHash": "wiciBTz1WfzwPnK1lZxZJhuliL9WfbfTgQnVNdORV4QYQxDpO8mIoBYho9w/WA8d0QM7p/GnQedxDJ8TKN2CvA==",
+        "requested": "[3.40.0, )",
+        "resolved": "3.40.0",
+        "contentHash": "aORS4mzRk2nHav6kWo0fMCgOpF5IW2n+K7XHWPkpyxQvXuSkFMh0QD3h//YQzF/eqSJj1BMo33BOjXvTy7/Pow==",
         "dependencies": {
           "Azure.Core": "1.19.0",
           "Microsoft.Bcl.AsyncInterfaces": "1.0.0",
@@ -575,9 +575,9 @@
       },
       "Microsoft.Extensions.FileProviders.Embedded": {
         "type": "CentralTransitive",
-        "requested": "[8.0.4, )",
-        "resolved": "8.0.4",
-        "contentHash": "r3wpZ7RSjDqtMQmsIICjOrOylCnOlJJ0nWcnsuLb+iyLslBEe2+wHAI7xCmEMDu8ZP1K5qSryXH8Kt4o6Lyn9g==",
+        "requested": "[8.0.5, )",
+        "resolved": "8.0.5",
+        "contentHash": "j0zzS7NPhux2rqbCIjrSV/MW0WPNSd49Vvs+j9+ALcTGVrRR48mPmIuBVpeaNO/flTFkN2fTZCLyom403KkzNg==",
         "dependencies": {
           "Microsoft.Extensions.FileProviders.Abstractions": "8.0.0"
         }
