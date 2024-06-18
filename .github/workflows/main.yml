@@ -40,13 +40,3 @@ jobs:
       version: ${{ needs.build-number.outputs.version }}
     needs: build-number
     secrets: inherit
-
-  deploy:
-    name: Deploy
-    uses: ./.github/workflows/deploy.yml
-    with:
-      version: ${{ needs.build-number.outputs.version }}
-    needs:
-      - build-number
-      - publish-docker
-    secrets: inherit

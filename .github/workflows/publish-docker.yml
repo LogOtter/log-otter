@@ -40,15 +40,3 @@ jobs:
       project_path: src/LogOtter.Hub
       version: ${{ inputs.version }}
     secrets: inherit
-
-  publish-ingress:
-    name: Publish Ingress
-    uses: ./.github/workflows/publish-docker-image.yml
-    permissions:
-      contents: read
-      packages: write
-    with:
-      project_name: ingress
-      project_path: sample/Ingress
-      version: ${{ inputs.version }}
-    secrets: inherit
