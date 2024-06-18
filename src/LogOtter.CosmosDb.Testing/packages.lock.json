@@ -13,8 +13,8 @@
       },
       "Azure.Core": {
         "type": "Transitive",
-        "resolved": "1.38.0",
-        "contentHash": "IuEgCoVA0ef7E4pQtpC3+TkPbzaoQfa77HlfJDmfuaJUCVJmn7fT0izamZiryW5sYUFKizsftIxMkXKbgIcPMQ==",
+        "resolved": "1.40.0",
+        "contentHash": "eOx6wk3kQ3SCnoAj7IytAu/d99l07PdarmUc+RmMkVOTkcQ3s+UQEaGzMyEqC2Ua4SKnOW4Xw/klLeB5V2PiSA==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
           "System.ClientModel": "1.0.0",
@@ -275,8 +275,8 @@
       },
       "Microsoft.Identity.Client": {
         "type": "Transitive",
-        "resolved": "4.60.3",
-        "contentHash": "jve1RzmSpBhGlqMzPva6VfRbLMLZZc1Q8WRVZf8+iEruQkBgDTJPq8OeTehcY4GGYG1j6UB1xVofVE+n4BLDdw==",
+        "resolved": "4.61.3",
+        "contentHash": "naJo/Qm35Caaoxp5utcw+R8eU8ZtLz2ALh8S+gkekOYQ1oazfCQMWVT4NJ/FnHzdIJlm8dMz0oMpMGCabx5odA==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.35.0",
           "System.Diagnostics.DiagnosticSource": "6.0.1"
@@ -284,10 +284,10 @@
       },
       "Microsoft.Identity.Client.Extensions.Msal": {
         "type": "Transitive",
-        "resolved": "4.60.3",
-        "contentHash": "X1Cz14/RbmlLshusE5u2zfG+5ul6ttgou19BZe5Mdw1qm6fgOI9/imBB2TIsx2UD7nkgd2+MCSzhbukZf7udeg==",
+        "resolved": "4.61.3",
+        "contentHash": "PWnJcznrSGr25MN8ajlc2XIDW4zCFu0U6FkpaNLEWLgd1NgFCp5uDY3mqLDgM8zCN8hqj8yo5wHYfLB2HjcdGw==",
         "dependencies": {
-          "Microsoft.Identity.Client": "4.60.3",
+          "Microsoft.Identity.Client": "4.61.3",
           "System.Security.Cryptography.ProtectedData": "4.5.0"
         }
       },
@@ -1414,8 +1414,8 @@
       "logotter.cosmosdb": {
         "type": "Project",
         "dependencies": {
-          "Azure.Identity": "[1.11.3, )",
-          "Microsoft.Azure.Cosmos": "[3.40.0, )",
+          "Azure.Identity": "[1.12.0, )",
+          "Microsoft.Azure.Cosmos": "[3.41.0, )",
           "Microsoft.Extensions.DependencyInjection": "[8.0.0, )",
           "Microsoft.Extensions.Hosting": "[8.0.0, )",
           "Microsoft.Extensions.Logging": "[8.0.0, )",
@@ -1425,18 +1425,18 @@
       "logotter.cosmosdb.containermock": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Azure.Cosmos": "[3.40.0, )"
+          "Microsoft.Azure.Cosmos": "[3.41.0, )"
         }
       },
       "Azure.Identity": {
         "type": "CentralTransitive",
-        "requested": "[1.11.3, )",
-        "resolved": "1.11.3",
-        "contentHash": "4EsGMAr+oog5UqHs46qwA7S/lJiwpXjPBY3t9tQBmJ8nsgmT/LLnrc32eiTlfOdfKxUz4fxBD2YjSnVZacu97w==",
+        "requested": "[1.12.0, )",
+        "resolved": "1.12.0",
+        "contentHash": "OBIM3aPz8n9oEO5fdnee+Vsc5Nl4W3FeslPpESyDiyByntQI5BAa76KD60eFXm9ulevnwxGZP9YXL8Y+paI5Uw==",
         "dependencies": {
-          "Azure.Core": "1.38.0",
-          "Microsoft.Identity.Client": "4.60.3",
-          "Microsoft.Identity.Client.Extensions.Msal": "4.60.3",
+          "Azure.Core": "1.40.0",
+          "Microsoft.Identity.Client": "4.61.3",
+          "Microsoft.Identity.Client.Extensions.Msal": "4.61.3",
           "System.Memory": "4.5.4",
           "System.Security.Cryptography.ProtectedData": "4.7.0",
           "System.Text.Json": "4.7.2",
@@ -1445,9 +1445,9 @@
       },
       "Microsoft.Azure.Cosmos": {
         "type": "CentralTransitive",
-        "requested": "[3.40.0, )",
-        "resolved": "3.40.0",
-        "contentHash": "aORS4mzRk2nHav6kWo0fMCgOpF5IW2n+K7XHWPkpyxQvXuSkFMh0QD3h//YQzF/eqSJj1BMo33BOjXvTy7/Pow==",
+        "requested": "[3.41.0, )",
+        "resolved": "3.41.0",
+        "contentHash": "SlY2fuF+U+06Ba440Usii/s92sPCDxxuQDLUUbxgFtczKyxyY3+LhR3n1vLZS3yjDLtmFZHzcgtHu3JQluv1Eg==",
         "dependencies": {
           "Azure.Core": "1.19.0",
           "Microsoft.Bcl.AsyncInterfaces": "1.0.0",
