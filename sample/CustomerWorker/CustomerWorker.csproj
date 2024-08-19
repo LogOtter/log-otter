@@ -12,11 +12,12 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" />
-        <PackageReference Include="Microsoft.Extensions.Hosting"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\LogOtter.SimpleHealthChecks\LogOtter.SimpleHealthChecks.csproj"/>
+        <ProjectReference Include="..\..\src\LogOtter.SimpleHealthChecks\LogOtter.SimpleHealthChecks.csproj" />
     </ItemGroup>
 
 </Project>
