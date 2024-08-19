@@ -10,6 +10,7 @@
         <PackageReference Include="FluentAssertions" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="Polly" />
         <PackageReference Include="Polly.Contrib.WaitAndRetry" />
         <PackageReference Include="Testcontainers.CosmosDb" />
