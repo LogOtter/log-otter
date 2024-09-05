@@ -26,7 +26,8 @@ internal static class CosmosExpressionValidatorConstants
                     "ToLower",
                     "ToUpper",
                     "TrimEnd",
-                    "TrimStart"
+                    "TrimStart",
+                    "Equals"
                 }
             },
             {
