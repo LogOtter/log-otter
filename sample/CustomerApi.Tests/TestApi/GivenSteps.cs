@@ -44,4 +44,9 @@ public class GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore
     {
         await customerStore.GivenTheCustomerIsDeleted(customerUri);
     }
+
+    public void CreatingACustomerWillConflict()
+    {
+        customerStore.GivenCreatingACustomerWillConflict();
+    }
 }
