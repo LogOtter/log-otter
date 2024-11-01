@@ -9,7 +9,7 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
     private readonly bool _enabled;
 
-    private Thread _taskExecutionThread;
+    private Thread? _taskExecutionThread;
     private readonly ConcurrentQueue<Task> _tasks = new();
     private bool _started;
 
@@ -24,9 +24,14 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
         _changeConverter = changeConverter;
         _changeHandler = changeHandler;
         _enabled = enabled;
+    }
+
+    public Task Start()
+    {
+        _started = true;
         _taskExecutionThread = new Thread(() =>
         {
-            while (true)
+            while (_started)
             {
                 if (_tasks.Any())
                 {
@@ -39,11 +44,6 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
                 }
             }
         });
-    }
-
-    public Task Start()
-    {
-        _started = true;
         return Task.CompletedTask;
     }
 
