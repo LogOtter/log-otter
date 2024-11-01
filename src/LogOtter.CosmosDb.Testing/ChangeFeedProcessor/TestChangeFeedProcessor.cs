@@ -10,7 +10,7 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     private readonly bool _enabled;
 
     private Thread _taskExecutionThread;
-    private ConcurrentQueue<Task> _tasks = new();
+    private readonly ConcurrentQueue<Task> _tasks = new();
     private bool _started;
 
     public TestChangeFeedProcessor(
