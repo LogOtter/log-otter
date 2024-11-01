@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using CustomerApi.Controllers.Customers.Create;
 using CustomerApi.Uris;
 using FluentAssertions;
+using LogOtter.CosmosDb.Testing;
 using LogOtter.HttpPatch;
 using Xunit;
 using Xunit.Abstractions;
@@ -48,6 +49,28 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
                 && c.FirstName == "Bobby"
                 && c.LastName == "Bobertson"
                 && c.Revision == existingCustomer.Revision + 1
+        );
+    }
+
+    [Fact]
+    public async Task Valid_MigratesDataCorrectly()
+    {
+        var customerUri = CustomerUri.Parse("/customers/CustomerId");
+
+        using var customerApi = new TestCustomerApi(testOutputHelper);
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.ReadWrite");
+        var existingCustomer = await customerApi.Given.AnExistingCustomer(customerUri, "bob@bobertson.co.uk", "Bob", "Bobertson");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new { EmailAddress = "bobby@bobertson.co.uk" };
+        await client.PatchAsJsonAsync("/customers/CustomerId", request);
+
+        await ChangeFeedTesting.WaitFor(
+            () =>
+                customerApi.Then.TheCustomerShouldMatch(
+                    customerUri,
+                    c => c.EmailAddresses.SequenceEqual(new List<String> { "bobby@bobertson.co.uk" })
+                )
         );
     }
 

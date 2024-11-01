@@ -8,6 +8,8 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
     private readonly bool _enabled;
 
+    private Thread _taskExecutionThread;
+    private Queue<Task> _tasks = new();
     private bool _started;
 
     public TestChangeFeedProcessor(
@@ -21,6 +23,21 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
         _changeConverter = changeConverter;
         _changeHandler = changeHandler;
         _enabled = enabled;
+        _taskExecutionThread = new Thread(() =>
+        {
+            while (true)
+            {
+                if (_tasks.Any())
+                {
+                    var task = _tasks.Dequeue();
+                    task.GetAwaiter().GetResult();
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        });
     }
 
     public Task Start()
@@ -41,11 +58,15 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
         {
             return;
         }
+        _tasks.Enqueue(
+            Task.Run(() =>
+            {
+                var changes = new List<TRawDocument> { e.Deserialize<TRawDocument>() };
 
-        var changes = new List<TRawDocument> { e.Deserialize<TRawDocument>() };
+                var convertedChanges = changes.Select(_changeConverter.ConvertChange).ToList().AsReadOnly();
 
-        var convertedChanges = changes.Select(_changeConverter.ConvertChange).ToList().AsReadOnly();
-
-        _changeHandler.ProcessChanges(convertedChanges, CancellationToken.None).GetAwaiter().GetResult();
+                _changeHandler.ProcessChanges(convertedChanges, CancellationToken.None).GetAwaiter().GetResult();
+            })
+        );
     }
 }
