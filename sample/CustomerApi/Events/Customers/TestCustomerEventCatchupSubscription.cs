@@ -2,12 +2,22 @@ using LogOtter.CosmosDb.EventStore;
 
 namespace CustomerApi.Events.Customers;
 
-public class TestCustomerEventCatchupSubscription(ILogger<TestCustomerEventCatchupSubscription> logger) : ICatchupSubscription<CustomerEvent>
+public class TestCustomerEventCatchupSubscription(
+    ILogger<TestCustomerEventCatchupSubscription> logger,
+    EventRepository<CustomerEvent, CustomerReadModel> eventRepository
+) : ICatchupSubscription<CustomerEvent>
 {
-    public Task ProcessEvents(IReadOnlyCollection<Event<CustomerEvent>> events, CancellationToken cancellationToken)
+    public async Task ProcessEvents(IReadOnlyCollection<Event<CustomerEvent>> events, CancellationToken cancellationToken)
     {
         foreach (var @event in events)
         {
+            await (
+                @event.Body switch
+                {
+                    CustomerEmailAddressChanged customerCreated => HandleEmailAddresses(customerCreated),
+                    _ => Task.CompletedTask
+                }
+            );
             logger.LogInformation(
                 "TestCustomerEventCatchupSubscription: {EventName} : {CustomerUri}",
                 @event.Body.GetType().Name,
@@ -15,6 +25,20 @@ public class TestCustomerEventCatchupSubscription(ILogger<TestCustomerEventCatch
             );
         }
 
-        return Task.CompletedTask;
+        return;
+    }
+
+    private async Task HandleEmailAddresses(CustomerEmailAddressChanged ev)
+    {
+        var existing = await eventRepository.Get(ev.CustomerUri.Uri, null);
+        if (existing == null)
+        {
+            return;
+        }
+        await eventRepository.ApplyEvents(
+            ev.CustomerUri.Uri,
+            existing.Revision,
+            new CustomerEmailAddressesChanged(ev.CustomerUri, [ev.OldEmailAddress], [ev.NewEmailAddress], ev.Timestamp)
+        );
     }
 }

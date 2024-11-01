@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using CustomerApi.Controllers.CustomerInterests;
 using CustomerApi.Uris;
 using FluentAssertions;
+using LogOtter.CosmosDb.Testing;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -111,6 +112,8 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var songUri = SongUri.Parse(location!);
 
-        await customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri);
+        await ChangeFeedTesting.WaitFor(
+            () => customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri)
+        );
     }
 }

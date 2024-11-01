@@ -14,6 +14,8 @@ public class CustomerReadModel : ISnapshot
 
     public string EmailAddress { get; set; }
 
+    public List<string> EmailAddresses { get; set; } = new List<string>();
+
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
