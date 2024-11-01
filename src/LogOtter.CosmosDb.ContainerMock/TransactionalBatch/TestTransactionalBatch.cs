@@ -62,6 +62,11 @@ internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock c
             {
                 action(response);
             }
+            catch (CosmosException cEx)
+            {
+                response.SetException(cEx);
+                break;
+            }
             catch (Exception ex)
             {
                 response.SetException(ex);

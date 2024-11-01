@@ -134,4 +134,19 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
+
+    [Fact]
+    public async Task Conflict()
+    {
+        using var customerApi = new TestCustomerApi(testOutputHelper);
+        var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Create");
+
+        var client = customerApi.CreateClient(authHeader);
+        var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
+        customerApi.Given.CreatingACustomerWillConflict();
+
+        var response = await client.PostAsJsonAsync("/customers", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
 }

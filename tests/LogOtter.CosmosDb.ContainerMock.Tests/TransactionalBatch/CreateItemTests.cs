@@ -112,6 +112,39 @@ public class CreateItemTests
         containerMock.GetAllItems<TestClass>().Should().HaveCount(0);
     }
 
+    [Fact]
+    public async Task OriginalCosmosExceptionIsSurfaced()
+    {
+        var containerMock = new ContainerMock();
+
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1"
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2"
+                }
+            );
+
+        containerMock.QueueExceptionToBeThrown(
+            new CosmosException("Conflict, oh no!", HttpStatusCode.Conflict, 0, string.Empty, 0),
+            i => i.MethodName == "CreateItemStreamAsync"
+        );
+
+        var response = await batch.ExecuteAsync();
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
     private class TestClass
     {
         [JsonProperty("id")]

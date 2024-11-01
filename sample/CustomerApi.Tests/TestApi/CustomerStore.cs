@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Net;
 using Bogus;
 using CustomerApi.Events.Customers;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
@@ -6,6 +7,7 @@ using CustomerApi.Services;
 using CustomerApi.Uris;
 using FluentAssertions;
 using LogOtter.CosmosDb;
+using LogOtter.CosmosDb.ContainerMock;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.Azure.Cosmos;
 
@@ -18,7 +20,8 @@ public class CustomerStore(
     EmailAddressReservationService emailAddressReservationService,
     SnapshotRepository<CustomerEvent, CustomerReadModel> customerSnapshotRepository,
     CosmosContainer<Movie> movieContainer,
-    CosmosContainer<Song> songContainer
+    CosmosContainer<Song> songContainer,
+    CosmosContainer<CustomerEvent> customerEventContainer
 )
 {
     private readonly Container _movieContainer = movieContainer.Container;
@@ -110,5 +113,14 @@ public class CustomerStore(
         var song = await _songContainer.ReadItemAsync<Song>(songUri.SongId, new PartitionKey(Song.StaticPartition));
         song.Resource.Should().NotBeNull();
         song.Resource.Should().Match(matchFunc);
+    }
+
+    public void GivenCreatingACustomerWillConflict()
+    {
+        var containerMock = customerEventContainer.Container as ContainerMock;
+        containerMock!.QueueExceptionToBeThrown(
+            new CosmosException("Conflict, oh no!", HttpStatusCode.Conflict, 0, string.Empty, 0),
+            i => i.MethodName == "CreateItemStreamAsync"
+        );
     }
 }

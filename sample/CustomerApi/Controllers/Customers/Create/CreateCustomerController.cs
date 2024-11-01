@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using CustomerApi.Events.Customers;
 using CustomerApi.Services;
 using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 
 namespace CustomerApi.Controllers.Customers.Create;
 
@@ -37,8 +39,14 @@ public class CreateCustomerController(
 
         var customerCreated = new CustomerCreated(customerUri, customerData.EmailAddress, customerData.FirstName, customerData.LastName);
 
-        var customer = await customerEventRepository.ApplyEvents(customerUri.Uri, 0, cancellationToken, customerCreated);
-
-        return Created(customerUri.Uri, new CustomerResponse(customer));
+        try
+        {
+            var customer = await customerEventRepository.ApplyEvents(customerUri.Uri, 0, cancellationToken, customerCreated);
+            return Created(customerUri.Uri, new CustomerResponse(customer));
+        }
+        catch (ConcurrencyException)
+        {
+            return Conflict("Wrong revision");
+        }
     }
 }
