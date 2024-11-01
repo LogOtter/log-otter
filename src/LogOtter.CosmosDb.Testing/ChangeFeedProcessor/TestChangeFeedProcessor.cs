@@ -1,4 +1,5 @@
-﻿using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
+﻿using System.Collections.Concurrent;
+using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 namespace LogOtter.CosmosDb.Testing;
 
@@ -9,7 +10,7 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     private readonly bool _enabled;
 
     private Thread _taskExecutionThread;
-    private Queue<Task> _tasks = new();
+    private ConcurrentQueue<Task> _tasks = new();
     private bool _started;
 
     public TestChangeFeedProcessor(
@@ -29,8 +30,8 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
             {
                 if (_tasks.Any())
                 {
-                    var task = _tasks.Dequeue();
-                    task.GetAwaiter().GetResult();
+                    _tasks.TryDequeue(out Task? task);
+                    task?.GetAwaiter().GetResult();
                 }
                 else
                 {
