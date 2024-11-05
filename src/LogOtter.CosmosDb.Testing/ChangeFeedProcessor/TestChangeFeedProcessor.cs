@@ -1,4 +1,5 @@
-﻿using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
+﻿using System.Collections.Concurrent;
+using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 namespace LogOtter.CosmosDb.Testing;
 
@@ -8,6 +9,8 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     private readonly IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> _changeHandler;
     private readonly bool _enabled;
 
+    private Thread? _taskExecutionThread;
+    private readonly ConcurrentQueue<Task> _tasks = new();
     private bool _started;
 
     public TestChangeFeedProcessor(
@@ -26,6 +29,21 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
     public Task Start()
     {
         _started = true;
+        _taskExecutionThread = new Thread(() =>
+        {
+            while (_started)
+            {
+                if (_tasks.Any())
+                {
+                    _tasks.TryDequeue(out Task? task);
+                    task?.GetAwaiter().GetResult();
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        });
         return Task.CompletedTask;
     }
 
@@ -41,11 +59,15 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
         {
             return;
         }
+        _tasks.Enqueue(
+            Task.Run(() =>
+            {
+                var changes = new List<TRawDocument> { e.Deserialize<TRawDocument>() };
 
-        var changes = new List<TRawDocument> { e.Deserialize<TRawDocument>() };
+                var convertedChanges = changes.Select(_changeConverter.ConvertChange).ToList().AsReadOnly();
 
-        var convertedChanges = changes.Select(_changeConverter.ConvertChange).ToList().AsReadOnly();
-
-        _changeHandler.ProcessChanges(convertedChanges, CancellationToken.None).GetAwaiter().GetResult();
+                _changeHandler.ProcessChanges(convertedChanges, CancellationToken.None).GetAwaiter().GetResult();
+            })
+        );
     }
 }
