@@ -8,5 +8,5 @@ namespace LogOtter.HttpPatch.Tests.Api.Controllers;
 public enum ResourceState
 {
     Unpublished,
-    Published
+    Published,
 }

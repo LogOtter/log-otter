@@ -29,7 +29,7 @@ internal static class ReverseProxyConfigureExtensions
             var clusterConfig = new ClusterConfig
             {
                 ClusterId = service.Name,
-                Destinations = new Dictionary<string, DestinationConfig> { [service.Name] = new() { Address = service.Url } }
+                Destinations = new Dictionary<string, DestinationConfig> { [service.Name] = new() { Address = service.Url } },
             };
 
             clusters.Add(clusterConfig);
@@ -60,7 +60,7 @@ internal static class ReverseProxyConfigureExtensions
         {
             RouteId = service.Name,
             ClusterId = service.Name,
-            Match = new RouteMatch { Path = $"{prefix}/{{**catch-all}}" }
+            Match = new RouteMatch { Path = $"{prefix}/{{**catch-all}}" },
         };
     }
 }

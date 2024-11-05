@@ -36,7 +36,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = Guid.NewGuid(),
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -55,7 +55,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = id,
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -65,7 +65,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = id,
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -84,7 +84,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = id,
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -94,7 +94,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = Guid.NewGuid(),
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -113,7 +113,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = Guid.NewGuid(),
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -132,7 +132,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = id,
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 
@@ -142,7 +142,7 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
                 Id = Guid.NewGuid(),
                 CustomerId = "Fred Blogs",
                 ItemId = "MT12342",
-                Type = TestEnum.Value1
+                Type = TestEnum.Value1,
             }
         );
 

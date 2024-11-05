@@ -32,8 +32,8 @@ public class SnapshotBuilder<TBaseEvent, TProjection>
                         defaultTimeToLive,
                         indexingPolicy,
                         throughputProperties
-                    )
-                }
+                    ),
+                },
             }
         );
         return this;

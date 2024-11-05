@@ -27,7 +27,7 @@ internal static class CosmosExpressionValidatorConstants
                     "ToUpper",
                     "TrimEnd",
                     "TrimStart",
-                    "Equals"
+                    "Equals",
                 }
             },
             {
@@ -50,7 +50,7 @@ internal static class CosmosExpressionValidatorConstants
                     "Sin",
                     "Sqrt",
                     "Tan",
-                    "Truncate"
+                    "Truncate",
                 }
             },
             {
@@ -81,7 +81,7 @@ internal static class CosmosExpressionValidatorConstants
                     "MaxAsync",
                     "AverageAsync",
                     "Skip",
-                    "Take"
+                    "Take",
                 }
             },
             // Any is only on enumerable as it is supported as a sub-query but not as an aggregation
@@ -110,13 +110,13 @@ internal static class CosmosExpressionValidatorConstants
                     "AverageAsync",
                     "Skip",
                     "Take",
-                    "Any"
+                    "Any",
                 }
             },
             {
                 typeof(object),
                 new List<string> { "ToString" }
-            }
+            },
         };
 
     public static readonly MethodInfo IsNull = typeof(CosmosLinqExtensions).GetMethod(nameof(CosmosLinqExtensions.IsNull))!;

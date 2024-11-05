@@ -200,22 +200,20 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         {
             throw batchResponse.StatusCode switch
             {
-                HttpStatusCode.NotFound
-                    => new CosmosException(
-                        $"Previous Event {previousEventNumber} not found for stream '{streamId}'",
-                        HttpStatusCode.Conflict,
-                        0,
-                        batchResponse.ActivityId,
-                        batchResponse.RequestCharge
-                    ),
-                _
-                    => new CosmosException(
-                        batchResponse.ErrorMessage,
-                        batchResponse.StatusCode,
-                        0,
-                        batchResponse.ActivityId,
-                        batchResponse.RequestCharge
-                    )
+                HttpStatusCode.NotFound => new CosmosException(
+                    $"Previous Event {previousEventNumber} not found for stream '{streamId}'",
+                    HttpStatusCode.Conflict,
+                    0,
+                    batchResponse.ActivityId,
+                    batchResponse.RequestCharge
+                ),
+                _ => new CosmosException(
+                    batchResponse.ErrorMessage,
+                    batchResponse.StatusCode,
+                    0,
+                    batchResponse.ActivityId,
+                    batchResponse.RequestCharge
+                ),
             };
         }
 

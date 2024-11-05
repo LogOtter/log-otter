@@ -88,7 +88,7 @@ public class TestCustomerApi : IDisposable
                 {
                     SignatureValidator = (token, _) => new JsonWebToken(token),
                     ValidateAudience = false,
-                    ValidateIssuer = false
+                    ValidateIssuer = false,
                 };
             }
         );

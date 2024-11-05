@@ -17,7 +17,7 @@ public class ReadItemTests
             {
                 Id = "Foo1",
                 PartitionKey = "Group1",
-                MyValue = "Bar1"
+                MyValue = "Bar1",
             }
         );
         await containerMock.CreateItemAsync(
@@ -25,7 +25,7 @@ public class ReadItemTests
             {
                 Id = "Foo2",
                 PartitionKey = "Group1",
-                MyValue = "Bar2"
+                MyValue = "Bar2",
             }
         );
 
@@ -54,7 +54,7 @@ public class ReadItemTests
             {
                 Id = "Foo1",
                 PartitionKey = "Group1",
-                MyValue = "Bar1"
+                MyValue = "Bar1",
             }
         );
 

@@ -34,7 +34,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -57,7 +57,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = null,
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -77,7 +77,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = null,
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -97,7 +97,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -107,7 +107,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD2",
                 Name = "Bobetta Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -126,7 +126,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -146,7 +146,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -169,7 +169,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = true,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -189,7 +189,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = true,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -209,7 +209,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = true,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -229,7 +229,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -252,7 +252,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -275,7 +275,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -295,7 +295,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -315,7 +315,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -338,7 +338,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -360,7 +360,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             {
                 Id = "RECORD1",
                 Children = new[] { new SubModel { Value = "bob bobertson" } },
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -383,7 +383,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -407,7 +407,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -431,7 +431,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -455,7 +455,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -480,7 +480,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -505,7 +505,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -532,7 +532,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -559,7 +559,7 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 

@@ -27,5 +27,5 @@ public enum Operation
 {
     Created,
     Updated,
-    Deleted
+    Deleted,
 }

@@ -20,7 +20,7 @@ internal static class HealthCheckResponseWriters
             HealthStatus.Degraded => DegradedBytes,
             HealthStatus.Healthy => HealthyBytes,
             HealthStatus.Unhealthy => UnhealthyBytes,
-            _ => Encoding.UTF8.GetBytes(result.Status.ToString())
+            _ => Encoding.UTF8.GetBytes(result.Status.ToString()),
         };
 
         await response.OutputStream.WriteAsync(bytes);

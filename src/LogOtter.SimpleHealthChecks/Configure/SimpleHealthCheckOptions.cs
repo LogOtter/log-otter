@@ -8,7 +8,7 @@ public class SimpleHealthCheckOptions
     {
         { HealthStatus.Healthy, 200 },
         { HealthStatus.Degraded, 200 },
-        { HealthStatus.Unhealthy, 503 }
+        { HealthStatus.Unhealthy, 503 },
     };
 
     private IDictionary<HealthStatus, int> _resultStatusCodes = new Dictionary<HealthStatus, int>(DefaultStatusCodesMapping);

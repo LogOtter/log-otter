@@ -43,7 +43,7 @@ public class CosmosDbStorageEvent
             StreamId = storageEvent.StreamId,
             EventNumber = storageEvent.EventNumber,
             Metadata = storageEvent.Metadata,
-            CreatedOn = storageEvent.CreatedOn
+            CreatedOn = storageEvent.CreatedOn,
         };
 
         return cosmosDbStorageEvent;

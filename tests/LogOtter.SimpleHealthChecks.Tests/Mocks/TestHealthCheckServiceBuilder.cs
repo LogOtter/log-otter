@@ -42,7 +42,7 @@ internal class TestHealthCheckServiceBuilder
         {
             HttpMethod = "GET",
             Url = new Uri($"http://localhost:80{url}"),
-            IsLocal = true
+            IsLocal = true,
         };
 
         return EnqueueRequest(request);

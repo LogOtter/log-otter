@@ -35,7 +35,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Fred Blogs",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             }
         );
 
@@ -51,7 +51,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -60,7 +60,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             }
         );
 
@@ -76,7 +76,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -85,7 +85,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             },
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() },
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
@@ -105,7 +105,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -114,7 +114,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             },
             new ItemRequestOptions { IfMatchEtag = testETag },
             new ItemRequestOptions { IfMatchEtag = realETag }
@@ -132,7 +132,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -141,7 +141,7 @@ public sealed class CosmosUpsertTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD2",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             }
         );
 

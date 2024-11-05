@@ -39,7 +39,7 @@ public sealed class CosmosQuerySerializationTests
                 Id = "ID",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "PartitionKeyValue"
+                PartitionKey = "PartitionKeyValue",
             }
         );
 

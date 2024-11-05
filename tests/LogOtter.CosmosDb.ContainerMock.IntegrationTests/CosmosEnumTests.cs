@@ -37,7 +37,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et1",
-                NullableEnum = TestEnum.Value1
+                NullableEnum = TestEnum.Value1,
             }
         );
 
@@ -60,7 +60,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 PartitionKey = "partition-et2",
-                OnlyChild = new SubModel { NullableEnum = TestEnum.Value1 }
+                OnlyChild = new SubModel { NullableEnum = TestEnum.Value1 },
             }
         );
 
@@ -84,7 +84,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et3",
-                NullableEnum = TestEnum.Value1
+                NullableEnum = TestEnum.Value1,
             }
         );
 
@@ -108,7 +108,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et4",
-                NullableEnum = null
+                NullableEnum = null,
             }
         );
 
@@ -132,7 +132,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et5",
-                OnlyChild = new SubModel { NullableEnum = null }
+                OnlyChild = new SubModel { NullableEnum = null },
             }
         );
 
@@ -156,7 +156,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et6",
-                OnlyChild = new SubModel { NullableEnum = null }
+                OnlyChild = new SubModel { NullableEnum = null },
             }
         );
 
@@ -180,7 +180,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et7",
-                NullableEnum = null
+                NullableEnum = null,
             }
         );
 
@@ -204,7 +204,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et8",
-                NullableEnumNotString = TestEnum.Value1
+                NullableEnumNotString = TestEnum.Value1,
             }
         );
 
@@ -228,7 +228,7 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "partition-et9",
-                NullableEnumNotString = null
+                NullableEnumNotString = null,
             }
         );
 

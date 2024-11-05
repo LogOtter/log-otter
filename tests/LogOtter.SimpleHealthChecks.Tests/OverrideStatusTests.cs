@@ -24,8 +24,8 @@ public class OverrideStatusTests
                 {
                     [HealthStatus.Healthy] = 230,
                     [HealthStatus.Degraded] = 231,
-                    [HealthStatus.Unhealthy] = 520
-                }
+                    [HealthStatus.Unhealthy] = 520,
+                },
             }
         );
 

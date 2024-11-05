@@ -20,7 +20,7 @@ public class CreateItemTests
                 {
                     Id = "Foo1",
                     PartitionKey = "Group1",
-                    MyValue = "Bar1"
+                    MyValue = "Bar1",
                 }
             )
             .CreateItem(
@@ -28,7 +28,7 @@ public class CreateItemTests
                 {
                     Id = "Foo2",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             );
 
@@ -59,7 +59,7 @@ public class CreateItemTests
                 {
                     Id = "Foo1",
                     PartitionKey = "Group1",
-                    MyValue = "Bar1"
+                    MyValue = "Bar1",
                 }
             )
             .CreateItem(
@@ -67,7 +67,7 @@ public class CreateItemTests
                 {
                     Id = "Foo2",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             );
 
@@ -94,7 +94,7 @@ public class CreateItemTests
                 {
                     Id = "Foo1",
                     PartitionKey = "Group1",
-                    MyValue = "Bar1"
+                    MyValue = "Bar1",
                 }
             )
             .CreateItem(
@@ -102,7 +102,7 @@ public class CreateItemTests
                 {
                     Id = "INVALID#ID",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             );
 
@@ -124,7 +124,7 @@ public class CreateItemTests
                 {
                     Id = "Foo1",
                     PartitionKey = "Group1",
-                    MyValue = "Bar1"
+                    MyValue = "Bar1",
                 }
             )
             .CreateItem(
@@ -132,7 +132,7 @@ public class CreateItemTests
                 {
                     Id = "Foo2",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             );
 

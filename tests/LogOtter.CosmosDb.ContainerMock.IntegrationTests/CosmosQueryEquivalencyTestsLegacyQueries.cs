@@ -33,7 +33,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -51,7 +51,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -71,7 +71,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = true
+                Value = true,
             }
         );
 
@@ -90,7 +90,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = true,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -111,7 +111,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = true
+                Value = true,
             }
         );
 
@@ -129,7 +129,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -147,7 +147,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -165,7 +165,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -183,7 +183,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -201,7 +201,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -221,7 +221,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -254,7 +254,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -277,7 +277,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -300,7 +300,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -321,7 +321,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -339,7 +339,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 
@@ -360,7 +360,7 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                Value = false
+                Value = false,
             }
         );
 

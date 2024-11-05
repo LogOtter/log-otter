@@ -32,7 +32,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                PartitionKey = "partition1"
+                PartitionKey = "partition1",
             }
         );
 
@@ -41,7 +41,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
             {
                 Id = "RECORD2",
                 Name = "Bobetta Bobertson",
-                PartitionKey = "partition2"
+                PartitionKey = "partition2",
             }
         );
 
@@ -61,7 +61,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                PartitionKey = "partition1"
+                PartitionKey = "partition1",
             }
         );
 
@@ -70,7 +70,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
             {
                 Id = "RECORD2",
                 Name = "Bobetta Bobertson",
-                PartitionKey = "partition2"
+                PartitionKey = "partition2",
             }
         );
 
@@ -89,7 +89,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
@@ -109,7 +109,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 Value = false,
-                PartitionKey = "partition"
+                PartitionKey = "partition",
             }
         );
 
