@@ -496,6 +496,85 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
         testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
     }
 
+    [Fact]
+    public async Task GivenAQueryUsingStringEqualsMethodThenBothShouldWork()
+    {
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false,
+                PartitionKey = "partition"
+            }
+        );
+
+        var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
+            "partition",
+            q => q.Where(tm => tm.Name != null && tm.Name.Equals("Bob Bobertson"))
+        );
+
+        realResults.Should().NotBeNull();
+        testResults.Should().NotBeNull();
+
+        realResults!.SingleOrDefault().Should().NotBeNull();
+        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+    }
+
+    [Theory]
+    [InlineData(StringComparison.InvariantCultureIgnoreCase)]
+    [InlineData(StringComparison.OrdinalIgnoreCase)]
+    public async Task GivenAQueryUsingStringEqualsMethodWithCultureDifferentCaseThenBothShouldWork(StringComparison comparisonType)
+    {
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false,
+                PartitionKey = "partition"
+            }
+        );
+
+        var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
+            "partition",
+            q => q.Where(tm => tm.Name != null && tm.Name.Equals("bob bobertson", comparisonType))
+        );
+
+        realResults.Should().NotBeNull();
+        testResults.Should().NotBeNull();
+
+        realResults!.SingleOrDefault().Should().NotBeNull();
+        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+    }
+
+    [Theory]
+    [InlineData(StringComparison.InvariantCulture)]
+    [InlineData(StringComparison.Ordinal)]
+    public async Task GivenAQueryUsingStringEqualsMethodWithCultureSameCaseThenBothShouldWork(StringComparison comparisonType)
+    {
+        await _testCosmos.GivenAnExistingItem(
+            new TestModel
+            {
+                Id = "RECORD1",
+                Name = "Bob Bobertson",
+                Value = false,
+                PartitionKey = "partition"
+            }
+        );
+
+        var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
+            "partition",
+            q => q.Where(tm => tm.Name != null && tm.Name.Equals("Bob Bobertson", comparisonType))
+        );
+
+        realResults.Should().NotBeNull();
+        testResults.Should().NotBeNull();
+
+        realResults!.SingleOrDefault().Should().NotBeNull();
+        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+    }
+
     private bool GetTrue()
     {
         return true;
