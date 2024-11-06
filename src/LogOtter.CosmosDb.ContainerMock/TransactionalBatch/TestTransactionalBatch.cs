@@ -98,7 +98,7 @@ internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock c
                 IndexingDirective = requestOptions.IndexingDirective,
                 IfMatchEtag = requestOptions.IfMatchEtag,
                 IfNoneMatchEtag = requestOptions.IfNoneMatchEtag,
-                EnableContentResponseOnWrite = requestOptions.EnableContentResponseOnWrite
+                EnableContentResponseOnWrite = requestOptions.EnableContentResponseOnWrite,
             };
     }
 

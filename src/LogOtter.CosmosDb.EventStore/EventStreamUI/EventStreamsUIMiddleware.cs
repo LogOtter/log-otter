@@ -62,7 +62,7 @@ internal class EventStreamsUIMiddleware(
         var staticFileOptions = new StaticFileOptions
         {
             RequestPath = string.IsNullOrEmpty(options.RoutePrefix) ? string.Empty : $"/{options.RoutePrefix.Trim('/')}",
-            FileProvider = new EmbeddedFileProvider(typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace)
+            FileProvider = new EmbeddedFileProvider(typeof(EventStreamsUIMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace),
         };
 
         return new StaticFileMiddleware(next, hostingEnv, Options.Create(staticFileOptions), loggerFactory);

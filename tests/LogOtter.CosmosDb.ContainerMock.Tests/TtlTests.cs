@@ -48,7 +48,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -71,7 +71,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -103,7 +103,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -127,7 +127,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -151,7 +151,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -175,7 +175,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -200,7 +200,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -228,7 +228,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -258,7 +258,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         await container.CreateItemAsync(document);
@@ -286,7 +286,7 @@ public class TtlTests
         {
             Id = "MyId",
             PartitionKey = "MyPartitionKey",
-            TimeToLive = itemTtl
+            TimeToLive = itemTtl,
         };
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));

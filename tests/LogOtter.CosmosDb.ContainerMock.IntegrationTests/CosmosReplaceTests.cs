@@ -35,7 +35,7 @@ public sealed class CosmosReplaceTests(IntegrationTestsFixture testFixture) : IA
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -44,7 +44,7 @@ public sealed class CosmosReplaceTests(IntegrationTestsFixture testFixture) : IA
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             },
             "RECORD1",
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() },
@@ -65,7 +65,7 @@ public sealed class CosmosReplaceTests(IntegrationTestsFixture testFixture) : IA
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -74,7 +74,7 @@ public sealed class CosmosReplaceTests(IntegrationTestsFixture testFixture) : IA
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             },
             "RECORD1",
             new ItemRequestOptions { IfMatchEtag = testETag },
@@ -93,7 +93,7 @@ public sealed class CosmosReplaceTests(IntegrationTestsFixture testFixture) : IA
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value1
+                EnumValue = TestEnum.Value1,
             },
             "RECORD1"
         );

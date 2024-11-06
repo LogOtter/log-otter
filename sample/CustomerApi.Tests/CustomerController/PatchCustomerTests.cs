@@ -155,7 +155,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         {
             FirstName = "Bob",
             LastName = "Bobertson",
-            EmailAddress = "bob@bobertson.co.uk"
+            EmailAddress = "bob@bobertson.co.uk",
         };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 

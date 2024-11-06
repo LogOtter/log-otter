@@ -90,8 +90,8 @@ public class EventSourcingBuilder
                 ExcludedPaths =
                 {
                     new ExcludedPath { Path = "/body/*" },
-                    new ExcludedPath { Path = "/metadata/*" }
-                }
+                    new ExcludedPath { Path = "/metadata/*" },
+                },
             }
         );
 

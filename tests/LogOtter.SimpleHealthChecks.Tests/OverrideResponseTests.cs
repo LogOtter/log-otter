@@ -31,7 +31,7 @@ public class OverrideResponseTests
                     res.AddHeader("X-PoweredBy", "LogOtter");
 
                     await res.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(json));
-                }
+                },
             }
         );
 

@@ -20,7 +20,7 @@ public class CreateReadTests
                 {
                     Id = "Foo1",
                     PartitionKey = "Group1",
-                    MyValue = "Bar1"
+                    MyValue = "Bar1",
                 }
             )
             .CreateItem(
@@ -28,7 +28,7 @@ public class CreateReadTests
                 {
                     Id = "Foo2",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             )
             .ReadItem("DoesNotExist");
@@ -49,7 +49,7 @@ public class CreateReadTests
             {
                 Id = "Foo1",
                 PartitionKey = "Group1",
-                MyValue = "Bar1"
+                MyValue = "Bar1",
             }
         );
 
@@ -60,7 +60,7 @@ public class CreateReadTests
                 {
                     Id = "Foo2",
                     PartitionKey = "Group1",
-                    MyValue = "Bar2"
+                    MyValue = "Bar2",
                 }
             )
             .CreateItem(
@@ -68,7 +68,7 @@ public class CreateReadTests
                 {
                     Id = "Foo3",
                     PartitionKey = "Group1",
-                    MyValue = "Bar3"
+                    MyValue = "Bar3",
                 }
             )
             .ReadItem("DoesNotExist");

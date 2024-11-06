@@ -15,7 +15,7 @@ public class TestCustomerEventCatchupSubscription(
                 @event.Body switch
                 {
                     CustomerEmailAddressChanged customerCreated => HandleEmailAddresses(customerCreated),
-                    _ => Task.CompletedTask
+                    _ => Task.CompletedTask,
                 }
             );
             logger.LogInformation(

@@ -18,7 +18,7 @@ public class SnapshotTests
         {
             Id = "Foo",
             PartitionKey = "Bar",
-            MyValue = "FooBar"
+            MyValue = "FooBar",
         };
         await container.CreateItemAsync(item, new PartitionKey("Bar"));
 
@@ -37,7 +37,7 @@ public class SnapshotTests
         {
             Id = "Foo",
             PartitionKey = "Bar",
-            MyValue = "FooBar"
+            MyValue = "FooBar",
         };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
 
@@ -47,7 +47,7 @@ public class SnapshotTests
         {
             Id = "Foo2",
             PartitionKey = "Bar",
-            MyValue = "FooBar2"
+            MyValue = "FooBar2",
         };
         await container.CreateItemAsync(item2, new PartitionKey("Bar"));
 
@@ -66,7 +66,7 @@ public class SnapshotTests
         {
             Id = "Foo",
             PartitionKey = "Bar",
-            MyValue = "FooBar"
+            MyValue = "FooBar",
         };
         await container.CreateItemAsync(item1, new PartitionKey("Bar"));
 

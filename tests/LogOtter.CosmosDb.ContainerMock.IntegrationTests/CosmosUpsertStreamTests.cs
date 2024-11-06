@@ -38,7 +38,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD2",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value1,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -57,7 +57,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -67,7 +67,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value1,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -86,7 +86,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -96,7 +96,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value1,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -120,7 +120,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -130,7 +130,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value1,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -154,7 +154,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 
@@ -164,7 +164,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
                 Id = "RECORD2",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value1,
-                PartitionKey = "test"
+                PartitionKey = "test",
             }
         );
 

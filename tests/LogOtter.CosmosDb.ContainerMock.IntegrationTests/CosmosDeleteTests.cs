@@ -36,7 +36,7 @@ public sealed class CosmosDeleteTests(IntegrationTestsFixture testFixture) : IAs
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test-dt1"
+                PartitionKey = "test-dt1",
             }
         );
 
@@ -62,7 +62,7 @@ public sealed class CosmosDeleteTests(IntegrationTestsFixture testFixture) : IAs
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
                 EnumValue = TestEnum.Value2,
-                PartitionKey = "test-dt2"
+                PartitionKey = "test-dt2",
             }
         );
 

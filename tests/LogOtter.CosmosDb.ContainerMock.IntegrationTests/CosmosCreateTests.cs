@@ -34,7 +34,7 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
         {
             Id = "RECORD1",
             Name = "Fred Blogs",
-            EnumValue = TestEnum.Value1
+            EnumValue = TestEnum.Value1,
         };
 
         var (realResult, testResult) = await _testCosmos.WhenCreating(testModel, new PartitionKey(testModel.PartitionKey));
@@ -50,7 +50,7 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
         {
             Id = string.Empty,
             Name = "Bob Bobertson",
-            EnumValue = TestEnum.Value1
+            EnumValue = TestEnum.Value1,
         };
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
@@ -69,7 +69,7 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
             {
                 Id = "RECORD1",
                 Name = "Bob Bobertson",
-                EnumValue = TestEnum.Value2
+                EnumValue = TestEnum.Value2,
             }
         );
 
@@ -77,7 +77,7 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
         {
             Id = "RECORD1",
             Name = "Bob Bobertson",
-            EnumValue = TestEnum.Value1
+            EnumValue = TestEnum.Value1,
         };
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
@@ -95,7 +95,7 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
         {
             Id = "RECORD1",
             Name = "Bob Bobertson",
-            EnumValue = TestEnum.Value1
+            EnumValue = TestEnum.Value1,
         };
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, PartitionKey.None);

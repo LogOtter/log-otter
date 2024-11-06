@@ -18,7 +18,7 @@ public class ConcurrencyTests
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
-                MyValue = "Value1"
+                MyValue = "Value1",
             },
             new PartitionKey("APartition")
         );
@@ -32,7 +32,7 @@ public class ConcurrencyTests
                 {
                     Id = "MyId",
                     PartitionKey = "APartition",
-                    MyValue = "Value2"
+                    MyValue = "Value2",
                 },
                 new PartitionKey("APartition")
             );
@@ -47,7 +47,7 @@ public class ConcurrencyTests
                 {
                     Id = "MyId",
                     PartitionKey = "APartition",
-                    MyValue = "Value2"
+                    MyValue = "Value2",
                 },
                 new PartitionKey("APartition"),
                 new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }
@@ -61,7 +61,7 @@ public class ConcurrencyTests
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
-                MyValue = "Value2"
+                MyValue = "Value2",
             },
             new PartitionKey("APartition"),
             new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }

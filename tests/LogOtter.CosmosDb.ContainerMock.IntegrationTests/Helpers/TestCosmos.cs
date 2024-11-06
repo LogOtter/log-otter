@@ -601,7 +601,7 @@ public sealed class TestCosmos(CosmosClient client, CosmosClientOptions cosmosCl
         var containerProperties = new ContainerProperties
         {
             Id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
-            PartitionKeyPath = partitionKeyPath
+            PartitionKeyPath = partitionKeyPath,
         };
 
         if (uniqueKeyPolicy != null)
