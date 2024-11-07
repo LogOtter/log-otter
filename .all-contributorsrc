@@ -45,6 +45,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "r-dunning",
+      "name": "Richard Dunning",
+      "avatar_url": "https://avatars.githubusercontent.com/u/125873252?v=4",
+      "profile": "https://github.com/r-dunning",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "edwardbarford",
+      "name": "Edward Barford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13379749?v=4",
+      "profile": "https://github.com/edwardbarford",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
