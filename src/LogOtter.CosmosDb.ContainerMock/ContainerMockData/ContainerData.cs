@@ -77,10 +77,7 @@ internal class ContainerData
             _updateSemaphore.Release();
         }
 
-        DataChanged?.Invoke(
-            this,
-            new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
-        );
+        DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Created, response.Item.Json, _serializationHelper));
 
         return response;
     }
@@ -143,8 +140,10 @@ internal class ContainerData
         {
             throw new NotFoundException();
         }
+        var response = await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
 
-        return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
+        DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Updated, response.Item.Json, _serializationHelper));
+        return response;
     }
 
     public ContainerItem RemoveItem(string id, PartitionKey partitionKey, ItemRequestOptions? requestOptions)
