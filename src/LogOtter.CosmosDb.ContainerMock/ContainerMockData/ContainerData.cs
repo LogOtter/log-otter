@@ -62,6 +62,7 @@ internal class ContainerData
         var partition = GetPartitionFromKey(partitionKey);
 
         await _updateSemaphore.WaitAsync(cancellationToken);
+        Response response;
         try
         {
             if (partition.ContainsKey(id))
@@ -69,12 +70,19 @@ internal class ContainerData
                 throw new ObjectAlreadyExistsException();
             }
 
-            return await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
+            response = await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
         }
         finally
         {
             _updateSemaphore.Release();
         }
+
+        DataChanged?.Invoke(
+            this,
+            new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
+        );
+
+        return response;
     }
 
     public Task<Response> UpsertItem(string json, PartitionKey partitionKey, ItemRequestOptions? requestOptions, CancellationToken cancellationToken)
@@ -117,8 +125,6 @@ internal class ContainerData
         var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer), _serializationHelper);
 
         partition[id] = newItem;
-
-        DataChanged?.Invoke(this, new DataChangedEventArgs(isUpdate ? Operation.Updated : Operation.Created, newItem.Json, _serializationHelper));
 
         return Task.FromResult(new Response(newItem, isUpdate));
     }
