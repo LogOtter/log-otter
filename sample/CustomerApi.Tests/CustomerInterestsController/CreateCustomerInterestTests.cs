@@ -112,8 +112,6 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var songUri = SongUri.Parse(location!);
 
-        await ChangeFeedTesting.WaitFor(
-            () => customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri)
-        );
+        await customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri);
     }
 }
