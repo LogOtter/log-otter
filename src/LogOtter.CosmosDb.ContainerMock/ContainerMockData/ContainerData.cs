@@ -59,30 +59,29 @@ internal class ContainerData
     )
     {
         var id = JsonHelpers.GetIdFromJson(json);
-        var partition = GetPartitionFromKey(partitionKey);
 
-        await _updateSemaphore.WaitAsync(cancellationToken);
-        Response response;
-        try
-        {
-            if (partition.ContainsKey(id))
+        return await UpsertItem(
+            json,
+            partitionKey,
+            requestOptions,
+            cancellationToken,
+            (partition) =>
             {
-                throw new ObjectAlreadyExistsException();
+                if (partition.ContainsKey(id))
+                {
+                    throw new ObjectAlreadyExistsException();
+                }
             }
-
-            response = await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
-        }
-        finally
-        {
-            _updateSemaphore.Release();
-        }
-
-        DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Created, response.Item.Json, _serializationHelper));
-
-        return response;
+        );
     }
 
-    public Task<Response> UpsertItem(string json, PartitionKey partitionKey, ItemRequestOptions? requestOptions, CancellationToken cancellationToken)
+    public async Task<Response> UpsertItem(
+        string json,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions,
+        CancellationToken cancellationToken,
+        Action<ConcurrentDictionary<string, ContainerItem>>? partitionAssertion = null
+    )
     {
         var partition = GetPartitionFromKey(partitionKey);
         var id = JsonHelpers.GetIdFromJson(json);
@@ -90,40 +89,56 @@ internal class ContainerData
 
         GuardAgainstInvalidId(id);
 
-        var isUpdate = partition.TryGetValue(id, out var existingItem);
-
-        if (existingItem != null)
+        Response response;
+        await _updateSemaphore.WaitAsync(cancellationToken);
+        try
         {
-            if (existingItem.RequireETagOnNextUpdate)
+            partitionAssertion?.Invoke(partition);
+            var isUpdate = partition.TryGetValue(id, out var existingItem);
+
+            if (existingItem != null)
             {
-                if (string.IsNullOrWhiteSpace(requestOptions?.IfMatchEtag))
+                if (existingItem.RequireETagOnNextUpdate)
                 {
-                    throw new InvalidOperationException("An eTag must be provided as a concurrency exception is queued");
+                    if (string.IsNullOrWhiteSpace(requestOptions?.IfMatchEtag))
+                    {
+                        throw new InvalidOperationException("An eTag must be provided as a concurrency exception is queued");
+                    }
+                }
+
+                if (existingItem.HasScheduledETagMismatch)
+                {
+                    existingItem.ChangeETag();
+                    throw new ETagMismatchException();
                 }
             }
 
-            if (existingItem.HasScheduledETagMismatch)
+            if (IsUniqueKeyViolation(json, partition.Values.Where(i => i.Id != id)))
             {
-                existingItem.ChangeETag();
+                throw new UniqueConstraintViolationException();
+            }
+
+            if (isUpdate && requestOptions?.IfMatchEtag != null && requestOptions.IfMatchEtag != existingItem!.ETag)
+            {
                 throw new ETagMismatchException();
             }
-        }
 
-        if (IsUniqueKeyViolation(json, partition.Values.Where(i => i.Id != id)))
+            var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer), _serializationHelper);
+
+            partition[id] = newItem;
+
+            response = new Response(newItem, isUpdate);
+        }
+        finally
         {
-            throw new UniqueConstraintViolationException();
+            _updateSemaphore.Release();
         }
 
-        if (isUpdate && requestOptions?.IfMatchEtag != null && requestOptions.IfMatchEtag != existingItem!.ETag)
-        {
-            throw new ETagMismatchException();
-        }
-
-        var newItem = new ContainerItem(id, json, partitionKey, GetExpiryTime(ttl, _currentTimer), _serializationHelper);
-
-        partition[id] = newItem;
-
-        return Task.FromResult(new Response(newItem, isUpdate));
+        DataChanged?.Invoke(
+            this,
+            new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
+        );
+        return response;
     }
 
     public async Task<Response> ReplaceItem(
@@ -134,15 +149,20 @@ internal class ContainerData
         CancellationToken cancellationToken
     )
     {
-        var partition = GetPartitionFromKey(partitionKey);
+        var response = await UpsertItem(
+            json,
+            partitionKey,
+            requestOptions,
+            cancellationToken,
+            (partition) =>
+            {
+                if (!partition.ContainsKey(id))
+                {
+                    throw new NotFoundException();
+                }
+            }
+        );
 
-        if (!partition.TryGetValue(id, out _))
-        {
-            throw new NotFoundException();
-        }
-        var response = await UpsertItem(json, partitionKey, requestOptions, cancellationToken);
-
-        DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Updated, response.Item.Json, _serializationHelper));
         return response;
     }
 
