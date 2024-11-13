@@ -61,10 +61,21 @@ public class ContainerMock : Container
         }
     }
 
-    public override async Task<ResponseMessage> CreateItemStreamAsync(
+    public override Task<ResponseMessage> CreateItemStreamAsync(
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return CreateItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ResponseMessage> CreateItemStreamAsync(
+        Stream streamPayload,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -81,7 +92,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.AddItem(json, partitionKey, requestOptions, cancellationToken);
+            var response = await _containerData.AddItem(json, partitionKey, dataChangeMode, requestOptions, cancellationToken);
 
             return ToCosmosResponseMessage(response, streamPayload);
         }
@@ -91,10 +102,21 @@ public class ContainerMock : Container
         }
     }
 
-    public override async Task<ItemResponse<T>> CreateItemAsync<T>(
+    public override Task<ItemResponse<T>> CreateItemAsync<T>(
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return CreateItemAsync(item, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ItemResponse<T>> CreateItemAsync<T>(
+        T item,
+        PartitionKey? partitionKey = default,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -126,7 +148,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.AddItem(json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
+            var response = await _containerData.AddItem(json, GetPartitionKey(json, partitionKey), dataChangeMode, requestOptions, cancellationToken);
 
             return ToCosmosItemResponse<T>(response);
         }
@@ -201,10 +223,21 @@ public class ContainerMock : Container
         return Task.FromResult<ItemResponse<T>>(itemResponse);
     }
 
-    public override async Task<ResponseMessage> UpsertItemStreamAsync(
+    public override Task<ResponseMessage> UpsertItemStreamAsync(
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return UpsertItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ResponseMessage> UpsertItemStreamAsync(
+        Stream streamPayload,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -216,7 +249,7 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.UpsertItem(json, partitionKey, requestOptions, cancellationToken);
+            var response = await _containerData.UpsertItem(json, partitionKey, dataChangeMode, requestOptions, cancellationToken);
             return ToCosmosResponseMessage(response, streamPayload);
         }
         catch (ContainerMockException ex)
@@ -225,10 +258,21 @@ public class ContainerMock : Container
         }
     }
 
-    public override async Task<ItemResponse<T>> UpsertItemAsync<T>(
+    public override Task<ItemResponse<T>> UpsertItemAsync<T>(
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return UpsertItemAsync(item, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ItemResponse<T>> UpsertItemAsync<T>(
+        T item,
+        PartitionKey? partitionKey = default,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -238,7 +282,13 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.UpsertItem(json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
+            var response = await _containerData.UpsertItem(
+                json,
+                GetPartitionKey(json, partitionKey),
+                dataChangeMode,
+                requestOptions,
+                cancellationToken
+            );
             return ToCosmosItemResponse<T>(response);
         }
         catch (ContainerMockException ex)
@@ -247,11 +297,23 @@ public class ContainerMock : Container
         }
     }
 
-    public override async Task<ItemResponse<T>> ReplaceItemAsync<T>(
+    public override Task<ItemResponse<T>> ReplaceItemAsync<T>(
         T item,
         string id,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return ReplaceItemAsync(item, id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ItemResponse<T>> ReplaceItemAsync<T>(
+        T item,
+        string id,
+        PartitionKey? partitionKey = default,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -261,7 +323,14 @@ public class ContainerMock : Container
 
         try
         {
-            var response = await _containerData.ReplaceItem(id, json, GetPartitionKey(json, partitionKey), requestOptions, cancellationToken);
+            var response = await _containerData.ReplaceItem(
+                id,
+                json,
+                GetPartitionKey(json, partitionKey),
+                dataChangeMode,
+                requestOptions,
+                cancellationToken
+            );
             return ToCosmosItemResponse<T>(response);
         }
         catch (ContainerMockException ex)
@@ -296,11 +365,22 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
+        return DeleteItemAsync<T>(id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public Task<ItemResponse<T>> DeleteItemAsync<T>(
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        CancellationToken cancellationToken = default
+    )
+    {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(DeleteItemAsync)));
 
         try
         {
-            _containerData.RemoveItem(id, partitionKey, requestOptions);
+            _containerData.RemoveItem(id, partitionKey, dataChangeMode, requestOptions);
 
             var itemResponse = new MockItemResponse<T>(HttpStatusCode.NoContent);
             return Task.FromResult<ItemResponse<T>>(itemResponse);
@@ -311,10 +391,21 @@ public class ContainerMock : Container
         }
     }
 
-    public override async Task<ResponseMessage> DeleteItemStreamAsync(
+    public override Task<ResponseMessage> DeleteItemStreamAsync(
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return DeleteItemStreamAsync(id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+    }
+
+    public async Task<ResponseMessage> DeleteItemStreamAsync(
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Single,
         CancellationToken cancellationToken = default
     )
     {
@@ -322,7 +413,7 @@ public class ContainerMock : Container
 
         try
         {
-            _containerData.RemoveItem(id, partitionKey, requestOptions);
+            _containerData.RemoveItem(id, partitionKey, dataChangeMode, requestOptions);
             var responseMessage = new ResponseMessage(HttpStatusCode.NoContent);
             return responseMessage;
         }
@@ -394,6 +485,15 @@ public class ContainerMock : Container
     public void RestoreSnapshot(ContainerDataSnapshot snapshot)
     {
         _containerData.RestoreSnapshot(snapshot);
+    }
+
+    public void ExecuteDataChanges()
+    {
+        while (!_containerData.DataChanges.IsEmpty)
+        {
+            _containerData.DataChanges.TryDequeue(out var action);
+            action?.Invoke();
+        }
     }
 
     private static ResponseMessage ToCosmosResponseMessage(Response response, Stream streamPayload)

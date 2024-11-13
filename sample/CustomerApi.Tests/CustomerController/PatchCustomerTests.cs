@@ -63,8 +63,9 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
 
         var client = customerApi.CreateClient(authHeader);
         var request = new { EmailAddress = "bobby@bobertson.co.uk" };
-        await client.PatchAsJsonAsync("/customers/CustomerId", request);
+        var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         await customerApi.Then.TheCustomerShouldMatch(customerUri, c => c.EmailAddresses.SequenceEqual(new List<String> { "bobby@bobertson.co.uk" }));
     }
 

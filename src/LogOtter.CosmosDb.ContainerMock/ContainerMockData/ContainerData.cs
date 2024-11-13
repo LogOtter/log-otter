@@ -18,6 +18,7 @@ internal class ContainerData
     private readonly SemaphoreSlim _updateSemaphore = new(1, 1);
 
     private int _currentTimer;
+    internal ConcurrentQueue<Action> DataChanges { get; } = new ConcurrentQueue<Action>();
 
     public ContainerData(UniqueKeyPolicy? uniqueKeyPolicy, int defaultDocumentTimeToLive, StringSerializationHelper serializationHelper)
     {
@@ -54,6 +55,7 @@ internal class ContainerData
     public async Task<Response> AddItem(
         string json,
         PartitionKey partitionKey,
+        DataChangeMode dataChangeMode,
         ItemRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
@@ -63,6 +65,7 @@ internal class ContainerData
         return await UpsertItem(
             json,
             partitionKey,
+            dataChangeMode,
             requestOptions,
             cancellationToken,
             (partition) =>
@@ -78,6 +81,7 @@ internal class ContainerData
     public async Task<Response> UpsertItem(
         string json,
         PartitionKey partitionKey,
+        DataChangeMode dataChangeMode,
         ItemRequestOptions? requestOptions,
         CancellationToken cancellationToken,
         Action<ConcurrentDictionary<string, ContainerItem>>? partitionAssertion = null
@@ -134,10 +138,19 @@ internal class ContainerData
             _updateSemaphore.Release();
         }
 
-        DataChanged?.Invoke(
-            this,
-            new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
-        );
+        void ExecuteDataChange() =>
+            DataChanged?.Invoke(
+                this,
+                new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
+            );
+        if (dataChangeMode == DataChangeMode.Single)
+        {
+            ExecuteDataChange();
+        }
+        else
+        {
+            DataChanges.Enqueue(ExecuteDataChange);
+        }
         return response;
     }
 
@@ -145,6 +158,7 @@ internal class ContainerData
         string id,
         string json,
         PartitionKey partitionKey,
+        DataChangeMode dataChangeMode,
         ItemRequestOptions? requestOptions,
         CancellationToken cancellationToken
     )
@@ -152,6 +166,7 @@ internal class ContainerData
         var response = await UpsertItem(
             json,
             partitionKey,
+            dataChangeMode,
             requestOptions,
             cancellationToken,
             (partition) =>
@@ -166,7 +181,7 @@ internal class ContainerData
         return response;
     }
 
-    public ContainerItem RemoveItem(string id, PartitionKey partitionKey, ItemRequestOptions? requestOptions)
+    public ContainerItem RemoveItem(string id, PartitionKey partitionKey, DataChangeMode dataChangeMode, ItemRequestOptions? requestOptions)
     {
         var existingItem = GetItem(id, partitionKey);
         if (existingItem == null)
@@ -179,20 +194,30 @@ internal class ContainerData
             throw new ETagMismatchException();
         }
 
-        var removedItem = RemoveItemInternal(id, partitionKey)!;
+        var removedItem = RemoveItemInternal(id, partitionKey, dataChangeMode)!;
 
         return removedItem;
     }
 
-    private ContainerItem? RemoveItemInternal(string id, PartitionKey partitionKey)
+    private ContainerItem? RemoveItemInternal(string id, PartitionKey partitionKey, DataChangeMode dataChangeMode)
     {
         var partition = GetPartitionFromKey(partitionKey);
 
         partition.Remove(id, out var removedItem);
 
-        if (removedItem != null)
+        if (removedItem == null)
         {
-            DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Deleted, removedItem.Json, _serializationHelper));
+            return removedItem;
+        }
+
+        void ExecuteDataChange() => DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Deleted, removedItem.Json, _serializationHelper));
+        if (dataChangeMode == DataChangeMode.Single)
+        {
+            ExecuteDataChange();
+        }
+        else
+        {
+            DataChanges.Enqueue(ExecuteDataChange);
         }
 
         return removedItem;
@@ -214,7 +239,7 @@ internal class ContainerData
                     continue;
                 }
 
-                RemoveItemInternal(item.Id, item.PartitionKey);
+                RemoveItemInternal(item.Id, item.PartitionKey, DataChangeMode.Single);
             }
         }
     }

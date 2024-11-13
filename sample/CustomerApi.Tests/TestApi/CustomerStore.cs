@@ -53,6 +53,13 @@ public class CustomerStore(
         return await customerEventRepository.ApplyEvents(customerUri.Uri, 0, customerCreated);
     }
 
+    public async Task<CustomerReadModel> AnExistingCustomerEmailWasUpdated(CustomerUri customerUri, string emailAddress)
+    {
+        var customerReadModel = await customerEventRepository.Get(customerUri.Uri);
+        var emailUpdated = new CustomerEmailAddressChanged(customerUri, customerReadModel!.EmailAddress, emailAddress);
+        return await customerEventRepository.ApplyEvents(customerUri.Uri, customerReadModel.Revision, emailUpdated);
+    }
+
     public async Task GivenTheCustomerIsDeleted(CustomerUri customerUri)
     {
         var customerDeleted = new CustomerDeleted(customerUri);
