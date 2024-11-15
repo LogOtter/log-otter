@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using FluentAssertions;
+using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Xunit;
@@ -143,6 +144,45 @@ public class CreateItemTests
 
         var response = await batch.ExecuteAsync();
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task CreatingItemsInBatchExecutesDataChangedEvents()
+    {
+        var containerMock = new ContainerMock();
+        bool dataChangeCalled = false;
+        containerMock.DataChanged += (_, args) =>
+        {
+            dataChangeCalled = true;
+            args.Should().NotBeNull();
+            args.Operation.Should().Be(Operation.Created);
+        };
+
+        var batch = containerMock
+            .CreateTransactionalBatch(new PartitionKey("Group1"))
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo1",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar1",
+                }
+            )
+            .CreateItem(
+                new TestClass
+                {
+                    Id = "Foo2",
+                    PartitionKey = "Group1",
+                    MyValue = "Bar2",
+                }
+            );
+
+        dataChangeCalled.Should().Be(false);
+
+        var response = await batch.ExecuteAsync();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        dataChangeCalled.Should().Be(true);
     }
 
     private class TestClass

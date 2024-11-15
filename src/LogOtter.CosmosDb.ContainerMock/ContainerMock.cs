@@ -68,14 +68,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return CreateItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return CreateItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ResponseMessage> CreateItemStreamAsync(
+    internal async Task<ResponseMessage> CreateItemStreamAsync(
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -109,14 +109,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return CreateItemAsync(item, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return CreateItemAsync(item, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ItemResponse<T>> CreateItemAsync<T>(
+    internal async Task<ItemResponse<T>> CreateItemAsync<T>(
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -230,14 +230,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return UpsertItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return UpsertItemStreamAsync(streamPayload, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ResponseMessage> UpsertItemStreamAsync(
+    internal async Task<ResponseMessage> UpsertItemStreamAsync(
         Stream streamPayload,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -265,14 +265,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return UpsertItemAsync(item, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return UpsertItemAsync(item, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ItemResponse<T>> UpsertItemAsync<T>(
+    internal async Task<ItemResponse<T>> UpsertItemAsync<T>(
         T item,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -305,15 +305,15 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return ReplaceItemAsync(item, id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return ReplaceItemAsync(item, id, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ItemResponse<T>> ReplaceItemAsync<T>(
+    internal async Task<ItemResponse<T>> ReplaceItemAsync<T>(
         T item,
         string id,
         PartitionKey? partitionKey = default,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -365,14 +365,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return DeleteItemAsync<T>(id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return DeleteItemAsync<T>(id, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public Task<ItemResponse<T>> DeleteItemAsync<T>(
+    internal Task<ItemResponse<T>> DeleteItemAsync<T>(
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {
@@ -398,14 +398,14 @@ public class ContainerMock : Container
         CancellationToken cancellationToken = default
     )
     {
-        return DeleteItemStreamAsync(id, partitionKey, requestOptions, DataChangeMode.Single, cancellationToken);
+        return DeleteItemStreamAsync(id, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
-    public async Task<ResponseMessage> DeleteItemStreamAsync(
+    internal async Task<ResponseMessage> DeleteItemStreamAsync(
         string id,
         PartitionKey partitionKey,
         ItemRequestOptions? requestOptions = null,
-        DataChangeMode dataChangeMode = DataChangeMode.Single,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
         CancellationToken cancellationToken = default
     )
     {

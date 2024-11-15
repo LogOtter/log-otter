@@ -143,7 +143,7 @@ internal class ContainerData
                 this,
                 new DataChangedEventArgs(response.IsUpdate ? Operation.Updated : Operation.Created, response.Item.Json, _serializationHelper)
             );
-        if (dataChangeMode == DataChangeMode.Single)
+        if (dataChangeMode == DataChangeMode.Auto)
         {
             ExecuteDataChange();
         }
@@ -211,7 +211,7 @@ internal class ContainerData
         }
 
         void ExecuteDataChange() => DataChanged?.Invoke(this, new DataChangedEventArgs(Operation.Deleted, removedItem.Json, _serializationHelper));
-        if (dataChangeMode == DataChangeMode.Single)
+        if (dataChangeMode == DataChangeMode.Auto)
         {
             ExecuteDataChange();
         }
@@ -239,7 +239,7 @@ internal class ContainerData
                     continue;
                 }
 
-                RemoveItemInternal(item.Id, item.PartitionKey, DataChangeMode.Single);
+                RemoveItemInternal(item.Id, item.PartitionKey, DataChangeMode.Auto);
             }
         }
     }

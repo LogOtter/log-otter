@@ -20,7 +20,7 @@ internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock c
             using var ms = new MemoryStream(bytes);
 
             var itemResponse = containerMock
-                .CreateItemStreamAsync(ms, partitionKey, itemRequestOptions, DataChangeMode.Batch)
+                .CreateItemStreamAsync(ms, partitionKey, itemRequestOptions, DataChangeMode.Manual)
                 .GetAwaiter()
                 .GetResult();
 
