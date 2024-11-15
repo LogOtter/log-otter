@@ -23,6 +23,8 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
     private readonly string _instanceName = Environment.MachineName;
     private ChangeFeedProcessor? _changeFeedProcessor;
 
+    public string Name => name;
+
     public async Task Start()
     {
         if (!enabled)
