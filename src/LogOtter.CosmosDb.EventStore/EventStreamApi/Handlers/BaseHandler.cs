@@ -6,8 +6,11 @@ namespace LogOtter.CosmosDb.EventStore.EventStreamApi.Handlers;
 
 internal abstract class BaseHandler : IHandler
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions =
-        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DictionaryKeyPolicy = JsonNamingPolicy.CamelCase };
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+    };
 
     protected EventStreamsApiOptions Options { get; private set; } = null!;
 
