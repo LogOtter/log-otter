@@ -13,11 +13,11 @@
       },
       "Meziantou.Extensions.Logging.Xunit": {
         "type": "Direct",
-        "requested": "[1.0.7, )",
-        "resolved": "1.0.7",
-        "contentHash": "ZCTr/6vz5YlIYFdtmqPnYtpYWucrY8vfysR2EisewyQShnLJwAYSTz/XXJ3igl/1PDKYjCzgoeX8U8paNDPUHA==",
+        "requested": "[1.0.8, )",
+        "resolved": "1.0.8",
+        "contentHash": "0q9Acu2kIVzjzc33iX+KRAXJiTLvwiUhRccySfiL5TgLHiyCHJXj8P5IAetYkiChzRqJAqdD1BfhmpteA9gluA==",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "xunit.abstractions": "2.0.3"
         }
       },
@@ -53,10 +53,19 @@
         "resolved": "17.11.1",
         "contentHash": "nPJqrcA5iX+Y0kqoT3a+pD/8lrW/V7ayqnEJQsTonSoPz59J8bmoQhcSN4G8+UJ64Hkuf0zuxnfuj2lkHOq4cA=="
       },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "+6f2qv2a3dLwd5w6JanPIPs47CxRbnk+ZocMJUhv9NxP88VlOcJYZs9jY+MYSjxvady08bUZn6qgiNh7DadGgg=="
+      },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "7.0.1",
-        "contentHash": "pkeBFx0vqMW/A3aUVHh7MPu3WkBhaVlezhSZeb1c9XD0vUReYH1TLFSy5MxJgZfmz5LZzYoErMorlYZiwpOoNA=="
+        "resolved": "9.0.0",
+        "contentHash": "g0UfujELzlLbHoVG8kPKVBaW470Ewi+jnptGS9KUi6jcb+k2StujtK3m26DFSGGwQ/+bVgZfsWqNzlP6YOejvw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
+          "System.Diagnostics.DiagnosticSource": "9.0.0"
+        }
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
@@ -82,6 +91,11 @@
         "dependencies": {
           "System.Security.Cryptography.ProtectedData": "4.4.0"
         }
+      },
+      "System.Diagnostics.DiagnosticSource": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "ddppcFpnbohLWdYKr/ZeLZHmmI+DXFgZ3Snq+/E7SwcdW4UnvxmaugkwGywvGVWkHPGCSZjCP+MLzu23AL5SDw=="
       },
       "System.Reflection.Metadata": {
         "type": "Transitive",
