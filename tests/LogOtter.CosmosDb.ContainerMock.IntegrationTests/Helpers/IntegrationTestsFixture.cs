@@ -1,4 +1,7 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.Containers;
+using Microsoft.Azure.Cosmos;
 using Testcontainers.CosmosDb;
 using Xunit;
 
@@ -6,7 +9,6 @@ namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
 
 public class IntegrationTestsFixture : IAsyncLifetime
 {
-    private const int CosmosEmulatorPartitionCount = 5;
     private readonly CosmosDbContainer? _container;
     private readonly string _cosmosConnectionString;
     private readonly bool _useTestContainers;
@@ -18,7 +20,16 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
         if (_useTestContainers)
         {
-            _container = new CosmosDbBuilder().WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", $"{CosmosEmulatorPartitionCount}").Build();
+            // _container = new ContainerBuilder()
+
+            //     .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+            //     .Build();
+            _container = new CosmosDbBuilder()
+                .WithImage("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview")
+                .WithCommand("--protocol", "https")
+                .WithEnvironment("ENABLE_EXPLORER", "false")
+                .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+                .Build();
         }
     }
 
@@ -51,5 +62,31 @@ public class IntegrationTestsFixture : IAsyncLifetime
         }
 
         return new TestCosmos(new CosmosClient(_cosmosConnectionString, clientOptions), clientOptions);
+    }
+
+    private sealed class WaitUntil : IWaitUntil
+    {
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            // CosmosDB's preconfigured HTTP client will redirect the request to the container.
+            const string requestUri = "https://localhost";
+
+            var httpClient = ((CosmosDbContainer)container).HttpClient;
+
+            try
+            {
+                using var httpResponse = await httpClient.GetAsync(requestUri).ConfigureAwait(false);
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                httpClient.Dispose();
+            }
+        }
     }
 }
