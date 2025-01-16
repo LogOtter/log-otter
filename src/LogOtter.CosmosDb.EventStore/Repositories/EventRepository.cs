@@ -78,4 +78,40 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
 
         return entity;
     }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, params TBaseEvent[] events)
+    {
+        return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, events);
+    }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        params TBaseEvent[] events
+    )
+    {
+        if (events.Any(e => e.EventStreamId != id))
+        {
+            throw new ArgumentException("All events must be for the same entity", nameof(events));
+        }
+
+        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
+
+        foreach (var eventToApply in events)
+        {
+            eventToApply.Apply(entity);
+        }
+
+        var streamId = _options.EscapeIdIfRequired(id);
+
+        var now = DateTimeOffset.Now;
+        var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
+
+        await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
+
+        entity.Revision += events.Length;
+
+        return (entity, eventData);
+    }
 }
