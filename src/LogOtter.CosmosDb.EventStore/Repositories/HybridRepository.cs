@@ -77,13 +77,13 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
         params TBaseEvent[] events
     )
     {
-        var snapshot = await eventRepository.ApplyEvents(id, expectedRevision, cancellationToken, events);
+        var (snapshot, eventData) = await eventRepository.ApplyAndGetEvents(id, expectedRevision, cancellationToken, events);
 
         try
         {
             var partitionKey = _snapshotPartitionKeyResolver(events.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
-            var eventsToUpdate = events.Select(e => new Event<TBaseEvent>(id, eventRevision++, e)).ToList();
+            var eventsToUpdate = eventData.Select(e => new Event<TBaseEvent>(id, eventRevision++, e.Body, e.CreatedOn, e.Metadata)).ToList();
 
             await snapshotRepository.ApplyEventsToSnapshot(id, partitionKey, eventsToUpdate, cancellationToken);
         }
