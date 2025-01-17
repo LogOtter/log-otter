@@ -46,7 +46,9 @@ public class SerializationTests
         deserialized.Primitive.Value.ShouldBe("hello world");
 
         deserialized.Address.IsIncludedInPatch.ShouldBeTrue();
-        deserialized.Address.Value.ShouldBeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
+        deserialized.Address.Value.ShouldNotBeNull();
+        deserialized.Address.Value.Line1.ShouldBe("Alpha Tower");
+        deserialized.Address.Value.Postcode.ShouldBe("B1 1TT");
     }
 
     [Theory]
@@ -60,7 +62,9 @@ public class SerializationTests
         deserialized.Primitive.Value.ShouldBe("hello world");
 
         deserialized.Address.IsIncludedInPatch.ShouldBeTrue();
-        deserialized.Address.Value.ShouldBeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
+        deserialized.Address.Value.ShouldNotBeNull();
+        deserialized.Address.Value.Line1.ShouldBe("Alpha Tower");
+        deserialized.Address.Value.Postcode.ShouldBe("B1 1TT");
     }
 
     [Theory]

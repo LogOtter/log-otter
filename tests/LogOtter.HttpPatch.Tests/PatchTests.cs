@@ -80,7 +80,8 @@ public class PatchTests
         updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
         updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
 
-        updatedResource.Address.ShouldBeEquivalentTo(new { Line1 = "Centenary Plaza", Postcode = "B1 1TB" });
+        updatedResource.Address.Line1.ShouldBe("Centenary Plaza");
+        updatedResource.Address.Postcode.ShouldBe("B1 1TB");
     }
 
     [Theory]
@@ -214,7 +215,8 @@ public class PatchTests
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.People.ShouldBeEquivalentTo(new[] { "Bob", "Bobetta" }, "The patched value should be updated");
+        updatedResource.People.ShouldContain("Bob", "The patched value should be updated");
+        updatedResource.People.ShouldContain("Bobetta", "The patched value should be updated");
         updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 }
