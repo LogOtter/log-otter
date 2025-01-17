@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -25,7 +25,7 @@ public class SnapshotTests
         container.RestoreSnapshot(snapshot);
 
         var itemCount = await container.CountAsync<TestClass>("Bar", q => q);
-        itemCount.Should().Be(0);
+        itemCount.ShouldBe(0);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class SnapshotTests
         container.RestoreSnapshot(snapshot);
 
         var itemCount = await container.CountAsync<TestClass>("Bar", q => q);
-        itemCount.Should().Be(1);
+        itemCount.ShouldBe(1);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class SnapshotTests
         container.RestoreSnapshot(snapshot);
 
         var dbItem = await container.ReadItemAsync<TestClass>("Foo", new PartitionKey("Bar"));
-        dbItem.Resource.MyValue.Should().Be("FooBar");
+        dbItem.Resource.MyValue.ShouldBe("FooBar");
     }
 
     private class TestClass

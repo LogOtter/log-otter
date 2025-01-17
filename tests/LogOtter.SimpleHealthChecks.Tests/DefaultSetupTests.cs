@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -21,7 +21,7 @@ public class DefaultSetupTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.ContentType.Should().Be("text/plain");
+            response.ContentType.ShouldBe("text/plain");
         });
     }
 
@@ -44,7 +44,7 @@ public class DefaultSetupTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(expectedStatusCode);
+            response.StatusCode.ShouldBe(expectedStatusCode);
         });
     }
 
@@ -69,7 +69,7 @@ public class DefaultSetupTests
             await response.WaitForResponseClosed();
 
             var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-            responseBody.Should().Be(expectedResponseBody);
+            responseBody.ShouldBe(expectedResponseBody);
         });
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Net;
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests.TransactionalBatch;
@@ -34,18 +34,18 @@ public class CreateItemTests
             );
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        containerMock.GetAllItems<TestClass>().Should().HaveCount(2);
+        containerMock.GetAllItems<TestClass>().Count().ShouldBe(2);
 
         var foo1 = await containerMock.ReadItemAsync<TestClass>("Foo1", new PartitionKey("Group1"));
         var foo2 = await containerMock.ReadItemAsync<TestClass>("Foo2", new PartitionKey("Group1"));
 
-        foo1.Should().NotBeNull();
-        foo1.Resource.MyValue.Should().Be("Bar1");
+        foo1.ShouldNotBeNull();
+        foo1.Resource.MyValue.ShouldBe("Bar1");
 
-        foo2.Should().NotBeNull();
-        foo2.Resource.MyValue.Should().Be("Bar2");
+        foo2.ShouldNotBeNull();
+        foo2.Resource.MyValue.ShouldBe("Bar2");
     }
 
     [Fact]
@@ -74,13 +74,13 @@ public class CreateItemTests
 
         // Intentionally not calling: await batch.ExecuteAsync();
 
-        containerMock.GetAllItems<TestClass>().Should().HaveCount(0);
+        containerMock.GetAllItems<TestClass>().Count().ShouldBe(0);
 
         var action1 = async () => await containerMock.ReadItemAsync<TestClass>("Foo1", new PartitionKey("Group1"));
         var action2 = async () => await containerMock.ReadItemAsync<TestClass>("Foo2", new PartitionKey("Group1"));
 
-        (await action1.Should().ThrowAsync<CosmosException>()).Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        (await action2.Should().ThrowAsync<CosmosException>()).Which.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        (await action1.ShouldThrowAsync<CosmosException>()).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await action2.ShouldThrowAsync<CosmosException>()).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public class CreateItemTests
             );
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().NotBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.OK);
 
-        containerMock.GetAllItems<TestClass>().Should().HaveCount(0);
+        containerMock.GetAllItems<TestClass>().Count().ShouldBe(0);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class CreateItemTests
         );
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class CreateItemTests
         containerMock.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Created);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Created);
         };
 
         var batch = containerMock
@@ -177,12 +177,12 @@ public class CreateItemTests
                 }
             );
 
-        dataChangeCalled.Should().Be(false);
+        dataChangeCalled.ShouldBe(false);
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     private class TestClass

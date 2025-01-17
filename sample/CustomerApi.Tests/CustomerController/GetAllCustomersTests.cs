@@ -2,8 +2,8 @@
 using System.Net.Http.Json;
 using CustomerApi.Controllers.Customers;
 using CustomerApi.Uris;
-using FluentAssertions;
 using LogOtter.JsonHal;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,35 +26,35 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var customersResponse = await response.Content.ReadFromJsonAsync<CustomersResponse>();
 
-        customersResponse.Should().NotBeNull();
-        customersResponse!.Customers.Should().NotBeNull();
-        customersResponse.Customers.Should().HaveCount(2);
+        customersResponse.ShouldNotBeNull();
+        customersResponse!.Customers.ShouldNotBeNull();
+        customersResponse.Customers.Count.ShouldBe(2);
 
-        customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(3);
-        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetSelfHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.ShouldNotBeNull();
+        customersResponse.Links.Count.ShouldBe(3);
+        customersResponse.Links.GetFirstHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetSelfHref().ShouldBeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetLastHref().ShouldBeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
 
         var bob = customersResponse.Customers.FirstOrDefault(c => c.CustomerUri == "/customers/ExistingUser");
-        bob.Should().NotBeNull();
-        bob!.EmailAddress.Should().Be("bob@bobertson.co.uk");
-        bob.FirstName.Should().Be("Bob");
-        bob.LastName.Should().Be("Bobertson");
-        bob.CustomerUri.Should().Be("/customers/ExistingUser");
-        bob.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(2)).Before(createdTimestamp);
+        bob.ShouldNotBeNull();
+        bob!.EmailAddress.ShouldBe("bob@bobertson.co.uk");
+        bob.FirstName.ShouldBe("Bob");
+        bob.LastName.ShouldBe("Bobertson");
+        bob.CustomerUri.ShouldBe("/customers/ExistingUser");
+        bob.CreatedOn.ShouldBe(createdTimestamp, TimeSpan.FromSeconds(2));
 
         var bobetta = customersResponse.Customers.FirstOrDefault(c => c.CustomerUri == "/customers/AnotherExistingUser");
-        bobetta.Should().NotBeNull();
-        bobetta!.EmailAddress.Should().Be("bobetta@bobson.co.uk");
-        bobetta.FirstName.Should().Be("Bobetta");
-        bobetta.LastName.Should().Be("Bobson");
-        bobetta.CustomerUri.Should().Be("/customers/AnotherExistingUser");
-        bobetta.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(2)).Before(createdTimestamp);
+        bobetta.ShouldNotBeNull();
+        bobetta!.EmailAddress.ShouldBe("bobetta@bobson.co.uk");
+        bobetta.FirstName.ShouldBe("Bobetta");
+        bobetta.LastName.ShouldBe("Bobson");
+        bobetta.CustomerUri.ShouldBe("/customers/AnotherExistingUser");
+        bobetta.CreatedOn.ShouldBe(createdTimestamp, TimeSpan.FromSeconds(2));
     }
 
     [Fact]
@@ -72,22 +72,22 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var customersResponse = await response.Content.ReadFromJsonAsync<CustomersResponse>();
 
-        customersResponse.Should().NotBeNull();
-        customersResponse!.Customers.Should().NotBeNull();
+        customersResponse.ShouldNotBeNull();
+        customersResponse!.Customers.ShouldNotBeNull();
 
         // TestCustomerApi is configured to have a page size of 5
-        customersResponse.Customers.Should().HaveCount(5);
+        customersResponse.Customers.Count.ShouldBe(5);
 
-        customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(4);
-        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetSelfHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetNextHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
-        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
+        customersResponse.Links.ShouldNotBeNull();
+        customersResponse.Links.Count.ShouldBe(4);
+        customersResponse.Links.GetFirstHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetSelfHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetNextHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
+        customersResponse.Links.GetLastHref().ShouldBeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
     }
 
     [Fact]
@@ -105,23 +105,23 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers?page=2");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var customersResponse = await response.Content.ReadFromJsonAsync<CustomersResponse>();
 
-        customersResponse.Should().NotBeNull();
-        customersResponse!.Customers.Should().NotBeNull();
+        customersResponse.ShouldNotBeNull();
+        customersResponse!.Customers.ShouldNotBeNull();
 
         // TestCustomerApi is configured to have a page size of 5
-        customersResponse.Customers.Should().HaveCount(5);
+        customersResponse.Customers.Count.ShouldBe(5);
 
-        customersResponse.Links.Should().NotBeNull();
-        customersResponse.Links.Should().HaveCount(5);
-        customersResponse.Links.GetFirstHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetPrevHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
-        customersResponse.Links.GetSelfHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
-        customersResponse.Links.GetNextHref().Should().Be(new Uri(customerApi.BaseAddress, "/customers?page=3").ToString());
-        customersResponse.Links.GetLastHref().Should().BeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=4").ToString());
+        customersResponse.Links.ShouldNotBeNull();
+        customersResponse.Links.Count.ShouldBe(5);
+        customersResponse.Links.GetFirstHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetPrevHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=1").ToString());
+        customersResponse.Links.GetSelfHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=2").ToString());
+        customersResponse.Links.GetNextHref().ShouldBe(new Uri(customerApi.BaseAddress, "/customers?page=3").ToString());
+        customersResponse.Links.GetLastHref().ShouldBeEquivalentTo(new Uri(customerApi.BaseAddress, "/customers?page=4").ToString());
     }
 
     [Fact]
@@ -135,13 +135,13 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var customerResponse = await response.Content.ReadFromJsonAsync<CustomersResponse>();
 
-        customerResponse.Should().NotBeNull();
-        customerResponse!.Customers.Should().NotBeNull();
-        customerResponse.Customers.Should().HaveCount(0);
+        customerResponse.ShouldNotBeNull();
+        customerResponse!.Customers.ShouldNotBeNull();
+        customerResponse.Customers.Count.ShouldBe(0);
     }
 
     [Theory]
@@ -161,7 +161,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync($"/customers?page={page}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -188,6 +188,6 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

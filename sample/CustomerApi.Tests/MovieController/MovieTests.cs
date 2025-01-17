@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using CustomerApi.Controllers.Movies;
 using CustomerApi.Uris;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,11 +21,11 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-event");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
-        movie.Should().NotBeNull();
-        movie!.MovieUri.Should().Be(movieUri);
-        movie.Name.Should().Be("The Matrix");
+        movie.ShouldNotBeNull();
+        movie!.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("The Matrix");
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-snapshot");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -53,11 +53,11 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-hybrid");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
-        movie.Should().NotBeNull();
-        movie!.MovieUri.Should().Be(movieUri);
-        movie.Name.Should().Be("The Matrix");
+        movie.ShouldNotBeNull();
+        movie!.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("The Matrix");
     }
 
     [Fact]
@@ -68,14 +68,14 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/movies/create-hybrid", new { name = "Hot Fuzz" });
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        response.Headers.Location.Should().NotBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.Headers.Location.ShouldNotBeNull();
         var movieUri = MovieUri.Parse(response.Headers.Location!.ToString());
-        await customerApi.Then.TheMovieSnapshotShouldMatch(movieUri, snapshot => snapshot.Name == "Hot Fuzz");
+        await customerApi.Then.TheMovieSnapshotShouldMatch(movieUri, snapshot => snapshot.Name.ShouldBe("Hot Fuzz"));
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
-        movie.Should().NotBeNull();
-        movie!.MovieUri.Should().Be(movieUri);
-        movie.Name.Should().Be("Hot Fuzz");
+        movie.ShouldNotBeNull();
+        movie!.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("Hot Fuzz");
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/movies/ExistingMovie/by-hybrid-query");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
-        movie.Should().NotBeNull();
-        movie!.MovieUri.Should().Be(movieUri);
-        movie.Name.Should().Be("The Matrix Reloaded");
+        movie.ShouldNotBeNull();
+        movie!.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("The Matrix Reloaded");
     }
 
     [Fact]
@@ -109,11 +109,11 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/movies/ExistingMovie/history");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movieHistory = await response.Content.ReadFromJsonAsync<MovieHistoryResponse>();
-        movieHistory.Should().NotBeNull();
-        movieHistory!.ChangeDescriptions.Should().HaveCount(2);
-        movieHistory.ChangeDescriptions.Should().Contain("Movie The Matrix added");
-        movieHistory.ChangeDescriptions.Should().Contain("Movie /movies/ExistingMovie name changed to The Matrix Reloaded");
+        movieHistory.ShouldNotBeNull();
+        movieHistory.ChangeDescriptions.Count.ShouldBe(2);
+        movieHistory.ChangeDescriptions.ShouldContain("Movie The Matrix added");
+        movieHistory.ChangeDescriptions.ShouldContain("Movie /movies/ExistingMovie name changed to The Matrix Reloaded");
     }
 }

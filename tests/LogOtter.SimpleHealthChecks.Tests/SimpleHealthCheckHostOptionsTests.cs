@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -10,7 +10,7 @@ public class SimpleHealthCheckHostOptionsTests
     {
         var options = new SimpleHealthCheckHostOptions();
 
-        options.Hostname.Should().Be("+");
+        options.Hostname.ShouldBe("+");
     }
 
     [Fact]
@@ -18,7 +18,7 @@ public class SimpleHealthCheckHostOptionsTests
     {
         var options = new SimpleHealthCheckHostOptions();
 
-        options.Port.Should().Be(80);
+        options.Port.ShouldBe(80);
     }
 
     [Fact]
@@ -26,6 +26,6 @@ public class SimpleHealthCheckHostOptionsTests
     {
         var options = new SimpleHealthCheckHostOptions();
 
-        options.Scheme.Should().Be("http");
+        options.Scheme.ShouldBe("http");
     }
 }

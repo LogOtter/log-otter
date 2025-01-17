@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
-using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -43,10 +43,10 @@ public class OverrideResponseTests
         {
             await response.WaitForResponseClosed();
 
-            response.Headers["X-PoweredBy"].Should().Be("LogOtter");
+            response.Headers["X-PoweredBy"].ShouldBe("LogOtter");
 
             var responseBody = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-            responseBody.Should().Be(expectedBody);
+            responseBody.ShouldBe(expectedBody);
         });
     }
 }

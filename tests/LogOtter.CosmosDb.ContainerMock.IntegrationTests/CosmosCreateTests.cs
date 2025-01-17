@@ -1,6 +1,6 @@
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -39,8 +39,8 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
 
         var (realResult, testResult) = await _testCosmos.WhenCreating(testModel, new PartitionKey(testModel.PartitionKey));
 
-        realResult.StatusCode.Should().Be(testResult.StatusCode);
-        realResult.Resource.Should().BeEquivalentTo(testResult.Resource);
+        realResult.StatusCode.ShouldBe(testResult.StatusCode);
+        realResult.Resource.ShouldBeEquivalentTo(testResult.Resource);
     }
 
     [Fact]
@@ -55,10 +55,10 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 
     [Fact]
@@ -82,10 +82,10 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 
     [Fact]
@@ -100,9 +100,9 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
 
         var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, PartitionKey.None);
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 }

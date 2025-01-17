@@ -1,7 +1,7 @@
 using System.Text.Json;
-using FluentAssertions;
 using LogOtter.HttpPatch.Tests.Api;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -18,8 +18,8 @@ public class SerializationTests
     {
         var deserialized = DeserializeFromStringWith<TestRequest>(engine, "{}");
 
-        deserialized.Primitive.IsIncludedInPatch.Should().BeFalse();
-        deserialized.Address.IsIncludedInPatch.Should().BeFalse();
+        deserialized.Primitive.IsIncludedInPatch.ShouldBeFalse();
+        deserialized.Address.IsIncludedInPatch.ShouldBeFalse();
     }
 
     [Theory]
@@ -28,8 +28,8 @@ public class SerializationTests
     {
         var deserialized = DeserializeFromStringWith<TestRequest>(engine, "{\"primitive\": undefined}");
 
-        deserialized.Primitive.IsIncludedInPatch.Should().BeFalse();
-        deserialized.Address.IsIncludedInPatch.Should().BeFalse();
+        deserialized.Primitive.IsIncludedInPatch.ShouldBeFalse();
+        deserialized.Address.IsIncludedInPatch.ShouldBeFalse();
     }
 
     [Theory]
@@ -42,11 +42,11 @@ public class SerializationTests
             "{ \"primitive\": \"hello world\", \"address\": { \"line1\": \"Alpha Tower\", \"postcode\": \"B1 1TT\" } }"
         );
 
-        deserialized.Primitive.IsIncludedInPatch.Should().BeTrue();
-        deserialized.Primitive.Value.Should().Be("hello world");
+        deserialized.Primitive.IsIncludedInPatch.ShouldBeTrue();
+        deserialized.Primitive.Value.ShouldBe("hello world");
 
-        deserialized.Address.IsIncludedInPatch.Should().BeTrue();
-        deserialized.Address.Value.Should().BeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
+        deserialized.Address.IsIncludedInPatch.ShouldBeTrue();
+        deserialized.Address.Value.ShouldBeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
     }
 
     [Theory]
@@ -56,11 +56,11 @@ public class SerializationTests
         var serialized = SerializeWith(engine, new TestRequest("hello world", new Address("Alpha Tower", "B1 1TT")));
 
         var deserialized = DeserializeFromStringWith<TestRequest>(engine, serialized);
-        deserialized.Primitive.IsIncludedInPatch.Should().BeTrue();
-        deserialized.Primitive.Value.Should().Be("hello world");
+        deserialized.Primitive.IsIncludedInPatch.ShouldBeTrue();
+        deserialized.Primitive.Value.ShouldBe("hello world");
 
-        deserialized.Address.IsIncludedInPatch.Should().BeTrue();
-        deserialized.Address.Value.Should().BeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
+        deserialized.Address.IsIncludedInPatch.ShouldBeTrue();
+        deserialized.Address.Value.ShouldBeEquivalentTo(new { Line1 = "Alpha Tower", Postcode = "B1 1TT" });
     }
 
     [Theory]
@@ -70,8 +70,8 @@ public class SerializationTests
         var serialized = SerializeWith(engine, new TestRequest());
 
         var deserialized = DeserializeFromStringWith<TestRequest>(engine, serialized);
-        deserialized.Address.IsIncludedInPatch.Should().BeFalse();
-        deserialized.Primitive.IsIncludedInPatch.Should().BeFalse();
+        deserialized.Address.IsIncludedInPatch.ShouldBeFalse();
+        deserialized.Primitive.IsIncludedInPatch.ShouldBeFalse();
     }
 
     private static T DeserializeFromStringWith<T>(SerializationEngine engine, string toDeserialize)

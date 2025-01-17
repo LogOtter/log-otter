@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using CustomerApi.Events.Movies;
 using CustomerApi.Uris;
-using FluentAssertions;
 using LogOtter.CosmosDb.EventStore;
+using Shouldly;
 
 // ReSharper disable UnusedMethodReturnValue.Local
 
@@ -52,10 +52,10 @@ public class MovieStore(
         return await movieEventRepository.ApplyEvents(movieUri.Uri, movieReadModel.Revision, movieNameChanged);
     }
 
-    public async Task ThenTheMovieSnapshotShouldMatch(MovieUri movieUri, Expression<Func<MovieReadModel, bool>> matchFunc)
+    public async Task ThenTheMovieSnapshotShouldMatch(MovieUri movieUri, params Action<MovieReadModel>[] conditions)
     {
         var movie = await movieSnapshotRepository.GetSnapshot(movieUri.Uri, MovieReadModel.StaticPartitionKey);
-        movie.Should().NotBeNull();
-        movie.Should().Match(matchFunc);
+        movie.ShouldNotBeNull();
+        movie.ShouldSatisfyAllConditions(conditions);
     }
 }

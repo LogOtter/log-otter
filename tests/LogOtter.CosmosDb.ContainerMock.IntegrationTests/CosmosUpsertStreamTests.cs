@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -45,7 +45,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
             new ItemRequestOptions { IfMatchEtag = realETag }
         );
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
         );
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public sealed class CosmosUpsertStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenUpsertingStream(ms, new PartitionKey("test"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     private static byte[] GetItemBytes(TestModel model)

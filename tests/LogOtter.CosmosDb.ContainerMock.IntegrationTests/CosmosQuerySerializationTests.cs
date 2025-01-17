@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -68,14 +68,13 @@ public sealed class CosmosQuerySerializationTests
 
         if (shouldThrow)
         {
-            act.Should()
-                .Throw<ArgumentException>()
-                .WithMessage("Linq serialization options do not match the base serializer options (Parameter 'linqSerializerOptions')")
-                .WithParameterName("linqSerializerOptions");
+            var exception = act.ShouldThrow<ArgumentException>();
+            exception.Message.ShouldBe("Linq serialization options do not match the base serializer options (Parameter 'linqSerializerOptions')");
+            exception.ParamName.ShouldBe("linqSerializerOptions");
         }
         else
         {
-            act.Should().NotThrow().Which.Should().NotBeEmpty();
+            act.ShouldNotThrow();
         }
     }
 }

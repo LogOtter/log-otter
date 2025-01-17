@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos.Linq;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -43,9 +43,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name == "Bob Bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -63,9 +63,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name.IsNull()));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -83,9 +83,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name.IsDefined()));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenCountingAQuery<TestModel>("partition", q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        realResults.Should().Be(1);
-        testResults.Should().Be(1);
+        realResults.ShouldBe(1);
+        testResults.ShouldBe(1);
     }
 
     [Fact]
@@ -132,9 +132,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition");
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -155,9 +155,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString()))
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -175,9 +175,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Value == GetTrue()));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -195,9 +195,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Value == GetBool(true)));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -215,9 +215,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         Func<Task> action = () => _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.GetBoolValue() == true));
 
-        var exceptionAssertions = await action.Should().ThrowAsync<CosmosEquivalencyException>();
-        exceptionAssertions.Which.RealException.Should().NotBeNull();
-        exceptionAssertions.Which.TestException.Should().NotBeNull();
+        var exceptionAssertions = await action.ShouldThrowAsync<CosmosEquivalencyException>();
+        exceptionAssertions.RealException.ShouldNotBeNull();
+        exceptionAssertions.TestException.ShouldNotBeNull();
     }
 
     [Fact]
@@ -238,9 +238,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Select(tm => new TestModel { Name = "Projected" })
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -261,9 +261,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != "Bobbeta Bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -281,9 +281,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => !(tm.Value ^ false)));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(0);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(0);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -301,9 +301,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition", q => q.Where(tm => tm.Value ^ true));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(0);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(0);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -324,9 +324,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != null && tm.Name.ToUpper() == "BOB BOBERTSON")
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -347,9 +347,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != null && tm.Name.ToLower() == "bob bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -369,9 +369,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Children != null && tm.Children.Any(c => c.Value == "bob bobertson"))
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -393,9 +393,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 q => q.Where(tm => tm.Name != null && tm.Name.ToUpperInvariant() == "BOB BOBERTSON")
             );
 
-        var exceptionAssertions = await action.Should().ThrowAsync<CosmosEquivalencyException>();
-        exceptionAssertions.Which.RealException.Should().NotBeNull();
-        exceptionAssertions.Which.TestException.Should().NotBeNull();
+        var exceptionAssertions = await action.ShouldThrowAsync<CosmosEquivalencyException>();
+        exceptionAssertions.RealException.ShouldNotBeNull();
+        exceptionAssertions.TestException.ShouldNotBeNull();
     }
 
     [Fact]
@@ -417,9 +417,9 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
                 q => q.Where(tm => tm.Name != null && tm.Name.ToLowerInvariant() == "bob bobertson")
             );
 
-        var exceptionAssertions = await action.Should().ThrowAsync<CosmosEquivalencyException>();
-        exceptionAssertions.Which.RealException.Should().NotBeNull();
-        exceptionAssertions.Which.TestException.Should().NotBeNull();
+        var exceptionAssertions = await action.ShouldThrowAsync<CosmosEquivalencyException>();
+        exceptionAssertions.RealException.ShouldNotBeNull();
+        exceptionAssertions.TestException.ShouldNotBeNull();
     }
 
     [Fact]
@@ -440,10 +440,10 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name == "bob bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        testResults!.Any().Should().Be(realResults!.Any());
+        testResults!.Any().ShouldBe(realResults!.Any());
     }
 
     [Fact]
@@ -464,11 +464,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name == "Bob Bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        realResults!.FirstOrDefault().Should().NotBeNull();
-        testResults!.FirstOrDefault().Should().BeEquivalentTo(realResults!.FirstOrDefault());
+        realResults!.FirstOrDefault().ShouldNotBeNull();
+        testResults!.FirstOrDefault().ShouldBeEquivalentTo(realResults!.FirstOrDefault());
     }
 
     [Fact]
@@ -489,11 +489,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name == "Bob Bobertson")
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        realResults!.SingleOrDefault().Should().NotBeNull();
-        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+        realResults!.SingleOrDefault().ShouldNotBeNull();
+        testResults!.SingleOrDefault().ShouldBeEquivalentTo(realResults!.SingleOrDefault());
     }
 
     [Fact]
@@ -514,11 +514,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != null && tm.Name.Equals("Bob Bobertson"))
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        realResults!.SingleOrDefault().Should().NotBeNull();
-        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+        realResults!.SingleOrDefault().ShouldNotBeNull();
+        testResults!.SingleOrDefault().ShouldBeEquivalentTo(realResults!.SingleOrDefault());
     }
 
     [Theory]
@@ -541,11 +541,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != null && tm.Name.Equals("bob bobertson", comparisonType))
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        realResults!.SingleOrDefault().Should().NotBeNull();
-        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+        realResults!.SingleOrDefault().ShouldNotBeNull();
+        testResults!.SingleOrDefault().ShouldBeEquivalentTo(realResults!.SingleOrDefault());
     }
 
     [Theory]
@@ -568,11 +568,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             q => q.Where(tm => tm.Name != null && tm.Name.Equals("Bob Bobertson", comparisonType))
         );
 
-        realResults.Should().NotBeNull();
-        testResults.Should().NotBeNull();
+        realResults.ShouldNotBeNull();
+        testResults.ShouldNotBeNull();
 
-        realResults!.SingleOrDefault().Should().NotBeNull();
-        testResults!.SingleOrDefault().Should().BeEquivalentTo(realResults!.SingleOrDefault());
+        realResults!.SingleOrDefault().ShouldNotBeNull();
+        testResults!.SingleOrDefault().ShouldBeEquivalentTo(realResults!.SingleOrDefault());
     }
 
     private bool GetTrue()

@@ -1,13 +1,8 @@
 ﻿using System.Linq.Expressions;
-using Bogus;
-using CustomerApi.Events.Customers;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
-using CustomerApi.Services;
-using CustomerApi.Uris;
-using FluentAssertions;
 using LogOtter.CosmosDb;
-using LogOtter.CosmosDb.EventStore;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 
 // ReSharper disable UnusedMethodReturnValue.Local
 
@@ -17,13 +12,13 @@ public class SearchableInterestStore(CosmosContainer<SearchableInterest> searcha
 {
     private readonly Container _searchableInterestContainer = searchableInterestContainer.Container;
 
-    public async Task ThenTheSearchableInterestShouldMatch(string id, Expression<Func<SearchableInterest, bool>> matchFunc)
+    public async Task ThenTheSearchableInterestShouldMatch(string id, params Action<SearchableInterest>[] conditions)
     {
         var searchableInterest = await _searchableInterestContainer.ReadItemAsync<SearchableInterest>(
             id,
             new PartitionKey(SearchableInterest.StaticPartition)
         );
-        searchableInterest.Resource.Should().NotBeNull();
-        searchableInterest.Resource.Should().Match(matchFunc);
+        searchableInterest.Resource.ShouldNotBeNull();
+        searchableInterest.Resource.ShouldSatisfyAllConditions(conditions);
     }
 }

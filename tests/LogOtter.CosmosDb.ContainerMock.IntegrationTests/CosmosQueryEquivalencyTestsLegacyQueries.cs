@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -39,8 +39,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString()))
         );
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -77,8 +77,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value == GetTrue()));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -99,8 +99,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
         var realResultsAction = new Func<TestModel?>(() => realResults.SingleOrDefault());
         var testResultsAction = new Func<TestModel?>(() => testResults.SingleOrDefault());
 
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResultsAction.ShouldThrow<Exception>();
+        testResultsAction.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value == GetBool(true)));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -135,8 +135,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Select(tm => new TestModel { Name = "Projected" }));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -153,8 +153,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name != "Bobbeta Bobertson"));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -171,8 +171,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => !(tm.Value ^ false)));
 
-        realResults.Count().Should().Be(0);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(0);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -189,8 +189,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Value ^ true));
 
-        realResults.Count().Should().Be(0);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(0);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             q.Where(tm => tm.Name != null && tm.Name.ToUpper() == "BOB BOBERTSON")
         );
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -229,8 +229,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             q.Where(tm => tm.Name != null && tm.Name.ToLower() == "bob bobertson")
         );
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -242,8 +242,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             q.Where(tm => tm.Children != null && tm.Children.Any(c => c.Value == "bob bobertson"))
         );
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -265,8 +265,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
         var testResultsAction = new Func<IList<TestModel>>(() => testResults.ToList());
 
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResultsAction.ShouldThrow<Exception>();
+        testResultsAction.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -288,8 +288,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
         var realResultsAction = new Func<IList<TestModel>>(() => realResults.ToList());
         var testResultsAction = new Func<IList<TestModel>>(() => testResults.ToList());
 
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResultsAction.ShouldThrow<Exception>();
+        testResultsAction.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -306,11 +306,11 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "bob bobertson"));
 
-        var realResultsAction = new Func<bool>(() => realResults.Any());
-        var testResultsAction = new Func<bool>(() => testResults.Any());
+        var realResultsAction = new Func<object>(() => realResults.Any());
+        var testResultsAction = new Func<object>(() => testResults.Any());
 
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResultsAction.ShouldThrow<Exception>();
+        testResultsAction.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -327,8 +327,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        realResults.Count().Should().Be(1);
-        realResults.Should().BeEquivalentTo(testResults);
+        realResults.Count().ShouldBe(1);
+        realResults.ShouldBeEquivalentTo(testResults);
     }
 
     [Fact]
@@ -348,8 +348,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
         var realResultsAction = new Func<TestModel?>(() => realResults.SingleOrDefault());
         var testResultsAction = new Func<TestModel?>(() => testResults.SingleOrDefault());
 
-        realResultsAction.Should().Throw<Exception>();
-        testResultsAction.Should().Throw<Exception>();
+        realResultsAction.ShouldThrow<Exception>();
+        testResultsAction.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -366,8 +366,8 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
 
         var (_, realException, _, testException) = _testCosmos.WhenExecutingAQuery<TestModel, bool>(q => q.Any());
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
     }
 
     private bool GetTrue()

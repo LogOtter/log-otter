@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
+﻿using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -29,6 +29,6 @@ public class PartitionKeyHelperTests
 
         var deserializedPartitionKey = PartitionKeyHelpers.FromJsonString(serializedPartitionKey);
 
-        deserializedPartitionKey.Should().Be(input);
+        deserializedPartitionKey.ShouldBe(input);
     }
 }

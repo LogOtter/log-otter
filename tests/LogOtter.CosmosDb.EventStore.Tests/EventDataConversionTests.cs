@@ -18,9 +18,10 @@ public class EventDataConversionTests
         var storageEvent = new StorageEvent<TestEvent>(id, eventData, 3);
         var wrapperEvent = Event<TestEvent>.FromStorageEvent(storageEvent);
 
-        wrapperEvent.StreamId.Should().Be(id);
-        wrapperEvent.EventNumber.Should().Be(3);
-        wrapperEvent.CreatedOn.Should().Be(createdOn);
-        wrapperEvent.Metadata.Should().ContainKey("key1").WhoseValue.Should().Be("value1");
+        wrapperEvent.StreamId.ShouldBe(id);
+        wrapperEvent.EventNumber.ShouldBe(3);
+        wrapperEvent.CreatedOn.ShouldBe(createdOn);
+        wrapperEvent.Metadata.ShouldContainKey("key1");
+        wrapperEvent.Metadata["key1"].ShouldBe("value1");
     }
 }

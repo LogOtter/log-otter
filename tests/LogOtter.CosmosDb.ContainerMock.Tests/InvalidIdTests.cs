@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using FluentAssertions;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -27,7 +27,7 @@ public class InvalidIdTests
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk" };
         Func<Task> act = () => containerMock.CreateItemAsync(model, new PartitionKey(model.PartitionKey));
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.ShouldThrowAsync<InvalidOperationException>();
     }
 
     [Theory]
@@ -41,7 +41,7 @@ public class InvalidIdTests
         await using var ms = new MemoryStream(bytes);
         Func<Task> act = () => containerMock.CreateItemStreamAsync(ms, new PartitionKey(model.PartitionKey));
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.ShouldThrowAsync<InvalidOperationException>();
     }
 
     [Theory]
@@ -53,7 +53,7 @@ public class InvalidIdTests
         var model = new TestModel { Id = "url" + invalidChars + "WillBreak", PartitionKey = "pk" };
         Func<Task> act = () => containerMock.UpsertItemAsync(model, new PartitionKey(model.PartitionKey));
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.ShouldThrowAsync<InvalidOperationException>();
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public class InvalidIdTests
         await using var ms = new MemoryStream(bytes);
         Func<Task> act = () => containerMock.UpsertItemStreamAsync(ms, new PartitionKey(model.PartitionKey));
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.ShouldThrowAsync<InvalidOperationException>();
     }
 
     private class TestModel

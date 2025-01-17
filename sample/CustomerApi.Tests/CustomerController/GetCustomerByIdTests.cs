@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using CustomerApi.Controllers.Customers;
 using CustomerApi.Uris;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,16 +22,16 @@ public class GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers/ExistingUser");
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var customer = await response.Content.ReadFromJsonAsync<CustomerResponse>();
 
-        customer.Should().NotBeNull();
-        customer!.EmailAddress.Should().Be("bob@bobertson.co.uk");
-        customer.FirstName.Should().Be("Bob");
-        customer.LastName.Should().Be("Bobertson");
-        customer.CustomerUri.Should().Be("/customers/ExistingUser");
-        customer.CreatedOn.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTimeOffset.UtcNow);
+        customer.ShouldNotBeNull();
+        customer!.EmailAddress.ShouldBe("bob@bobertson.co.uk");
+        customer.FirstName.ShouldBe("Bob");
+        customer.LastName.ShouldBe("Bobertson");
+        customer.CustomerUri.ShouldBe("/customers/ExistingUser");
+        customer.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers/NonExistentUser");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers/ExistingUser");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -72,6 +72,6 @@ public class GetCustomerByIdTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.GetAsync("/customers/ExistingUser");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

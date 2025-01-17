@@ -13,28 +13,28 @@ public class ThenSteps(CustomerStore customerStore, SearchableInterestStore sear
         await customerStore.ThenTheCustomerShouldBeDeleted(customerUri);
     }
 
-    public async Task TheCustomerShouldMatch(CustomerUri customerUri, Expression<Func<CustomerReadModel, bool>> matchFunc)
+    public async Task TheCustomerShouldMatch(CustomerUri customerUri, params Action<CustomerReadModel>[] conditions)
     {
-        await customerStore.ThenTheCustomerShouldMatch(customerUri, matchFunc);
+        await customerStore.ThenTheCustomerShouldMatch(customerUri, conditions);
     }
 
-    public async Task TheMovieShouldMatch(MovieUri movieUri, Expression<Func<Movie, bool>> matchFunc)
+    public async Task TheMovieShouldMatch(MovieUri movieUri, params Action<Movie>[] conditions)
     {
-        await customerStore.ThenTheMovieShouldMatch(movieUri, matchFunc);
+        await customerStore.ThenTheMovieShouldMatch(movieUri, conditions);
     }
 
-    public async Task TheMovieSnapshotShouldMatch(MovieUri movieUri, Expression<Func<MovieReadModel, bool>> matchFunc)
+    public async Task TheMovieSnapshotShouldMatch(MovieUri movieUri, params Action<MovieReadModel>[] conditions)
     {
-        await movieStore.ThenTheMovieSnapshotShouldMatch(movieUri, matchFunc);
+        await movieStore.ThenTheMovieSnapshotShouldMatch(movieUri, conditions);
     }
 
-    public async Task TheSongShouldMatch(SongUri songUri, Expression<Func<Song, bool>> matchFunc)
+    public async Task TheSongShouldMatch(SongUri songUri, params Action<Song>[] conditions)
     {
-        await customerStore.ThenTheSongShouldMatch(songUri, matchFunc);
+        await customerStore.ThenTheSongShouldMatch(songUri, conditions);
     }
 
-    public async Task TheSearchableInterestShouldMatch(string id, Expression<Func<SearchableInterest, bool>> matchFunc)
+    public async Task TheSearchableInterestShouldMatch(string id, params Action<SearchableInterest>[] conditions)
     {
-        await searchableInterestStore.ThenTheSearchableInterestShouldMatch(id, matchFunc);
+        await searchableInterestStore.ThenTheSearchableInterestShouldMatch(id, conditions);
     }
 }

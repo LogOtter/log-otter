@@ -6,7 +6,6 @@
   <ItemGroup>
     <PackageVersion Include="Azure.Identity" Version="1.13.1" />
     <PackageVersion Include="Bogus" Version="35.6.1" />
-    <PackageVersion Include="FluentAssertions" Version="[7.0.0]" allowedVersions="[7.0.0]" />
     <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.7" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
@@ -25,6 +24,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Polly" Version="8.4.2" />
     <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
+    <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.9.0" />
     <PackageVersion Include="Testcontainers.CosmosDb" Version="4.0.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />

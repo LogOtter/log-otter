@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Meziantou.Extensions.Logging.Xunit;
+﻿using Meziantou.Extensions.Logging.Xunit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,7 +29,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
         await middleware.Invoke(context);
 
-        context.Request.Path.ToString().Should().Be(pathInHeader);
+        context.Request.Path.ToString().ShouldBe(pathInHeader);
     }
 
     [Theory]
@@ -47,8 +47,8 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
         await middleware.Invoke(context);
 
-        context.Request.Path.ToString().Should().Be(expectedPath);
-        context.Request.QueryString.ToString().Should().Be(queryString);
+        context.Request.Path.ToString().ShouldBe(expectedPath);
+        context.Request.QueryString.ToString().ShouldBe(queryString);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
         await middleware.Invoke(context);
 
-        context.Request.Path.ToString().Should().Be("/foo/bar/customers/1234");
+        context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
         await middleware.Invoke(context);
 
-        context.Request.Path.ToString().Should().Be("/foo/bar/customers/1234");
+        context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
         await middleware.Invoke(context);
 
-        context.Request.Path.ToString().Should().Be("/foo/bar/customers/1234");
+        context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
     }
 
     private static HttpContext CreateContext(string pathInUrl, string? queryString = null, string? pathInHeader = null)

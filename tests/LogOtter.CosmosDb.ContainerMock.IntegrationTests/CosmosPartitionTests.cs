@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -47,10 +47,10 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>("partition1", q => q);
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        realResults.Single().Name.Should().Be("Bob Bobertson");
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        realResults.Single().Name.ShouldBe("Bob Bobertson");
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
 
         var (realResults, testResults) = await _testCosmos.WhenCountingAQuery<TestModel>("partition1", q => q);
 
-        realResults.Should().Be(1);
-        testResults.Should().Be(1);
+        realResults.ShouldBe(1);
+        testResults.ShouldBe(1);
     }
 
     [Fact]
@@ -95,9 +95,9 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
 
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(null, q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public sealed class CosmosPartitionTests(IntegrationTestsFixture testFixture) : 
 
         var (realResults, testResults) = await _testCosmos.WhenCountingAQuery<TestModel>(null, q => q.Where(tm => tm.Name == "Bob Bobertson"));
 
-        realResults.Should().Be(1);
-        testResults.Should().Be(1);
+        realResults.ShouldBe(1);
+        testResults.ShouldBe(1);
     }
 }

@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -30,13 +30,13 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
     {
         var (realException, testException) = await _testCosmos.WhenReadItemProducesException<TestModel>(string.Empty);
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException.Should().BeOfType(testException!.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException.ShouldBeOfType(testException!.GetType());
 
         if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
         {
-            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
+            realCosmosException.StatusCode.ShouldBe(testCosmosException.StatusCode);
         }
     }
 
@@ -48,13 +48,13 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
 
         var (realException, testException) = await _testCosmos.WhenReadItemProducesException<TestModel>("#");
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException.Should().BeOfType(testException!.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException.ShouldBeOfType(testException!.GetType());
 
         if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
         {
-            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
+            realCosmosException.StatusCode.ShouldBe(testCosmosException.StatusCode);
         }
     }
 
@@ -63,13 +63,13 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
     {
         var (realException, testException) = await _testCosmos.WhenReadItemProducesException<TestModel>(null);
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException.Should().BeOfType(testException!.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException.ShouldBeOfType(testException!.GetType());
 
         if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
         {
-            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
+            realCosmosException.StatusCode.ShouldBe(testCosmosException.StatusCode);
         }
     }
 }

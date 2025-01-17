@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.JsonHal.Tests;
@@ -14,7 +14,7 @@ public class SerializeTests
 
         var json = JsonSerializer.Serialize(linkCollection);
 
-        json.Should().Be("""{"self":{"href":"/foo/self"}}""");
+        json.ShouldBe("""{"self":{"href":"/foo/self"}}""");
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class SerializeTests
 
         var json = JsonSerializer.Serialize(linkCollection);
 
-        json.Should().Be("""{"next":{"href":"/foo/next"}}""");
+        json.ShouldBe("""{"next":{"href":"/foo/next"}}""");
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class SerializeTests
 
         var json = JsonSerializer.Serialize(linkCollection);
 
-        json.Should().Be("""{"self":{"href":"/foo/self"},"next":{"href":"/foo/next"}}""");
+        json.ShouldBe("""{"self":{"href":"/foo/self"},"next":{"href":"/foo/next"}}""");
     }
 
     [Fact]
@@ -49,6 +49,6 @@ public class SerializeTests
 
         var json = JsonSerializer.Serialize(linkCollection);
 
-        json.Should().Be("""{"related":[{"href":"/foo/related1"},{"href":"/foo/related2"}]}""");
+        json.ShouldBe("""{"related":[{"href":"/foo/related1"},{"href":"/foo/related2"}]}""");
     }
 }

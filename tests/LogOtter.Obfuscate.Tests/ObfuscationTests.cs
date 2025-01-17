@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace LogOtter.Obfuscate.Tests;
@@ -25,7 +25,7 @@ public class ObfuscationTests
     {
         var actualOutput = Obfuscate.Email(email);
 
-        actualOutput.Should().Be(expectedOutput);
+        actualOutput.ShouldBe(expectedOutput);
     }
 
     [Theory]
@@ -49,7 +49,7 @@ public class ObfuscationTests
     {
         var actualOutput = Obfuscate.Name(firstName, lastName);
 
-        actualOutput.Should().Be(expectedOutput);
+        actualOutput.ShouldBe(expectedOutput);
     }
 
     [Theory]
@@ -68,6 +68,6 @@ public class ObfuscationTests
     {
         var actualOutput = Obfuscate.Phone(phoneNumber);
 
-        actualOutput.Should().Be(expectedOutput);
+        actualOutput.ShouldBe(expectedOutput);
     }
 }

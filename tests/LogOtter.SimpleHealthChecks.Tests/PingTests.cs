@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -20,10 +20,10 @@ public class PingTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.ContentType.Should().Be("text/plain");
+            response.ContentType.ShouldBe("text/plain");
 
             var body = Encoding.UTF8.GetString(response.GetOutputStreamBytes());
-            body.Should().Be("OK");
+            body.ShouldBe("OK");
         });
     }
 }
