@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="Azure.Identity" Version="1.13.1" />
     <PackageVersion Include="Bogus" Version="35.6.1" />
-    <PackageVersion Include="FluentAssertions" Version="[7.0.0]" allowedVersions="[7.0.0]" />
+    <PackageVersion Include="FluentAssertions" Version="[8.0.0]" allowedVersions="[7.0.0]" />
     <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.7" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
