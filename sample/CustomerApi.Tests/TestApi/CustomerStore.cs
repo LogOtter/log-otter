@@ -5,11 +5,11 @@ using CustomerApi.Events.Customers;
 using CustomerApi.NonEventSourcedData.CustomerInterests;
 using CustomerApi.Services;
 using CustomerApi.Uris;
-using FluentAssertions;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.ContainerMock;
 using LogOtter.CosmosDb.EventStore;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 
 // ReSharper disable UnusedMethodReturnValue.Local
 
@@ -70,16 +70,16 @@ public class CustomerStore(
     {
         var customerReadModel = await customerSnapshotRepository.GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);
 
-        customerReadModel.Should().BeNull("The customer should not exist in the read store");
+        customerReadModel.ShouldBeNull("The customer should not exist in the read store");
 
         var customerQueryReadModel = (
             await customerSnapshotRepository.QuerySnapshots(CustomerReadModel.StaticPartitionKey).ToListAsync()
         ).SingleOrDefault(c => c.CustomerUri == customerUri);
 
-        customerQueryReadModel.Should().BeNull("The customer should not exist in the query read store");
+        customerQueryReadModel.ShouldBeNull("The customer should not exist in the query read store");
 
         var customerWriteModel = await customerEventRepository.Get(customerUri.Uri);
-        customerWriteModel.Should().BeNull("The customer should not exist in the write store");
+        customerWriteModel.ShouldBeNull("The customer should not exist in the write store");
     }
 
     private async Task<CustomerReadModel> ApplyEvents(params CustomerEvent[] events)
@@ -91,35 +91,35 @@ public class CustomerStore(
         return await customerEventRepository.ApplyEvents(customerUri.Uri, revision, events);
     }
 
-    public async Task ThenTheCustomerShouldMatch(CustomerUri customerUri, Expression<Func<CustomerReadModel, bool>> matchFunc)
+    public async Task ThenTheCustomerShouldMatch(CustomerUri customerUri, params Action<CustomerReadModel>[] conditions)
     {
         var customerWrite = await customerEventRepository.Get(customerUri.Uri);
-        customerWrite.Should().NotBeNull();
-        customerWrite.Should().Match(matchFunc);
+        customerWrite.ShouldNotBeNull();
+        customerWrite.ShouldSatisfyAllConditions(conditions);
 
         var customerRead = await customerSnapshotRepository.GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);
-        customerRead.Should().NotBeNull();
-        customerRead.Should().Match(matchFunc);
+        customerRead.ShouldNotBeNull();
+        customerRead.ShouldSatisfyAllConditions(conditions);
 
         var customerQueryRead = (await customerSnapshotRepository.QuerySnapshots(CustomerReadModel.StaticPartitionKey).ToListAsync()).SingleOrDefault(
             c => c.CustomerUri == customerUri
         );
-        customerQueryRead.Should().NotBeNull();
-        customerQueryRead.Should().Match(matchFunc);
+        customerQueryRead.ShouldNotBeNull();
+        customerQueryRead.ShouldSatisfyAllConditions(conditions);
     }
 
-    public async Task ThenTheMovieShouldMatch(MovieUri movieUri, Expression<Func<Movie, bool>> matchFunc)
+    public async Task ThenTheMovieShouldMatch(MovieUri movieUri, params Action<Movie>[] conditions)
     {
         var movie = await _movieContainer.ReadItemAsync<Movie>(movieUri.MovieId, new PartitionKey(Movie.StaticPartition));
-        movie.Resource.Should().NotBeNull();
-        movie.Resource.Should().Match(matchFunc);
+        movie.Resource.ShouldNotBeNull();
+        movie.Resource.ShouldSatisfyAllConditions(conditions);
     }
 
-    public async Task ThenTheSongShouldMatch(SongUri songUri, Expression<Func<Song, bool>> matchFunc)
+    public async Task ThenTheSongShouldMatch(SongUri songUri, params Action<Song>[] conditions)
     {
         var song = await _songContainer.ReadItemAsync<Song>(songUri.SongId, new PartitionKey(Song.StaticPartition));
-        song.Resource.Should().NotBeNull();
-        song.Resource.Should().Match(matchFunc);
+        song.Resource.ShouldNotBeNull();
+        song.Resource.ShouldSatisfyAllConditions(conditions);
     }
 
     public void GivenCreatingACustomerWillConflict()

@@ -21,12 +21,12 @@ public class EventStoreTests
         await eventStore.AppendToStream(id, 0, eventData);
 
         var allEvents = await eventStore.ReadStreamForwards(id);
-        allEvents.Should().HaveCount(1);
+        allEvents.Count.ShouldBe(1);
 
         var createdEvent = allEvents.First();
-        createdEvent.StreamId.Should().Be(id);
-        createdEvent.EventId.Should().Be(eventId);
-        createdEvent.EventBody.Should().BeOfType<TestEventCreated>().Which.Name.Should().Be(name);
+        createdEvent.StreamId.ShouldBe(id);
+        createdEvent.EventId.ShouldBe(eventId);
+        createdEvent.EventBody.ShouldBeOfType<TestEventCreated>().Name.ShouldBe(name);
     }
 
     [Fact]
@@ -48,17 +48,17 @@ public class EventStoreTests
         await eventStore.AppendToStream(id, 0, createdEventData, modifiedEventData);
 
         var allEvents = await eventStore.ReadStreamForwards(id);
-        allEvents.Should().HaveCount(2);
+        allEvents.Count.ShouldBe(2);
 
         var createdEvent = allEvents.First();
-        createdEvent.StreamId.Should().Be(id);
-        createdEvent.EventId.Should().Be(createdEventId);
-        createdEvent.EventBody.Should().BeOfType<TestEventCreated>().Which.Name.Should().Be(name);
+        createdEvent.StreamId.ShouldBe(id);
+        createdEvent.EventId.ShouldBe(createdEventId);
+        createdEvent.EventBody.ShouldBeOfType<TestEventCreated>().Name.ShouldBe(name);
 
         var modifiedEvent = allEvents.Skip(1).First();
-        modifiedEvent.StreamId.Should().Be(id);
-        modifiedEvent.EventId.Should().Be(modifiedEventId);
-        modifiedEvent.EventBody.Should().BeOfType<TestEventModified>().Which.NewName.Should().Be(newName);
+        modifiedEvent.StreamId.ShouldBe(id);
+        modifiedEvent.EventId.ShouldBe(modifiedEventId);
+        modifiedEvent.EventBody.ShouldBeOfType<TestEventModified>().NewName.ShouldBe(newName);
     }
 
     [Fact]
@@ -80,20 +80,20 @@ public class EventStoreTests
         await eventStore.AppendToStream(id, 0, createdEventData, modifiedEventData);
 
         var pagedEvents = await eventStore.ReadStreamForwards(id, 1, 1);
-        pagedEvents.Should().HaveCount(1);
+        pagedEvents.Count.ShouldBe(1);
 
         var createdEvent = pagedEvents.First();
-        createdEvent.StreamId.Should().Be(id);
-        createdEvent.EventId.Should().Be(createdEventId);
-        createdEvent.EventBody.Should().BeOfType<TestEventCreated>().Which.Name.Should().Be(name);
+        createdEvent.StreamId.ShouldBe(id);
+        createdEvent.EventId.ShouldBe(createdEventId);
+        createdEvent.EventBody.ShouldBeOfType<TestEventCreated>().Name.ShouldBe(name);
 
         pagedEvents = await eventStore.ReadStreamForwards(id, 2, 1);
-        pagedEvents.Should().HaveCount(1);
+        pagedEvents.Count.ShouldBe(1);
 
         var modifiedEvent = pagedEvents.First();
-        modifiedEvent.StreamId.Should().Be(id);
-        modifiedEvent.EventId.Should().Be(modifiedEventId);
-        modifiedEvent.EventBody.Should().BeOfType<TestEventModified>().Which.NewName.Should().Be(newName);
+        modifiedEvent.StreamId.ShouldBe(id);
+        modifiedEvent.EventId.ShouldBe(modifiedEventId);
+        modifiedEvent.EventBody.ShouldBeOfType<TestEventModified>().NewName.ShouldBe(newName);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class EventStoreTests
             await eventStore.ReadStreamForwards(id, 0, 1);
         };
 
-        await shouldThrowAction.Should().ThrowAsync<ArgumentOutOfRangeException>();
+        await shouldThrowAction.ShouldThrowAsync<ArgumentOutOfRangeException>();
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class EventStoreTests
             await eventStore.ReadStreamForwards(id, 1, 0);
         };
 
-        await shouldThrowAction.Should().ThrowAsync<ArgumentOutOfRangeException>();
+        await shouldThrowAction.ShouldThrowAsync<ArgumentOutOfRangeException>();
     }
 
     private static EventStore<TestEvent> CreateEventStore()

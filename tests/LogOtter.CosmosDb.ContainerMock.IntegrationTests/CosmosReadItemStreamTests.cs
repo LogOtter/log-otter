@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -29,9 +29,9 @@ public sealed class CosmosReadItemStreamTests(IntegrationTestsFixture testFixtur
     {
         var (realResponse, testResponse) = await _testCosmos.WhenReadItemStream(string.Empty);
 
-        realResponse.Should().NotBeNull();
-        testResponse.Should().NotBeNull();
-        realResponse.StatusCode.Should().Be(testResponse.StatusCode);
+        realResponse.ShouldNotBeNull();
+        testResponse.ShouldNotBeNull();
+        realResponse.StatusCode.ShouldBe(testResponse.StatusCode);
     }
 
     [Fact]
@@ -39,13 +39,13 @@ public sealed class CosmosReadItemStreamTests(IntegrationTestsFixture testFixtur
     {
         var (realException, testException) = await _testCosmos.WhenReadItemStreamProducesException(null);
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException.Should().BeOfType(testException!.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException.ShouldBeOfType(testException!.GetType());
 
         if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
         {
-            realCosmosException.StatusCode.Should().Be(testCosmosException.StatusCode);
+            realCosmosException.StatusCode.ShouldBe(testCosmosException.StatusCode);
         }
     }
 }

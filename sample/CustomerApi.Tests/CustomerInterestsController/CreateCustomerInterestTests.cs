@@ -2,8 +2,7 @@
 using System.Net.Http.Json;
 using CustomerApi.Controllers.CustomerInterests;
 using CustomerApi.Uris;
-using FluentAssertions;
-using LogOtter.CosmosDb.Testing;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,7 +23,7 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/movies", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -40,11 +39,11 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/movies", request);
         var location = response.Headers.Location?.ToString();
-        location.Should().NotBeNull("Location should be returned");
+        location.ShouldNotBeNull("Location should be returned");
 
         var movieUri = MovieUri.Parse(location!);
 
-        await customerApi.Then.TheMovieShouldMatch(movieUri, c => c.Name == "Alien" && c.RuntimeMinutes == 116);
+        await customerApi.Then.TheMovieShouldMatch(movieUri, c => c.Name.ShouldBe("Alien"), c => c.RuntimeMinutes.ShouldBe(116));
     }
 
     [Fact]
@@ -58,11 +57,11 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/movies", request);
         var location = response.Headers.Location?.ToString();
-        location.Should().NotBeNull("Location should be returned");
+        location.ShouldNotBeNull("Location should be returned");
 
         var movieUri = MovieUri.Parse(location!);
 
-        await customerApi.Then.TheSearchableInterestShouldMatch(movieUri.MovieId, c => c.Name == "Alien" && c.Uri == movieUri.Uri);
+        await customerApi.Then.TheSearchableInterestShouldMatch(movieUri.MovieId, c => c.Name.ShouldBe("Alien"), c => c.Uri.ShouldBe(movieUri.Uri));
     }
 
     [Fact]
@@ -76,7 +75,7 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/songs", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Fact]
@@ -90,11 +89,11 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/songs", request);
         var location = response.Headers.Location?.ToString();
-        location.Should().NotBeNull("Location should be returned");
+        location.ShouldNotBeNull("Location should be returned");
 
         var songUri = SongUri.Parse(location!);
 
-        await customerApi.Then.TheSongShouldMatch(songUri, c => c.Name == "Drink" && c.Genre == "Pirate Metal");
+        await customerApi.Then.TheSongShouldMatch(songUri, c => c.Name.ShouldBe("Drink"), c => c.Genre.ShouldBe("Pirate Metal"));
     }
 
     [Fact]
@@ -108,10 +107,10 @@ public class CreateCustomerInterestTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/interests/songs", request);
         var location = response.Headers.Location?.ToString();
-        location.Should().NotBeNull("Location should be returned");
+        location.ShouldNotBeNull("Location should be returned");
 
         var songUri = SongUri.Parse(location!);
 
-        await customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name == "Drink" && c.Uri == songUri.Uri);
+        await customerApi.Then.TheSearchableInterestShouldMatch(songUri.SongId, c => c.Name.ShouldBe("Drink"), c => c.Uri.ShouldBe(songUri.Uri));
     }
 }

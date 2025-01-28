@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -36,7 +36,7 @@ public class OverrideStatusTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(expectedStatusCode);
+            response.StatusCode.ShouldBe(expectedStatusCode);
         });
     }
 }

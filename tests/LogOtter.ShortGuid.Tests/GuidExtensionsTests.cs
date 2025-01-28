@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace LogOtter.ShortGuid.Tests;
@@ -11,7 +11,7 @@ public class GuidExtensionsTests
         var guid = Guid.Parse("0a3d2017-7581-4831-ba3c-a46556c87304");
         var shortGuid = guid.ToShortString();
 
-        shortGuid.Should().Be("sZCkPjP1rt2B8QVN4GhvctDB");
+        shortGuid.ShouldBe("sZCkPjP1rt2B8QVN4GhvctDB");
     }
 
     [Theory]
@@ -28,7 +28,7 @@ public class GuidExtensionsTests
         var shortString = guidValue.ToShortString();
         var reversed = ToGuidFromShortString(shortString);
 
-        reversed.Should().Be(guidValue);
+        reversed.ShouldBe(guidValue);
     }
 
     [Fact]
@@ -36,8 +36,8 @@ public class GuidExtensionsTests
     {
         var shortGuid = Guid.NewGuid().ToShortString();
 
-        shortGuid.Should().NotBeNullOrEmpty();
-        shortGuid.Should().HaveLength(24);
+        shortGuid.ShouldNotBeNullOrEmpty();
+        shortGuid.Length.ShouldBe(24);
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class GuidExtensionsTests
         var guid = Guid.Parse("04030201-0605-0007-0000-000c0d0e0f10");
         var shortGuid = guid.ToShortString();
 
-        shortGuid.Should().NotBeNullOrEmpty();
-        shortGuid.Should().HaveLength(24);
+        shortGuid.ShouldNotBeNullOrEmpty();
+        shortGuid.Length.ShouldBe(24);
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public class GuidExtensionsTests
         var guid = Guid.Parse("00000035-0000-0000-0000-00000d0e0f10");
         var shortGuid = guid.ToShortString();
 
-        shortGuid.Should().NotBeNullOrEmpty();
-        shortGuid.Should().HaveLength(24);
+        shortGuid.ShouldNotBeNullOrEmpty();
+        shortGuid.Length.ShouldBe(24);
     }
 
     [Fact]
@@ -69,12 +69,12 @@ public class GuidExtensionsTests
         var guid1 = new Guid(firstSection.Concat(secondSection).ToArray());
         var guid2 = new Guid(secondSection.Concat(firstSection).ToArray());
 
-        guid1.Should().NotBe(guid2);
+        guid1.ShouldNotBe(guid2);
 
         var shortGuid1 = guid1.ToShortString();
         var shortGuid2 = guid2.ToShortString();
 
-        shortGuid1.Should().NotBe(shortGuid2);
+        shortGuid1.ShouldNotBe(shortGuid2);
     }
 
     [Theory]
@@ -86,7 +86,7 @@ public class GuidExtensionsTests
     {
         var valid = shortString.IsValidShortGuid();
 
-        valid.Should().Be(isValid, reason);
+        valid.ShouldBe(isValid, reason);
     }
 
     /// <summary>

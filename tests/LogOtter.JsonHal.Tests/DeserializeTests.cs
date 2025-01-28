@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.JsonHal.Tests;
@@ -19,10 +19,10 @@ public class DeserializeTests
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
-        linkCollection.Should().NotBeNull();
-        linkCollection.Should().HaveCount(1);
+        linkCollection.ShouldNotBeNull();
+        linkCollection.Count.ShouldBe(1);
 
-        linkCollection.Should().Contain(new JsonHalLink("next", "/foo/next"));
+        linkCollection.ShouldContain(new JsonHalLink("next", "/foo/next"));
     }
 
     [Fact]
@@ -38,10 +38,10 @@ public class DeserializeTests
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
-        linkCollection.Should().NotBeNull();
-        linkCollection.Should().HaveCount(1);
+        linkCollection.ShouldNotBeNull();
+        linkCollection.Count.ShouldBe(1);
 
-        linkCollection.Should().Contain(new JsonHalLink("self", "/foo/self"));
+        linkCollection.ShouldContain(new JsonHalLink("self", "/foo/self"));
     }
 
     [Fact]
@@ -60,11 +60,11 @@ public class DeserializeTests
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
-        linkCollection.Should().NotBeNull();
-        linkCollection.Should().HaveCount(2);
+        linkCollection.ShouldNotBeNull();
+        linkCollection.Count.ShouldBe(2);
 
-        linkCollection.Should().Contain(new JsonHalLink("self", "/foo/self"));
-        linkCollection.Should().Contain(new JsonHalLink("next", "/foo/next"));
+        linkCollection.ShouldContain(new JsonHalLink("self", "/foo/self"));
+        linkCollection.ShouldContain(new JsonHalLink("next", "/foo/next"));
     }
 
     [Fact]
@@ -76,15 +76,15 @@ public class DeserializeTests
                     "href": "/foo/related1"
                 }, {
                     "href": "/foo/related2"
-                }] 
+                }]
             }
             """;
 
         var linkCollection = JsonSerializer.Deserialize<JsonHalLinkCollection>(json);
 
-        linkCollection.Should().NotBeNull();
-        linkCollection.Should().HaveCount(2);
+        linkCollection.ShouldNotBeNull();
+        linkCollection.Count.ShouldBe(2);
 
-        linkCollection.Should().Contain(new JsonHalLink("related", "/foo/related1"));
+        linkCollection.ShouldContain(new JsonHalLink("related", "/foo/related1"));
     }
 }

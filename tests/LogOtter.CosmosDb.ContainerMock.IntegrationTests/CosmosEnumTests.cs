@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+using Shouldly;
 using Xunit;
 
 // Deliberately testing this
@@ -46,9 +46,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.NullableEnum!.Value != null && tm.NullableEnum == TestEnum.Value1)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -69,9 +69,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.OnlyChild != null && tm.OnlyChild.NullableEnum!.Value != null && tm.OnlyChild.NullableEnum == TestEnum.Value1)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => null != tm.NullableEnum!.Value && TestEnum.Value1 == tm.NullableEnum)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -117,9 +117,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.NullableEnum!.Value == null)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -141,9 +141,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.OnlyChild!.NullableEnum!.Value == null)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -165,9 +165,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.OnlyChild!.NullableEnum!.Value != null)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(0);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(0);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -189,9 +189,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => null == tm.NullableEnum!.Value)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -213,9 +213,9 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.NullableEnumNotString!.Value != null && tm.NullableEnumNotString == TestEnum.Value1)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 
     [Fact]
@@ -237,8 +237,8 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
             q => q.Where(tm => tm.NullableEnumNotString!.Value == null)
         );
 
-        realResults.Should().NotBeNull();
-        realResults!.Count.Should().Be(1);
-        testResults.Should().BeEquivalentTo(realResults);
+        realResults.ShouldNotBeNull();
+        realResults!.Count.ShouldBe(1);
+        testResults.ShouldBeEquivalentTo(realResults);
     }
 }

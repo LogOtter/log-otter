@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using CustomerApi.Controllers.Customers.Create;
 using CustomerApi.Uris;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,7 +23,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -39,13 +39,15 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
         var location = response.Headers.Location?.ToString();
-        location.Should().NotBeNull("Location should be returned");
+        location.ShouldNotBeNull("Location should be returned");
 
         var customerUri = CustomerUri.Parse(location!);
 
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+            c => c.EmailAddress.ShouldBe("bob@bobertson.co.uk"),
+            c => c.FirstName.ShouldBe("Bob"),
+            c => c.LastName.ShouldBe("Bobertson")
         );
     }
 
@@ -64,7 +66,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -84,7 +86,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -105,7 +107,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -118,7 +120,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -132,7 +134,7 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -147,6 +149,6 @@ public class CreateCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PostAsJsonAsync("/customers", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 }

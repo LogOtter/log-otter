@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using FluentAssertions;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -36,9 +36,9 @@ public class ConcurrencyTests
                 },
                 new PartitionKey("APartition")
             );
-        (await mustPassETag.Should().ThrowAsync<InvalidOperationException>())
-            .Which.Message.Should()
-            .Be("An eTag must be provided as a concurrency exception is queued");
+        (await mustPassETag.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe(
+            "An eTag must be provided as a concurrency exception is queued"
+        );
 
         // First update should fail as if the document has been modified by another process
         Func<Task> shouldPreConditionFail = () =>
@@ -52,7 +52,7 @@ public class ConcurrencyTests
                 new PartitionKey("APartition"),
                 new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }
             );
-        (await shouldPreConditionFail.Should().ThrowAsync<CosmosException>()).Which.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+        (await shouldPreConditionFail.ShouldThrowAsync<CosmosException>()).StatusCode.ShouldBe(HttpStatusCode.PreconditionFailed);
 
         // Second update should succeed if it has the correct etag
         documentInDb = await sut.ReadItemAsync<TestClass>("MyId", new PartitionKey("APartition"));
@@ -66,7 +66,7 @@ public class ConcurrencyTests
             new PartitionKey("APartition"),
             new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }
         );
-        success.StatusCode.Should().Be(HttpStatusCode.OK);
+        success.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     private class TestClass

@@ -1,7 +1,7 @@
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -17,8 +17,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Created);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Created);
         };
         await sut.CreateItemAsync(
             new TestClass()
@@ -30,7 +30,7 @@ public class DataChangedTests
             new PartitionKey("APartition")
         );
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -41,8 +41,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Created);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Created);
         };
         await sut.UpsertItemAsync(
             new TestClass()
@@ -54,7 +54,7 @@ public class DataChangedTests
             new PartitionKey("APartition")
         );
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Updated);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Updated);
         };
         await sut.ReplaceItemAsync(
             new TestClass()
@@ -88,7 +88,7 @@ public class DataChangedTests
             new PartitionKey("APartition")
         );
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -109,8 +109,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Updated);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Updated);
         };
         await sut.UpsertItemAsync(
             new TestClass()
@@ -122,7 +122,7 @@ public class DataChangedTests
             new PartitionKey("APartition")
         );
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -143,12 +143,12 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Deleted);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Deleted);
         };
         await sut.DeleteItemAsync<TestClass>("MyId", new PartitionKey("APartition"));
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     #endregion
@@ -162,8 +162,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Created);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Created);
         };
         var item = new TestClass()
         {
@@ -175,7 +175,7 @@ public class DataChangedTests
         await using var ms = new MemoryStream(bytes);
         await sut.CreateItemStreamAsync(ms, new PartitionKey("APartition"));
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -186,8 +186,8 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Created);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Created);
         };
         var item = new TestClass()
         {
@@ -199,7 +199,7 @@ public class DataChangedTests
         await using var ms = new MemoryStream(bytes);
         await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"));
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -220,15 +220,15 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Updated);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Updated);
         };
         item.MyValue = "Value2";
         bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms2 = new MemoryStream(bytes);
         await sut.UpsertItemStreamAsync(ms2, new PartitionKey("APartition"));
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -249,12 +249,12 @@ public class DataChangedTests
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
-            args.Should().NotBeNull();
-            args.Operation.Should().Be(Operation.Deleted);
+            args.ShouldNotBeNull();
+            args.Operation.ShouldBe(Operation.Deleted);
         };
         await sut.DeleteItemStreamAsync("MyId", new PartitionKey("APartition"));
 
-        dataChangeCalled.Should().Be(true);
+        dataChangeCalled.ShouldBe(true);
     }
 
     #endregion

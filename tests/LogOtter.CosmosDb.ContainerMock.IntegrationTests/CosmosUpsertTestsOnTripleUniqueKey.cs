@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -40,8 +40,8 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
             }
         );
 
-        realResult.StatusCode.Should().Be(testResult.StatusCode);
-        realResult.Resource.Should().BeEquivalentTo(testResult.Resource);
+        realResult.StatusCode.ShouldBe(testResult.StatusCode);
+        realResult.Resource.ShouldBeEquivalentTo(testResult.Resource);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
             }
         );
 
-        realResult.StatusCode.Should().Be(testResult.StatusCode);
-        realResult.Resource.Should().BeEquivalentTo(testResult.Resource);
+        realResult.StatusCode.ShouldBe(testResult.StatusCode);
+        realResult.Resource.ShouldBeEquivalentTo(testResult.Resource);
     }
 
     [Fact]
@@ -98,10 +98,10 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
             }
         );
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
             }
         );
 
-        realResult.StatusCode.Should().Be(testResult.StatusCode);
-        realResult.Resource.Should().BeEquivalentTo(testResult.Resource);
+        realResult.StatusCode.ShouldBe(testResult.StatusCode);
+        realResult.Resource.ShouldBeEquivalentTo(testResult.Resource);
     }
 
     [Fact]
@@ -146,9 +146,9 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
             }
         );
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 }

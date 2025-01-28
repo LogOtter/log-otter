@@ -19,11 +19,11 @@ public class EventRepositoryTests
         await eventRepository.ApplyEvents(id, null, testEvent);
 
         var allEvents = await eventRepository.GetEventStream(id);
-        allEvents.Should().HaveCount(1);
+        allEvents.Count.ShouldBe(1);
 
         var createdEvent = allEvents.First();
-        createdEvent.Id.Should().Be(id);
-        createdEvent.EventStreamId.Should().Be(id);
+        createdEvent.Id.ShouldBe(id);
+        createdEvent.EventStreamId.ShouldBe(id);
     }
 
     [Fact]
@@ -41,13 +41,13 @@ public class EventRepositoryTests
         await eventRepository.ApplyEvents(id, null, testCreatedEvent, testModifiedEvent);
 
         var allEvents = await eventRepository.GetEventStream(id);
-        allEvents.Should().HaveCount(2);
+        allEvents.Count.ShouldBe(2);
 
         var createdEvent = allEvents.First();
-        createdEvent.Should().BeOfType<TestEventCreated>().Which.Name.Should().Be(name);
+        createdEvent.ShouldBeOfType<TestEventCreated>().Name.ShouldBe(name);
 
         var modifiedEvent = allEvents.Skip(1).First();
-        modifiedEvent.Should().BeOfType<TestEventModified>().Which.NewName.Should().Be(newName);
+        modifiedEvent.ShouldBeOfType<TestEventModified>().NewName.ShouldBe(newName);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class EventRepositoryTests
         var id = Guid.NewGuid().ToString();
 
         var projection = await eventRepository.Get(id);
-        projection.Should().BeNull();
+        projection.ShouldBeNull();
     }
 
     [Fact]
@@ -74,9 +74,9 @@ public class EventRepositoryTests
         await eventRepository.ApplyEvents(id, null, testCreatedEvent);
 
         var projection = await eventRepository.Get(id);
-        projection.Should().NotBeNull();
-        projection!.Id.Should().Be(id);
-        projection.Name.Should().Be(name);
+        projection.ShouldNotBeNull();
+        projection!.Id.ShouldBe(id);
+        projection.Name.ShouldBe(name);
     }
 
     [Fact]
@@ -94,9 +94,9 @@ public class EventRepositoryTests
         await eventRepository.ApplyEvents(id, null, testCreatedEvent, testModifiedEvent);
 
         var projection = await eventRepository.Get(id);
-        projection.Should().NotBeNull();
-        projection!.Id.Should().Be(id);
-        projection.Name.Should().Be(newName);
+        projection.ShouldNotBeNull();
+        projection!.Id.ShouldBe(id);
+        projection.Name.ShouldBe(newName);
     }
 
     private static EventRepository<TestEvent, TestEventProjection> CreateEventRepository()

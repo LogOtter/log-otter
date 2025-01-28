@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using CustomerApi.Uris;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +17,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.DeleteAsync("/customers/CustomerId");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.DeleteAsync("/customers/CustomerId");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.DeleteAsync("/customers/CustomerId");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.DeleteAsync("/customers/CustomerId");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -102,6 +102,6 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.DeleteAsync("/customers/CustomerId");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

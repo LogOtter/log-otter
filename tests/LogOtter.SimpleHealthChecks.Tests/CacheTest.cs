@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -21,9 +21,9 @@ public class CacheTests
         {
             await response.WaitForResponseClosed();
 
-            response.Headers[HttpResponseHeader.CacheControl].Should().Be("no-store, no-cache");
-            response.Headers[HttpResponseHeader.Pragma].Should().Be("no-cache");
-            response.Headers[HttpResponseHeader.Expires].Should().Be("Thu, 01 Jan 1970 00:00:00 GMT");
+            response.Headers[HttpResponseHeader.CacheControl].ShouldBe("no-store, no-cache");
+            response.Headers[HttpResponseHeader.Pragma].ShouldBe("no-cache");
+            response.Headers[HttpResponseHeader.Expires].ShouldBe("Thu, 01 Jan 1970 00:00:00 GMT");
         });
     }
 
@@ -42,9 +42,9 @@ public class CacheTests
         {
             await response.WaitForResponseClosed();
 
-            response.Headers[HttpResponseHeader.CacheControl].Should().BeNull();
-            response.Headers[HttpResponseHeader.Pragma].Should().BeNull();
-            response.Headers[HttpResponseHeader.Expires].Should().BeNull();
+            response.Headers[HttpResponseHeader.CacheControl].ShouldBeNull();
+            response.Headers[HttpResponseHeader.Pragma].ShouldBeNull();
+            response.Headers[HttpResponseHeader.Expires].ShouldBeNull();
         });
     }
 }

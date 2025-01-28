@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
+﻿using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -47,7 +47,7 @@ public sealed class CosmosDeleteStreamTests(IntegrationTestsFixture testFixture)
             new ItemRequestOptions { IfMatchEtag = Guid.NewGuid().ToString() }
         );
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -70,6 +70,6 @@ public sealed class CosmosDeleteStreamTests(IntegrationTestsFixture testFixture)
             new ItemRequestOptions { IfMatchEtag = realETag }
         );
 
-        realResult.StatusCode.Should().Be(testResult.StatusCode);
+        realResult.StatusCode.ShouldBe(testResult.StatusCode);
     }
 }

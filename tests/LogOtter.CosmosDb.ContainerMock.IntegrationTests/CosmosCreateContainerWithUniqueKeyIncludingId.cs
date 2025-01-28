@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -31,9 +31,9 @@ public sealed class CosmosCreateContainerWithUniqueKeyIncludingId(IntegrationTes
 
         var (realException, testException) = await _testCosmos.SetupAsyncProducesExceptions("/partitionKey", uniqueKeyPolicy);
 
-        realException.Should().NotBeNull();
-        testException.Should().NotBeNull();
-        realException!.StatusCode.Should().Be(testException!.StatusCode);
-        realException.Should().BeOfType(testException.GetType());
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
     }
 }

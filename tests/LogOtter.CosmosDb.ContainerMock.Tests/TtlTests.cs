@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Text;
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.Tests.Helpers;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests;
@@ -58,7 +58,7 @@ public class TtlTests
         var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
         var expectedResultsCount = expectedItemExists ? 1 : 0;
-        results.Should().HaveCount(expectedResultsCount);
+        results.Count.ShouldBe(expectedResultsCount);
     }
 
     [Theory]
@@ -85,11 +85,11 @@ public class TtlTests
 
         if (expectedItemExists)
         {
-            await act.Should().NotThrowAsync();
+            await act.ShouldNotThrowAsync();
         }
         else
         {
-            (await act.Should().ThrowAsync<CosmosException>()).Where(e => e.StatusCode == HttpStatusCode.NotFound);
+            (await act.ShouldThrowAsync<CosmosException>()).StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
     }
 
@@ -114,7 +114,7 @@ public class TtlTests
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
-        response.StatusCode.Should().Be(expectedStatusCode);
+        response.StatusCode.ShouldBe(expectedStatusCode);
     }
 
     [Theory]
@@ -138,7 +138,7 @@ public class TtlTests
 
         var expectedResultsCount = expectedItemExists ? 1 : 0;
 
-        results.Should().HaveCount(expectedResultsCount);
+        results.Count.ShouldBe(expectedResultsCount);
     }
 
     [Theory]
@@ -162,7 +162,7 @@ public class TtlTests
 
         var expectedCount = expectedItemExists ? 1 : 0;
 
-        count.Should().Be(expectedCount);
+        count.ShouldBe(expectedCount);
     }
 
     [Theory]
@@ -187,7 +187,7 @@ public class TtlTests
 
         var expectedResultsCount = expectedItemExists ? 1 : 0;
 
-        items.Should().HaveCount(expectedResultsCount);
+        items.Count.ShouldBe(expectedResultsCount);
     }
 
     [Theory]
@@ -215,7 +215,7 @@ public class TtlTests
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
-        response.StatusCode.Should().Be(expectedStatusCode);
+        response.StatusCode.ShouldBe(expectedStatusCode);
     }
 
     [Theory]
@@ -245,7 +245,7 @@ public class TtlTests
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
-        response.StatusCode.Should().Be(expectedStatusCode);
+        response.StatusCode.ShouldBe(expectedStatusCode);
     }
 
     [Theory]
@@ -273,7 +273,7 @@ public class TtlTests
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
-        response.StatusCode.Should().Be(expectedStatusCode);
+        response.StatusCode.ShouldBe(expectedStatusCode);
     }
 
     [Theory]
@@ -298,7 +298,7 @@ public class TtlTests
         var results = container.GetAllItems<TestDocumentWithTtl>().ToList();
 
         var expectedResultsCount = expectedItemExists ? 1 : 0;
-        results.Should().HaveCount(expectedResultsCount);
+        results.Count.ShouldBe(expectedResultsCount);
     }
 
     private class TestDocumentWithTtl

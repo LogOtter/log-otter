@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using FluentAssertions;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests.TransactionalBatch;
@@ -32,17 +32,17 @@ public class ReadItemTests
         var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1")).ReadItem("Foo1").ReadItem("Foo2");
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var foo1Result = response.GetOperationResultAtIndex<TestClass>(0);
-        foo1Result.Should().NotBeNull();
-        foo1Result.Resource.Id.Should().Be("Foo1");
-        foo1Result.Resource.MyValue.Should().Be("Bar1");
+        foo1Result.ShouldNotBeNull();
+        foo1Result.Resource.Id.ShouldBe("Foo1");
+        foo1Result.Resource.MyValue.ShouldBe("Bar1");
 
         var foo2Result = response.GetOperationResultAtIndex<TestClass>(1);
-        foo2Result.Should().NotBeNull();
-        foo2Result.Resource.Id.Should().Be("Foo2");
-        foo2Result.Resource.MyValue.Should().Be("Bar2");
+        foo2Result.ShouldNotBeNull();
+        foo2Result.Resource.Id.ShouldBe("Foo2");
+        foo2Result.Resource.MyValue.ShouldBe("Bar2");
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class ReadItemTests
         var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1")).ReadItem("Foo1").ReadItem("Foo2");
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     private class TestClass

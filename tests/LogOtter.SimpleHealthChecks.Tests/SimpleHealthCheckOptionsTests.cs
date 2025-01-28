@@ -1,5 +1,5 @@
-using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -11,15 +11,15 @@ public class SimpleHealthCheckOptionsTests
     {
         var options = new SimpleHealthCheckOptions();
 
-        options.ResultStatusCodes.Should().HaveCount(3);
-        options.ResultStatusCodes.Should().ContainKey(HealthStatus.Healthy);
-        options.ResultStatusCodes.Should().ContainKey(HealthStatus.Degraded);
-        options.ResultStatusCodes.Should().ContainKey(HealthStatus.Unhealthy);
-        options.ResultStatusCodes[HealthStatus.Healthy].Should().Be(200);
-        options.ResultStatusCodes[HealthStatus.Degraded].Should().Be(200);
-        options.ResultStatusCodes[HealthStatus.Unhealthy].Should().Be(503);
+        options.ResultStatusCodes.Count.ShouldBe(3);
+        options.ResultStatusCodes.ShouldContainKey(HealthStatus.Healthy);
+        options.ResultStatusCodes.ShouldContainKey(HealthStatus.Degraded);
+        options.ResultStatusCodes.ShouldContainKey(HealthStatus.Unhealthy);
+        options.ResultStatusCodes[HealthStatus.Healthy].ShouldBe(200);
+        options.ResultStatusCodes[HealthStatus.Degraded].ShouldBe(200);
+        options.ResultStatusCodes[HealthStatus.Unhealthy].ShouldBe(503);
 
-        options.AllowCachingResponses.Should().BeFalse();
+        options.AllowCachingResponses.ShouldBeFalse();
     }
 
     [Fact]
@@ -29,6 +29,6 @@ public class SimpleHealthCheckOptionsTests
 
         var actions = () => new SimpleHealthCheckOptions { ResultStatusCodes = invalidOptions };
 
-        actions.Should().Throw<InvalidOperationException>();
+        actions.ShouldThrow<InvalidOperationException>();
     }
 }

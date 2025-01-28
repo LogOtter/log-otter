@@ -3,9 +3,8 @@ using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using CustomerApi.Controllers.Customers.Create;
 using CustomerApi.Uris;
-using FluentAssertions;
-using LogOtter.CosmosDb.Testing;
 using LogOtter.HttpPatch;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,7 +25,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { FirstName = "Bobby" };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -44,11 +43,10 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
 
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c =>
-                c.EmailAddress == "bob@bobertson.co.uk"
-                && c.FirstName == "Bobby"
-                && c.LastName == "Bobertson"
-                && c.Revision == existingCustomer.Revision + 1
+            c => c.EmailAddress.ShouldBe("bob@bobertson.co.uk"),
+            c => c.FirstName.ShouldBe("Bobby"),
+            c => c.LastName.ShouldBe("Bobertson"),
+            c => c.Revision.ShouldBe(existingCustomer.Revision + 1)
         );
     }
 
@@ -65,7 +63,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { EmailAddress = "bobby@bobertson.co.uk" };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         await customerApi.Then.TheCustomerShouldMatch(customerUri, c => c.EmailAddresses.SequenceEqual(new List<String> { "bobby@bobertson.co.uk" }));
     }
 
@@ -85,7 +83,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var createRequest = new CreateCustomerRequest("bob@bobertson.co.uk", "Bob", "Bobertson");
         var response = await client.PostAsJsonAsync("/customers", createRequest);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 
     public static IEnumerable<object[]> InvalidData()
@@ -132,7 +130,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
 
         var response = await client.PatchAsJObjectAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -154,10 +152,13 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson" && c.Revision == previousRevision
+            c => c.EmailAddress.ShouldBe("bob@bobertson.co.uk"),
+            c => c.FirstName.ShouldBe("Bob"),
+            c => c.LastName.ShouldBe("Bobertson"),
+            c => c.Revision.ShouldBe(previousRevision)
         );
     }
 
@@ -174,10 +175,12 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         await customerApi.Then.TheCustomerShouldMatch(
             customerUri,
-            c => c.EmailAddress == "bob@bobertson.co.uk" && c.FirstName == "Bob" && c.LastName == "Bobertson"
+            c => c.EmailAddress.ShouldBe("bob@bobertson.co.uk"),
+            c => c.FirstName.ShouldBe("Bob"),
+            c => c.LastName.ShouldBe("Bobertson")
         );
     }
 
@@ -193,7 +196,7 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { FirstName = "Bobby" };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -209,6 +212,6 @@ public class PatchCustomerTests(ITestOutputHelper testOutputHelper)
         var request = new { FirstName = "Bobby" };
         var response = await client.PatchAsJsonAsync("/customers/CustomerId", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

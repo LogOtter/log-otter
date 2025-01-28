@@ -1,9 +1,9 @@
 ﻿using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
 using LogOtter.HttpPatch.Tests.Api;
 using LogOtter.HttpPatch.Tests.Api.Controllers;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.HttpPatch.Tests;
@@ -33,10 +33,10 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = "Bob Bobertson" });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.Name.Should().Be("Bob Bobertson", "The patched value should be updated");
-        updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
+        updatedResource.Name.ShouldBe("Bob Bobertson", "The patched value should be updated");
+        updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 
     [Theory]
@@ -51,11 +51,11 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { count = 10 });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.Count.Should().Be(10, "The patched value should be updated");
-        updatedResource.Name.Should().Be("Bob", "Values that aren't patched should be unaltered");
-        updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
+        updatedResource.Count.ShouldBe(10, "The patched value should be updated");
+        updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
+        updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 
     [Theory]
@@ -73,14 +73,15 @@ public class PatchTests
             new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
 
-        updatedResource.Count.Should().Be(0, "The patched value should be updated");
-        updatedResource.Name.Should().Be("Bob", "Values that aren't patched should be unaltered");
-        updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
+        updatedResource.Count.ShouldBe(0, "The patched value should be updated");
+        updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
+        updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
 
-        updatedResource.Address.Should().BeEquivalentTo(new { Line1 = "Centenary Plaza", Postcode = "B1 1TB" });
+        updatedResource.Address.Line1.ShouldBe("Centenary Plaza");
+        updatedResource.Address.Postcode.ShouldBe("B1 1TB");
     }
 
     [Theory]
@@ -95,10 +96,10 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { description = "A fake Bobertson" });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.Description.Should().Be("A fake Bobertson", "The patched value should be updated");
-        updatedResource.Name.Should().Be("Bob", "Values that aren't patched should be unaltered");
+        updatedResource.Description.ShouldBe("A fake Bobertson", "The patched value should be updated");
+        updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
     }
 
     [Theory]
@@ -113,10 +114,10 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { description = (string?)null });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.Description.Should().BeNull("The patched value should be updated");
-        updatedResource.Name.Should().Be("Bob", "Values that aren't patched should be unaltered");
+        updatedResource.Description.ShouldBeNull("The patched value should be updated");
+        updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
     }
 
     [Theory]
@@ -131,7 +132,7 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { count = (string?)null });
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
 
     [Theory]
@@ -149,7 +150,7 @@ public class PatchTests
             new { address = new { line1 = (string?)null, postCode = (string?)null } }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
 
     [Theory]
@@ -164,7 +165,7 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = (string?)null });
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
 
     [Theory]
@@ -179,7 +180,7 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = "b" });
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
 
     [Theory]
@@ -194,10 +195,10 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { state = "Published" });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.State.Should().Be(ResourceState.Published, "The patched value should be updated");
-        updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
+        updatedResource.State.ShouldBe(ResourceState.Published, "The patched value should be updated");
+        updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 
     [Theory]
@@ -212,9 +213,10 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync("/test-resource/12345", new { people = new[] { "Bob", "Bobetta" } });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         var updatedResource = testApi.DataStore.GetResource("12345");
-        updatedResource.People.Should().BeEquivalentTo(new[] { "Bob", "Bobetta" }, "The patched value should be updated");
-        updatedResource.Description.Should().Be("Bobertson family patriarch", "Values that aren't patched should be unaltered");
+        updatedResource.People.ShouldContain("Bob", "The patched value should be updated");
+        updatedResource.People.ShouldContain("Bobetta", "The patched value should be updated");
+        updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
     }
 }

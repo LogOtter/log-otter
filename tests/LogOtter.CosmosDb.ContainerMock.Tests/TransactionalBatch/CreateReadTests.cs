@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using FluentAssertions;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.Tests.TransactionalBatch;
@@ -34,9 +34,9 @@ public class CreateReadTests
             .ReadItem("DoesNotExist");
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
-        containerMock.GetAllItems<TestClass>().Should().HaveCount(0);
+        containerMock.GetAllItems<TestClass>().Count().ShouldBe(0);
     }
 
     [Fact]
@@ -74,14 +74,14 @@ public class CreateReadTests
             .ReadItem("DoesNotExist");
 
         var response = await batch.ExecuteAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
         var allItems = containerMock.GetAllItems<TestClass>().ToList();
-        allItems.Should().HaveCount(1);
+        allItems.Count.ShouldBe(1);
 
         var item1 = allItems.Single().Document;
-        item1.Id.Should().Be("Foo1");
-        item1.MyValue.Should().Be("Bar1");
+        item1.Id.ShouldBe("Foo1");
+        item1.MyValue.ShouldBe("Bar1");
     }
 
     private class TestClass

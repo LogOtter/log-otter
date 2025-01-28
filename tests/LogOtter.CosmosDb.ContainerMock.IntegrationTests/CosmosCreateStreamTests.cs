@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using FluentAssertions;
 using LogOtter.CosmosDb.ContainerMock.IntegrationTests.TestModels;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace LogOtter.CosmosDb.ContainerMock.IntegrationTests;
@@ -45,7 +45,7 @@ public sealed class CosmosCreateStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenCreatingStream(ms, new PartitionKey("test-cst1"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public sealed class CosmosCreateStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenCreatingStream(ms, new PartitionKey("test-cst2"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public sealed class CosmosCreateStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenCreatingStream(ms, new PartitionKey("test-cst2"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public sealed class CosmosCreateStreamTests(IntegrationTestsFixture testFixture)
         await using var ms = new MemoryStream(bytes);
         var (real, test) = await _testCosmos.WhenCreatingStream(ms, new PartitionKey("test-cst3"));
 
-        real.StatusCode.Should().Be(test.StatusCode);
+        real.StatusCode.ShouldBe(test.StatusCode);
     }
 
     private static byte[] GetItemBytes(TestModel model)

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace LogOtter.SimpleHealthChecks.Tests;
@@ -19,7 +19,7 @@ public class QueryStringTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(404);
+            response.StatusCode.ShouldBe(404);
         });
     }
 
@@ -37,7 +37,7 @@ public class QueryStringTests
         await service.Run(async () =>
         {
             await response.WaitForResponseClosed();
-            response.StatusCode.Should().Be(200);
+            response.StatusCode.ShouldBe(200);
         });
     }
 }
