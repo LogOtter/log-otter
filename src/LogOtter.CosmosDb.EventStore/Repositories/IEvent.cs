@@ -4,5 +4,5 @@ public interface IEvent<TSnapshot>
     where TSnapshot : ISnapshot
 {
     string EventStreamId { get; }
-    void Apply(TSnapshot model);
+    void Apply(TSnapshot model, EventInfo eventInfo);
 }

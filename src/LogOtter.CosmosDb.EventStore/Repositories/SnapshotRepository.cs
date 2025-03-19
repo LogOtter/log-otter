@@ -108,7 +108,7 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>(
                 continue;
             }
 
-            @event.Body.Apply(snapshot);
+            @event.Body.Apply(snapshot, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
             snapshot.Revision = @event.EventNumber;
         }
 
