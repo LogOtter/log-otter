@@ -12,7 +12,7 @@ public abstract class CustomerEvent(CustomerUri customerUri, DateTimeOffset? tim
 
     public string EventStreamId => CustomerUri.Uri;
 
-    public abstract void Apply(CustomerReadModel model);
+    public abstract void Apply(CustomerReadModel model, EventInfo eventInfo);
 
     [EventDescription]
     public abstract string? GetDescription();

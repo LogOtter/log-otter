@@ -4,7 +4,7 @@ public class TestEventModified(string id, string newName) : TestEvent(id)
 {
     public string NewName { get; } = newName;
 
-    public override void Apply(TestEventProjection model)
+    public override void Apply(TestEventProjection model, EventInfo eventInfo)
     {
         model.Name = NewName;
     }

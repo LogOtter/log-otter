@@ -25,4 +25,6 @@ public class MovieReadModel : ISnapshot
     public DateTimeOffset? DeletedAt { get; set; }
 
     public int Revision { get; set; }
+
+    public Dictionary<int, string> NameVersions { get; set; } = new();
 }

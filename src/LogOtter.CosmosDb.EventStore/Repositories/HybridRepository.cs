@@ -105,20 +105,18 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
     {
         var startPosition = snapshot?.Revision + 1 ?? 1;
 
-        var eventStoreEvents = await eventStore.ReadStreamForwards(streamId, startPosition, int.MaxValue, cancellationToken);
+        var eventStoreEvents = (await eventStore.ReadStreamForwards(streamId, startPosition, int.MaxValue, cancellationToken)).ToList();
 
-        var events = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody).ToList();
-
-        if (snapshot == null && !events.Any())
+        if (snapshot == null && !eventStoreEvents.Any())
         {
             return null;
         }
 
         snapshot ??= new TSnapshot { Revision = 0, Id = streamId };
 
-        foreach (var @event in events)
+        foreach (var @event in eventStoreEvents)
         {
-            @event.Apply(snapshot);
+            @event.EventBody.Apply(snapshot, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
             snapshot.Revision++;
         }
 

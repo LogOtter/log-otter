@@ -24,8 +24,12 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
         movie.ShouldNotBeNull();
-        movie!.MovieUri.ShouldBe(movieUri);
+        movie.MovieUri.ShouldBe(movieUri);
         movie.Name.ShouldBe("The Matrix");
+        movie.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        movie.MovieRevision.ShouldBe(1);
+        movie.NameVersions.Count.ShouldBe(1);
+        movie.NameVersions.ShouldContainKeyAndValue(1, "The Matrix");
     }
 
     [Fact]
@@ -56,8 +60,12 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
         movie.ShouldNotBeNull();
-        movie!.MovieUri.ShouldBe(movieUri);
+        movie.MovieUri.ShouldBe(movieUri);
         movie.Name.ShouldBe("The Matrix");
+        movie.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        movie.MovieRevision.ShouldBe(1);
+        movie.NameVersions.Count.ShouldBe(1);
+        movie.NameVersions.ShouldContainKeyAndValue(1, "The Matrix");
     }
 
     [Fact]
@@ -74,8 +82,34 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
         await customerApi.Then.TheMovieSnapshotShouldMatch(movieUri, snapshot => snapshot.Name.ShouldBe("Hot Fuzz"));
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
         movie.ShouldNotBeNull();
-        movie!.MovieUri.ShouldBe(movieUri);
+        movie.MovieUri.ShouldBe(movieUri);
         movie.Name.ShouldBe("Hot Fuzz");
+        movie.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        movie.MovieRevision.ShouldBe(1);
+        movie.NameVersions.Count.ShouldBe(1);
+        movie.NameVersions.ShouldContainKeyAndValue(1, "Hot Fuzz");
+    }
+
+    [Fact]
+    public async Task Valid_SavesWhenUsingEventRepoToApply()
+    {
+        using var customerApi = new TestCustomerApi(testOutputHelper);
+        var client = customerApi.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/movies/create", new { name = "Hot Fuzz" });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.Headers.Location.ShouldNotBeNull();
+        var movieUri = MovieUri.Parse(response.Headers.Location!.ToString());
+        await customerApi.Then.TheMovieEventStreamShouldMatch(movieUri, snapshot => snapshot.Name.ShouldBe("Hot Fuzz"));
+        var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
+        movie.ShouldNotBeNull();
+        movie.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("Hot Fuzz");
+        movie.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        movie.MovieRevision.ShouldBe(1);
+        movie.NameVersions.Count.ShouldBe(1);
+        movie.NameVersions.ShouldContainKeyAndValue(1, "Hot Fuzz");
     }
 
     [Fact]
@@ -85,6 +119,7 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
         var movieUri = MovieUri.Parse("/movies/ExistingMovie");
         await customerApi.Given.AnExistingMovieWithAProjectedSnapshot(movieUri, "The Matrix");
         await customerApi.Given.AnExistingMovieNameIsChangedButNotProjected(movieUri, "The Matrix Reloaded");
+        await customerApi.Given.AnExistingMovieNameIsChangedButNotProjected(movieUri, "The Matrix Revelations");
 
         var client = customerApi.CreateClient();
 
@@ -93,8 +128,14 @@ public class MovieTests(ITestOutputHelper testOutputHelper)
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movie = await response.Content.ReadFromJsonAsync<MovieQueryResponse>();
         movie.ShouldNotBeNull();
-        movie!.MovieUri.ShouldBe(movieUri);
-        movie.Name.ShouldBe("The Matrix Reloaded");
+        movie.MovieUri.ShouldBe(movieUri);
+        movie.Name.ShouldBe("The Matrix Revelations");
+        movie.CreatedOn.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        movie.MovieRevision.ShouldBe(3);
+        movie.NameVersions.Count.ShouldBe(3);
+        movie.NameVersions.ShouldContainKeyAndValue(1, "The Matrix");
+        movie.NameVersions.ShouldContainKeyAndValue(2, "The Matrix Reloaded");
+        movie.NameVersions.ShouldContainKeyAndValue(3, "The Matrix Revelations");
     }
 
     [Fact]

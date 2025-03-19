@@ -14,7 +14,7 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
 
         var eventStoreEvents = await eventStore.ReadStreamForwards(streamId, cancellationToken);
 
-        var eventsSelect = eventStoreEvents.Select(e => (TBaseEvent)e.EventBody);
+        var eventsSelect = eventStoreEvents.Select(e => e);
 
         var events = revision != null ? eventsSelect.Take(revision.Value).ToList() : eventsSelect.ToList();
 
@@ -27,7 +27,7 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
 
         foreach (var @event in events)
         {
-            @event.Apply(model);
+            @event.EventBody.Apply(model, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
         }
 
         if (model.DeletedAt.HasValue && !includeDeleted)
@@ -60,21 +60,22 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
             throw new ArgumentException("All events must be for the same entity", nameof(events));
         }
 
+        var now = DateTimeOffset.Now;
         var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
+        var revision = entity.Revision;
 
         foreach (var eventToApply in events)
         {
-            eventToApply.Apply(entity);
+            eventToApply.Apply(entity, new(now, ++revision, new()));
         }
 
         var streamId = _options.EscapeIdIfRequired(id);
 
-        var now = DateTimeOffset.Now;
         var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
         await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
-        entity.Revision += events.Length;
+        entity.Revision = revision;
 
         return entity;
     }
@@ -96,21 +97,22 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
             throw new ArgumentException("All events must be for the same entity", nameof(events));
         }
 
+        var now = DateTimeOffset.Now;
         var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
+        var revision = entity.Revision;
 
         foreach (var eventToApply in events)
         {
-            eventToApply.Apply(entity);
+            eventToApply.Apply(entity, new(now, ++revision, new()));
         }
 
         var streamId = _options.EscapeIdIfRequired(id);
 
-        var now = DateTimeOffset.Now;
         var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
         await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
-        entity.Revision += events.Length;
+        entity.Revision = revision;
 
         return (entity, eventData);
     }
