@@ -1,4 +1,5 @@
 ﻿using CustomerApi.Uris;
+using LogOtter.CosmosDb.EventStore;
 using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
@@ -12,7 +13,7 @@ public class CustomerCreated(CustomerUri customerUri, string emailAddress, strin
 
     public string LastName { get; } = lastName;
 
-    public override void Apply(CustomerReadModel model)
+    public override void Apply(CustomerReadModel model, EventInfo eventInfo)
     {
         model.CustomerUri = CustomerUri;
         model.EmailAddress = EmailAddress;

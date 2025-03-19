@@ -25,7 +25,7 @@ public class MovieController(
 
         if (movie != null)
         {
-            return Ok(new MovieQueryResponse(movieUri, movie.Name));
+            return Ok(new MovieQueryResponse(movieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
         }
 
         return NotFound();
@@ -60,7 +60,7 @@ public class MovieController(
 
         if (movie != null)
         {
-            return Ok(new MovieQueryResponse(movieUri, movie.Name));
+            return Ok(new MovieQueryResponse(movieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
         }
 
         return NotFound();
@@ -81,7 +81,7 @@ public class MovieController(
 
         if (movie != null)
         {
-            return Ok(new MovieQueryResponse(movieUri, movie.Name));
+            return Ok(new MovieQueryResponse(movieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
         }
 
         return NotFound();
@@ -106,7 +106,7 @@ public class MovieController(
         var movie = movies.FirstOrDefault();
         if (movie != null)
         {
-            return Ok(new MovieQueryResponse(movie.MovieUri, movie.Name));
+            return Ok(new MovieQueryResponse(movie.MovieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
         }
 
         return NotFound();
@@ -123,6 +123,20 @@ public class MovieController(
         var movieCreated = new MovieAdded(movieUri, request.Name);
         var movie = await movieHybridRepository.ApplyEventsAndUpdateSnapshotImmediately(movieUri.Uri, 0, cancellationToken, movieCreated);
 
-        return Created(movieUri.Uri, new MovieQueryResponse(movieUri, movie.Name));
+        return Created(movieUri.Uri, new MovieQueryResponse(movieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
+    }
+
+    [HttpPost("create", Name = "Create a movie using the event store")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<MovieQueryResponse>> Create(CreateMovieRequest request, CancellationToken cancellationToken)
+    {
+        var movieUri = MovieUri.Generate();
+
+        var movieCreated = new MovieAdded(movieUri, request.Name);
+        var movie = await movieEventRepository.ApplyEvents(movieUri.Uri, 0, cancellationToken, movieCreated);
+
+        return Created(movieUri.Uri, new MovieQueryResponse(movieUri, movie.Name, movie.CreatedOn, movie.Revision, movie.NameVersions));
     }
 }

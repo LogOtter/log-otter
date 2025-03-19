@@ -1,4 +1,5 @@
 using CustomerApi.Uris;
+using LogOtter.CosmosDb.EventStore;
 using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
@@ -17,7 +18,7 @@ public class CustomerNameChanged(
     public string NewFirstName { get; } = newFirstName;
     public string NewLastName { get; } = newLastName;
 
-    public override void Apply(CustomerReadModel model)
+    public override void Apply(CustomerReadModel model, EventInfo eventInfo)
     {
         model.FirstName = NewFirstName;
         model.LastName = NewLastName;

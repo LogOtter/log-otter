@@ -1,4 +1,5 @@
 using CustomerApi.Uris;
+using LogOtter.CosmosDb.EventStore;
 using LogOtter.Obfuscate;
 
 namespace CustomerApi.Events.Customers;
@@ -13,7 +14,7 @@ public class CustomerEmailAddressesChanged(
     public List<string> OldEmailAddresses { get; } = oldEmailAddresses;
     public List<string> NewEmailAddresses { get; } = newEmailAddresses;
 
-    public override void Apply(CustomerReadModel model)
+    public override void Apply(CustomerReadModel model, EventInfo eventInfo)
     {
         model.EmailAddresses = NewEmailAddresses;
     }

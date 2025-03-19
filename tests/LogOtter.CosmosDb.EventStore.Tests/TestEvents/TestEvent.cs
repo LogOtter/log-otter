@@ -5,5 +5,5 @@ public abstract class TestEvent(string id) : IEvent<TestEventProjection>
     public string Id { get; } = id;
     public string EventStreamId => Id;
 
-    public abstract void Apply(TestEventProjection model);
+    public abstract void Apply(TestEventProjection model, EventInfo eventInfo);
 }

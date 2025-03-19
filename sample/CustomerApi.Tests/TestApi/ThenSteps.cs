@@ -28,6 +28,11 @@ public class ThenSteps(CustomerStore customerStore, SearchableInterestStore sear
         await movieStore.ThenTheMovieSnapshotShouldMatch(movieUri, conditions);
     }
 
+    public async Task TheMovieEventStreamShouldMatch(MovieUri movieUri, params Action<MovieReadModel>[] conditions)
+    {
+        await movieStore.TheMovieEventStreamShouldMatch(movieUri, conditions);
+    }
+
     public async Task TheSongShouldMatch(SongUri songUri, params Action<Song>[] conditions)
     {
         await customerStore.ThenTheSongShouldMatch(songUri, conditions);

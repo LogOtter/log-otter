@@ -1,14 +1,16 @@
 using CustomerApi.Uris;
+using LogOtter.CosmosDb.EventStore;
 
 namespace CustomerApi.Events.Movies;
 
-public class MovieNameChanged(MovieUri movieUri, string name, DateTimeOffset? timestamp = null) : MovieEvent(movieUri, timestamp)
+public class MovieNameChanged(MovieUri movieUri, string name) : MovieEvent(movieUri)
 {
     public string Name { get; } = name;
 
-    public override void Apply(MovieReadModel model)
+    public override void Apply(MovieReadModel model, EventInfo eventInfo)
     {
         model.Name = Name;
+        model.NameVersions.Add(eventInfo.EventNumber, Name);
     }
 
     public override string GetDescription()

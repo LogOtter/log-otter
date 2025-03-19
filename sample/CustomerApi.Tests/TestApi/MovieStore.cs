@@ -58,4 +58,11 @@ public class MovieStore(
         movie.ShouldNotBeNull();
         movie.ShouldSatisfyAllConditions(conditions);
     }
+
+    public async Task TheMovieEventStreamShouldMatch(MovieUri movieUri, params Action<MovieReadModel>[] conditions)
+    {
+        var movie = await movieEventRepository.Get(movieUri.Uri);
+        movie.ShouldNotBeNull();
+        movie.ShouldSatisfyAllConditions(conditions);
+    }
 }
