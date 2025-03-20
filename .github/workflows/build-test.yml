@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build & Test
-    runs-on: windows-latest         # Run on Windows for now to use the pre-installed Cosmos Emulator
+    runs-on: windows-latest # Run on Windows for now to use the pre-installed Cosmos Emulator
     permissions:
       id-token: write
       contents: read
@@ -45,7 +45,7 @@ jobs:
         shell: pwsh
         run: |
           Import-Module "$env:ProgramFiles\Azure Cosmos DB Emulator\PSModules\Microsoft.Azure.CosmosDB.Emulator"
-          Start-CosmosDbEmulator
+          Start-CosmosDbEmulator -PartitionCount 10 -NoUI -Timeout 600
 
       - name: Test
         run: dotnet test --no-build
