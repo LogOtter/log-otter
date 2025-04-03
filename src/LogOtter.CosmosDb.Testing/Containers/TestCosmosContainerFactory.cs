@@ -14,7 +14,8 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IndexingPolicy? indexingPolicy = null,
-        ThroughputProperties? throughputProperties = null
+        ThroughputProperties? throughputProperties = null,
+        CancellationToken cancellationToken = default
     )
     {
         var existingContainer = _containers.FirstOrDefault(c => string.Equals(c.Id, containerName, StringComparison.InvariantCulture));

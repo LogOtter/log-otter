@@ -10,7 +10,8 @@ public interface ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IndexingPolicy? indexingPolicy = null,
-        ThroughputProperties? throughputProperties = null
+        ThroughputProperties? throughputProperties = null,
+        CancellationToken cancellationToken = default
     );
 
     Container GetContainer(string containerName);

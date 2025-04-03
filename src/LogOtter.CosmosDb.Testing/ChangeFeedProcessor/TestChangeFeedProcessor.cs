@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
+﻿using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 
 namespace LogOtter.CosmosDb.Testing;
 
@@ -11,13 +10,17 @@ public class TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument> :
 
     private bool _started;
 
+    public string Name { get; }
+
     public TestChangeFeedProcessor(
+        string processorName,
         ContainerMock.ContainerMock container,
         IChangeFeedChangeConverter<TRawDocument, TChangeFeedHandlerDocument> changeConverter,
         IChangeFeedProcessorChangeHandler<TChangeFeedHandlerDocument> changeHandler,
         bool enabled
     )
     {
+        Name = processorName;
         container.DataChanged += OnChanges;
         _changeConverter = changeConverter;
         _changeHandler = changeHandler;

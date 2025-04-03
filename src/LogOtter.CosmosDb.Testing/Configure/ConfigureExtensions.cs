@@ -8,6 +8,7 @@ public static class ConfigureExtensions
     {
         services.AddSingleton<IFeedIteratorFactory, TestFeedIteratorFactory>();
         services.AddSingleton<TestCosmosContainerFactory>();
+        services.AddSingleton<ICosmosDatabaseFactory, TestCosmosDatabaseFactory>();
         services.AddSingleton<ICosmosContainerFactory>(sp => sp.GetRequiredService<TestCosmosContainerFactory>());
         services.AddSingleton<IChangeFeedProcessorFactory, TestChangeFeedProcessorFactory>();
 

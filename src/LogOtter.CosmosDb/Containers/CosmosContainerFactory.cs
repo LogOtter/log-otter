@@ -10,7 +10,8 @@ public class CosmosContainerFactory(Database database) : ICosmosContainerFactory
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = null,
         IndexingPolicy? indexingPolicy = null,
-        ThroughputProperties? throughputProperties = null
+        ThroughputProperties? throughputProperties = null,
+        CancellationToken cancellationToken = default
     )
     {
         var containerProperties = new ContainerProperties(containerName, partitionKeyPath) { DefaultTimeToLive = defaultTimeToLive };
@@ -25,7 +26,11 @@ public class CosmosContainerFactory(Database database) : ICosmosContainerFactory
             containerProperties.IndexingPolicy = indexingPolicy;
         }
 
-        var containerResponse = await database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
+        var containerResponse = await database.CreateContainerIfNotExistsAsync(
+            containerProperties,
+            throughputProperties,
+            cancellationToken: cancellationToken
+        );
 
         return containerResponse.Container;
     }

@@ -31,11 +31,7 @@ public class ChangeFeedProcessorFactory(Database database, IOptions<CosmosDbOpti
             enabled = enabledFunc(scope.ServiceProvider).GetAwaiter().GetResult();
         }
 
-        var autoProvisionSettings = scope.ServiceProvider.GetRequiredService<AutoProvisionSettings>();
-
-        var leaseContainer = autoProvisionSettings.Enabled
-            ? database.CreateContainerIfNotExistsAsync(_options.LeasesContainerName, "/id").GetAwaiter().GetResult().Container
-            : database.GetContainer(_options.LeasesContainerName);
+        var leaseContainer = database.GetContainer(_options.LeasesContainerName);
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>>>();
 

@@ -103,4 +103,6 @@ app.UseHealthChecks("/health");
 
 app.MapControllers();
 
+await app.ProvisionCosmosDb();
+
 app.Run();
