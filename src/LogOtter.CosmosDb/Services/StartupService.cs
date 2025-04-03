@@ -120,6 +120,7 @@ internal class StartupService : IHostedService, IHealthCheck
             _logger.LogError(ex, "Failed to AutoProvision database");
             _dbCreated = false;
             _dbCreationException = ex;
+            throw;
         }
     }
 
