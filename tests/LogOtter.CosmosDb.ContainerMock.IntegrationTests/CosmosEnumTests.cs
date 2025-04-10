@@ -12,12 +12,12 @@ public sealed class CosmosEnumTests(IntegrationTestsFixture testFixture) : IAsyn
 {
     private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _testCosmos.SetupAsync("/partitionKey");
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _testCosmos.CleanupAsync();
     }

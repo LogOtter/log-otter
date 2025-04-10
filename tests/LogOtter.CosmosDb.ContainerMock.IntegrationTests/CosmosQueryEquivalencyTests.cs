@@ -10,12 +10,12 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
 {
     private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        return _testCosmos.SetupAsync("/partitionKey");
+        await _testCosmos.SetupAsync("/partitionKey");
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _testCosmos.CleanupAsync();
     }

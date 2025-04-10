@@ -20,7 +20,7 @@ public class EventStoreTests
 
         await eventStore.AppendToStream(id, 0, eventData);
 
-        var allEvents = await eventStore.ReadStreamForwards(id);
+        var allEvents = await eventStore.ReadStreamForwards(id, cancellationToken: TestContext.Current.CancellationToken);
         allEvents.Count.ShouldBe(1);
 
         var createdEvent = allEvents.First();
@@ -47,7 +47,7 @@ public class EventStoreTests
 
         await eventStore.AppendToStream(id, 0, createdEventData, modifiedEventData);
 
-        var allEvents = await eventStore.ReadStreamForwards(id);
+        var allEvents = await eventStore.ReadStreamForwards(id, cancellationToken: TestContext.Current.CancellationToken);
         allEvents.Count.ShouldBe(2);
 
         var createdEvent = allEvents.First();
@@ -79,7 +79,7 @@ public class EventStoreTests
 
         await eventStore.AppendToStream(id, 0, createdEventData, modifiedEventData);
 
-        var pagedEvents = await eventStore.ReadStreamForwards(id, 1, 1);
+        var pagedEvents = await eventStore.ReadStreamForwards(id, 1, 1, cancellationToken: TestContext.Current.CancellationToken);
         pagedEvents.Count.ShouldBe(1);
 
         var createdEvent = pagedEvents.First();
@@ -87,7 +87,7 @@ public class EventStoreTests
         createdEvent.EventId.ShouldBe(createdEventId);
         createdEvent.EventBody.ShouldBeOfType<TestEventCreated>().Name.ShouldBe(name);
 
-        pagedEvents = await eventStore.ReadStreamForwards(id, 2, 1);
+        pagedEvents = await eventStore.ReadStreamForwards(id, 2, 1, cancellationToken: TestContext.Current.CancellationToken);
         pagedEvents.Count.ShouldBe(1);
 
         var modifiedEvent = pagedEvents.First();

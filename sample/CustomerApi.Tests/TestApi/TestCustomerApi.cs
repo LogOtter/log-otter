@@ -7,7 +7,6 @@ using CustomerApi.Services;
 using LogOtter.CosmosDb;
 using LogOtter.CosmosDb.EventStore;
 using LogOtter.CosmosDb.Testing;
-using Meziantou.Extensions.Logging.Xunit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Xunit.Abstractions;
 
 namespace CustomerApi.Tests;
 
@@ -32,10 +30,10 @@ public class TestCustomerApi : IDisposable
     public GivenSteps Given { get; }
     public ThenSteps Then { get; }
 
-    public TestCustomerApi(ITestOutputHelper testOutputHelper, bool disableCosmosAutoProvisioning = false)
+    public TestCustomerApi(bool disableCosmosAutoProvisioning = false)
     {
         _disableCosmosAutoProvisioning = disableCosmosAutoProvisioning;
-        _hostedApi = new TestApplicationFactory(testOutputHelper, ConfigureTestServices, ConfigureServices);
+        _hostedApi = new TestApplicationFactory(ConfigureTestServices, ConfigureServices);
 
         Given = _hostedApi.Services.GetRequiredService<GivenSteps>();
         Then = _hostedApi.Services.GetRequiredService<ThenSteps>();
@@ -106,11 +104,8 @@ public class TestCustomerApi : IDisposable
         return client;
     }
 
-    private class TestApplicationFactory(
-        ITestOutputHelper testOutputHelper,
-        Action<IServiceCollection> configureTestServices,
-        Action<IServiceCollection> configureServices
-    ) : WebApplicationFactory<Program>
+    private class TestApplicationFactory(Action<IServiceCollection> configureTestServices, Action<IServiceCollection> configureServices)
+        : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -121,7 +116,6 @@ public class TestCustomerApi : IDisposable
                 {
                     options.AddFilter(logLevel => logLevel >= LogLevel.Warning);
                     options.AddFilter("Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", logLevel => logLevel >= LogLevel.Error);
-                    options.Services.AddSingleton<ILoggerProvider>(_ => new XUnitLoggerProvider(testOutputHelper));
                 });
         }
     }

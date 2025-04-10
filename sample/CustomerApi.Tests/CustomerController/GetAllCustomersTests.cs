@@ -5,16 +5,15 @@ using CustomerApi.Uris;
 using LogOtter.JsonHal;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerController;
 
-public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
+public class GetAllCustomersTests
 {
     [Fact]
     public async Task Valid_ReturnsOk()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
 
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"), "bob@bobertson.co.uk", "Bob", "Bobertson");
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/AnotherExistingUser"), "bobetta@bobson.co.uk", "Bobetta", "Bobson");
@@ -60,7 +59,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Valid_MultiplePages_Page1()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         for (var i = 0; i < 10; i++)
         {
             await customerApi.Given.AnExistingCustomer(CustomerUri.Parse($"/customers/ExistingUser{i}"));
@@ -93,7 +92,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Valid_MultiplePages_Page2()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         for (var i = 0; i < 20; i++)
         {
             await customerApi.Given.AnExistingCustomer(CustomerUri.Parse($"/customers/ExistingUser{i}"));
@@ -127,7 +126,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Valid_NoCustomers_ReturnsOk()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 
@@ -153,7 +152,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [InlineData("foo")]
     public async Task Invalid_Page(string page)
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
 
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Read");
 
@@ -167,7 +166,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Unauthorized()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"));
 
         var client = customerApi.CreateClient();
@@ -180,7 +179,7 @@ public class GetAllCustomersTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Forbidden()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         await customerApi.Given.AnExistingCustomer(CustomerUri.Parse("/customers/ExistingUser"));
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
 

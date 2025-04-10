@@ -22,7 +22,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
         }
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (_useTestContainers)
         {
@@ -30,7 +30,7 @@ public class IntegrationTestsFixture : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_useTestContainers)
         {

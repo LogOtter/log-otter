@@ -13,12 +13,11 @@
         <PackageReference Include="Polly.Contrib.WaitAndRetry" />
         <PackageReference Include="Shouldly" />
         <PackageReference Include="Testcontainers.CosmosDb" />
-        <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Xunit.SkippableFact" />
+        <PackageReference Include="xunit.v3" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,20 +2,19 @@
 using CustomerApi.Uris;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.CustomerController;
 
-public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
+public class DeleteCustomerTests
 {
     [Fact]
     public async Task NoExisting_ReturnsNotFound()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         var client = customerApi.CreateClient(authHeader);
 
-        var response = await client.DeleteAsync("/customers/CustomerId");
+        var response = await client.DeleteAsync("/customers/CustomerId", cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -25,7 +24,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
         var client = customerApi.CreateClient(authHeader);
@@ -40,7 +39,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
         await customerApi.Given.TheCustomerIsDeleted(customerUri);
@@ -56,7 +55,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
         var client = customerApi.CreateClient(authHeader);
@@ -71,7 +70,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     {
         var customerUri = CustomerUri.Parse("/customers/CustomerId");
 
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Delete");
         await customerApi.Given.AnExistingCustomer(customerUri);
         await customerApi.Given.TheCustomerIsDeleted(customerUri);
@@ -85,7 +84,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Unauthorized()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var client = customerApi.CreateClient();
 
         var response = await client.DeleteAsync("/customers/CustomerId");
@@ -96,7 +95,7 @@ public class DeleteCustomerTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Forbidden()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.InvalidRole");
         var client = customerApi.CreateClient(authHeader);
 
