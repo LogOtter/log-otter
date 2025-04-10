@@ -18,7 +18,8 @@ public class ReadItemTests
                 Id = "Foo1",
                 PartitionKey = "Group1",
                 MyValue = "Bar1",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         await containerMock.CreateItemAsync(
             new TestClass
@@ -26,12 +27,13 @@ public class ReadItemTests
                 Id = "Foo2",
                 PartitionKey = "Group1",
                 MyValue = "Bar2",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1")).ReadItem("Foo1").ReadItem("Foo2");
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var foo1Result = response.GetOperationResultAtIndex<TestClass>(0);
@@ -55,12 +57,13 @@ public class ReadItemTests
                 Id = "Foo1",
                 PartitionKey = "Group1",
                 MyValue = "Bar1",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var batch = containerMock.CreateTransactionalBatch(new PartitionKey("Group1")).ReadItem("Foo1").ReadItem("Foo2");
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

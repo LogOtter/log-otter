@@ -18,7 +18,7 @@ public class EventRepositoryTests
 
         await eventRepository.ApplyEvents(id, null, testEvent);
 
-        var allEvents = await eventRepository.GetEventStream(id);
+        var allEvents = await eventRepository.GetEventStream(id, cancellationToken: TestContext.Current.CancellationToken);
         allEvents.Count.ShouldBe(1);
 
         var createdEvent = allEvents.First();
@@ -40,7 +40,7 @@ public class EventRepositoryTests
 
         await eventRepository.ApplyEvents(id, null, testCreatedEvent, testModifiedEvent);
 
-        var allEvents = await eventRepository.GetEventStream(id);
+        var allEvents = await eventRepository.GetEventStream(id, cancellationToken: TestContext.Current.CancellationToken);
         allEvents.Count.ShouldBe(2);
 
         var createdEvent = allEvents.First();
@@ -57,7 +57,7 @@ public class EventRepositoryTests
 
         var id = Guid.NewGuid().ToString();
 
-        var projection = await eventRepository.Get(id);
+        var projection = await eventRepository.Get(id, cancellationToken: TestContext.Current.CancellationToken);
         projection.ShouldBeNull();
     }
 
@@ -73,9 +73,9 @@ public class EventRepositoryTests
 
         await eventRepository.ApplyEvents(id, null, testCreatedEvent);
 
-        var projection = await eventRepository.Get(id);
+        var projection = await eventRepository.Get(id, cancellationToken: TestContext.Current.CancellationToken);
         projection.ShouldNotBeNull();
-        projection!.Id.ShouldBe(id);
+        projection.Id.ShouldBe(id);
         projection.Name.ShouldBe(name);
     }
 
@@ -93,9 +93,9 @@ public class EventRepositoryTests
 
         await eventRepository.ApplyEvents(id, null, testCreatedEvent, testModifiedEvent);
 
-        var projection = await eventRepository.Get(id);
+        var projection = await eventRepository.Get(id, cancellationToken: TestContext.Current.CancellationToken);
         projection.ShouldNotBeNull();
-        projection!.Id.ShouldBe(id);
+        projection.Id.ShouldBe(id);
         projection.Name.ShouldBe(newName);
     }
 

@@ -20,7 +20,7 @@ public class SnapshotTests
             PartitionKey = "Bar",
             MyValue = "FooBar",
         };
-        await container.CreateItemAsync(item, new PartitionKey("Bar"));
+        await container.CreateItemAsync(item, new PartitionKey("Bar"), cancellationToken: TestContext.Current.CancellationToken);
 
         container.RestoreSnapshot(snapshot);
 
@@ -39,7 +39,7 @@ public class SnapshotTests
             PartitionKey = "Bar",
             MyValue = "FooBar",
         };
-        await container.CreateItemAsync(item1, new PartitionKey("Bar"));
+        await container.CreateItemAsync(item1, new PartitionKey("Bar"), cancellationToken: TestContext.Current.CancellationToken);
 
         var snapshot = container.CreateSnapshot();
 
@@ -49,7 +49,7 @@ public class SnapshotTests
             PartitionKey = "Bar",
             MyValue = "FooBar2",
         };
-        await container.CreateItemAsync(item2, new PartitionKey("Bar"));
+        await container.CreateItemAsync(item2, new PartitionKey("Bar"), cancellationToken: TestContext.Current.CancellationToken);
 
         container.RestoreSnapshot(snapshot);
 
@@ -68,16 +68,20 @@ public class SnapshotTests
             PartitionKey = "Bar",
             MyValue = "FooBar",
         };
-        await container.CreateItemAsync(item1, new PartitionKey("Bar"));
+        await container.CreateItemAsync(item1, new PartitionKey("Bar"), cancellationToken: TestContext.Current.CancellationToken);
 
         var snapshot = container.CreateSnapshot();
 
         item1.MyValue = "NewValue";
-        await container.UpsertItemAsync(item1, new PartitionKey("Bar"));
+        await container.UpsertItemAsync(item1, new PartitionKey("Bar"), cancellationToken: TestContext.Current.CancellationToken);
 
         container.RestoreSnapshot(snapshot);
 
-        var dbItem = await container.ReadItemAsync<TestClass>("Foo", new PartitionKey("Bar"));
+        var dbItem = await container.ReadItemAsync<TestClass>(
+            "Foo",
+            new PartitionKey("Bar"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         dbItem.Resource.MyValue.ShouldBe("FooBar");
     }
 

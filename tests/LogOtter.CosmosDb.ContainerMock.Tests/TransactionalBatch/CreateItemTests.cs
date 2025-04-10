@@ -33,13 +33,21 @@ public class CreateItemTests
                 }
             );
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         containerMock.GetAllItems<TestClass>().Count().ShouldBe(2);
 
-        var foo1 = await containerMock.ReadItemAsync<TestClass>("Foo1", new PartitionKey("Group1"));
-        var foo2 = await containerMock.ReadItemAsync<TestClass>("Foo2", new PartitionKey("Group1"));
+        var foo1 = await containerMock.ReadItemAsync<TestClass>(
+            "Foo1",
+            new PartitionKey("Group1"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        var foo2 = await containerMock.ReadItemAsync<TestClass>(
+            "Foo2",
+            new PartitionKey("Group1"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         foo1.ShouldNotBeNull();
         foo1.Resource.MyValue.ShouldBe("Bar1");
@@ -107,7 +115,7 @@ public class CreateItemTests
                 }
             );
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldNotBe(HttpStatusCode.OK);
 
         containerMock.GetAllItems<TestClass>().Count().ShouldBe(0);
@@ -142,7 +150,7 @@ public class CreateItemTests
             i => i.MethodName == "CreateItemStreamAsync"
         );
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
@@ -179,7 +187,7 @@ public class CreateItemTests
 
         dataChangeCalled.ShouldBe(false);
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         dataChangeCalled.ShouldBe(true);

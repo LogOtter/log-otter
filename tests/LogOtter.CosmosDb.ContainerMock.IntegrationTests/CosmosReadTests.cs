@@ -10,12 +10,12 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
 {
     private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _testCosmos.SetupAsync("/partitionKey");
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _testCosmos.CleanupAsync();
     }
@@ -40,11 +40,11 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
         }
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task ReadWithInvalidIdIsEquivalent()
     {
         var isUsingCosmosDbEmulator = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING"));
-        Skip.If(isUsingCosmosDbEmulator, "The CosmosDb emulator does not behave like the real CosmosDb in this scenario");
+        Assert.SkipWhen(isUsingCosmosDbEmulator, "The CosmosDb emulator does not behave like the real CosmosDb in this scenario");
 
         var (realException, testException) = await _testCosmos.WhenReadItemProducesException<TestModel>("#");
 

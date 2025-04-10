@@ -4,16 +4,15 @@ using CustomerApi.Uris;
 using LogOtter.CosmosDb.EventStore.EventStreamApi.Responses;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CustomerApi.Tests.EventStoreApi;
 
-public class RetrieveEventsFromEventStream(ITestOutputHelper testOutputHelper)
+public class RetrieveEventsFromEventStream
 {
     [Fact]
     public async Task CanRetrieveEventStream()
     {
-        using var customerApi = new TestCustomerApi(testOutputHelper);
+        using var customerApi = new TestCustomerApi();
 
         var customerUri = CustomerUri.Generate();
         await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk");

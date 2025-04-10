@@ -1,19 +1,13 @@
-﻿using Meziantou.Extensions.Logging.Xunit;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace LogOtter.Azure.AppServices.RequestMiddleware.Tests;
 
-public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
+public class RequestMiddlewareTests
 {
     private static readonly RequestDelegate NoActionRequestDelegate = _ => Task.CompletedTask;
-
-    private readonly ILogger<RestoreRawRequestPathMiddleware> _middlewareLogger = XUnitLogger.CreateLogger<RestoreRawRequestPathMiddleware>(
-        testOutputHelper
-    );
 
     [Theory]
     [InlineData("/", "/")]
@@ -26,7 +20,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
     {
         var context = CreateContext(pathInUrl, pathInHeader: pathInHeader);
 
-        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
+        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, CreateLogger());
         await middleware.Invoke(context);
 
         context.Request.Path.ToString().ShouldBe(pathInHeader);
@@ -44,7 +38,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
     {
         var context = CreateContext(pathInUrl, queryString, pathInHeader);
 
-        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
+        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, CreateLogger());
         await middleware.Invoke(context);
 
         context.Request.Path.ToString().ShouldBe(expectedPath);
@@ -56,7 +50,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
     {
         var context = CreateContext("/foo/bar/customers/1234");
 
-        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
+        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, CreateLogger());
         await middleware.Invoke(context);
 
         context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
@@ -67,7 +61,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
     {
         var context = CreateContext("/foo/bar/customers/1234", pathInHeader: "/mismatched/path/%2Fcustomers%2F1234");
 
-        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
+        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, CreateLogger());
         await middleware.Invoke(context);
 
         context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
@@ -82,7 +76,7 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
             pathInHeader: "/foo/bar/%2Fcustomers%2F1234?mismatch=different"
         );
 
-        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, _middlewareLogger);
+        var middleware = new RestoreRawRequestPathMiddleware(NoActionRequestDelegate, CreateLogger());
         await middleware.Invoke(context);
 
         context.Request.Path.ToString().ShouldBe("/foo/bar/customers/1234");
@@ -98,5 +92,10 @@ public class RequestMiddlewareTests(ITestOutputHelper testOutputHelper)
         }
 
         return httpContext;
+    }
+
+    private static ILogger<RestoreRawRequestPathMiddleware> CreateLogger()
+    {
+        return LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<RestoreRawRequestPathMiddleware>();
     }
 }

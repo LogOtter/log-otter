@@ -51,7 +51,7 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
@@ -74,13 +74,17 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
         Func<Task> act = async () =>
         {
-            await container.ReadItemAsync<TestDocumentWithTtl>(document.Id, new PartitionKey(document.PartitionKey));
+            await container.ReadItemAsync<TestDocumentWithTtl>(
+                document.Id,
+                new PartitionKey(document.PartitionKey),
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         };
 
         if (expectedItemExists)
@@ -106,11 +110,15 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
-        var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
+        var response = await container.ReadItemStreamAsync(
+            document.Id,
+            new PartitionKey(document.PartitionKey),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
@@ -130,7 +138,7 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
@@ -154,7 +162,7 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
@@ -178,7 +186,7 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 
@@ -203,15 +211,19 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(20);
 
-        await container.UpsertItemAsync(document);
+        await container.UpsertItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(20);
 
-        var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
+        var response = await container.ReadItemStreamAsync(
+            document.Id,
+            new PartitionKey(document.PartitionKey),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
@@ -231,17 +243,21 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(20);
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));
         await using var ms = new MemoryStream(bytes);
-        await container.UpsertItemStreamAsync(ms, new PartitionKey(document.PartitionKey));
+        await container.UpsertItemStreamAsync(ms, new PartitionKey(document.PartitionKey), cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(20);
 
-        var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
+        var response = await container.ReadItemStreamAsync(
+            document.Id,
+            new PartitionKey(document.PartitionKey),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
@@ -261,15 +277,24 @@ public class TtlTests
             TimeToLive = itemTtl,
         };
 
-        await container.CreateItemAsync(document);
+        await container.CreateItemAsync(document, cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(20);
 
-        await container.ReplaceItemAsync(document, document.Id, new PartitionKey(document.PartitionKey));
+        await container.ReplaceItemAsync(
+            document,
+            document.Id,
+            new PartitionKey(document.PartitionKey),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         container.AdvanceTime(20);
 
-        var response = await container.ReadItemStreamAsync(document.Id, new PartitionKey(document.PartitionKey));
+        var response = await container.ReadItemStreamAsync(
+            document.Id,
+            new PartitionKey(document.PartitionKey),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         var expectedStatusCode = expectedItemExists ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 
@@ -291,7 +316,7 @@ public class TtlTests
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));
         await using var ms = new MemoryStream(bytes);
-        await container.CreateItemStreamAsync(ms, new PartitionKey(document.PartitionKey));
+        await container.CreateItemStreamAsync(ms, new PartitionKey(document.PartitionKey), cancellationToken: TestContext.Current.CancellationToken);
 
         container.AdvanceTime(30);
 

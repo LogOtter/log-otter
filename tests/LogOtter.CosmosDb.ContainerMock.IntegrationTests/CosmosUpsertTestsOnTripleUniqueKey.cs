@@ -10,14 +10,14 @@ public sealed class CosmosUpsertTestsOnTripleUniqueKey(IntegrationTestsFixture t
 {
     private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var uniqueKeyPolicy = new UniqueKeyPolicy { UniqueKeys = { new UniqueKey { Paths = { "/CustomerId", "/ItemId", "/Type" } } } };
 
         await _testCosmos.SetupAsync("/partitionKey", uniqueKeyPolicy);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _testCosmos.CleanupAsync();
     }

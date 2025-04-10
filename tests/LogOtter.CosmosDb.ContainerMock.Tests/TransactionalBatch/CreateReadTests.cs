@@ -33,7 +33,7 @@ public class CreateReadTests
             )
             .ReadItem("DoesNotExist");
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
         containerMock.GetAllItems<TestClass>().Count().ShouldBe(0);
@@ -50,7 +50,8 @@ public class CreateReadTests
                 Id = "Foo1",
                 PartitionKey = "Group1",
                 MyValue = "Bar1",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var batch = containerMock
@@ -73,7 +74,7 @@ public class CreateReadTests
             )
             .ReadItem("DoesNotExist");
 
-        var response = await batch.ExecuteAsync();
+        var response = await batch.ExecuteAsync(TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
         var allItems = containerMock.GetAllItems<TestClass>().ToList();

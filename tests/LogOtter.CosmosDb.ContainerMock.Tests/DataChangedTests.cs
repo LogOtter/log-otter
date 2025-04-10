@@ -21,13 +21,14 @@ public class DataChangedTests
             args.Operation.ShouldBe(Operation.Created);
         };
         await sut.CreateItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         dataChangeCalled.ShouldBe(true);
@@ -45,13 +46,14 @@ public class DataChangedTests
             args.Operation.ShouldBe(Operation.Created);
         };
         await sut.UpsertItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         dataChangeCalled.ShouldBe(true);
@@ -62,30 +64,34 @@ public class DataChangedTests
     {
         var sut = new ContainerMock();
         await sut.UpsertItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
-        bool dataChangeCalled = false;
+
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
             args.ShouldNotBeNull();
             args.Operation.ShouldBe(Operation.Updated);
         };
+
         await sut.ReplaceItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value2",
             },
             "MyId",
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         dataChangeCalled.ShouldBe(true);
@@ -96,16 +102,17 @@ public class DataChangedTests
     {
         var sut = new ContainerMock();
         await sut.UpsertItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        bool dataChangeCalled = false;
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
@@ -113,13 +120,14 @@ public class DataChangedTests
             args.Operation.ShouldBe(Operation.Updated);
         };
         await sut.UpsertItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value2",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         dataChangeCalled.ShouldBe(true);
@@ -130,23 +138,24 @@ public class DataChangedTests
     {
         var sut = new ContainerMock();
         await sut.UpsertItemAsync(
-            new TestClass()
+            new TestClass
             {
                 Id = "MyId",
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        bool dataChangeCalled = false;
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
             args.ShouldNotBeNull();
             args.Operation.ShouldBe(Operation.Deleted);
         };
-        await sut.DeleteItemAsync<TestClass>("MyId", new PartitionKey("APartition"));
+        await sut.DeleteItemAsync<TestClass>("MyId", new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
         dataChangeCalled.ShouldBe(true);
     }
@@ -173,7 +182,7 @@ public class DataChangedTests
         };
         var bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms = new MemoryStream(bytes);
-        await sut.CreateItemStreamAsync(ms, new PartitionKey("APartition"));
+        await sut.CreateItemStreamAsync(ms, new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
         dataChangeCalled.ShouldBe(true);
     }
@@ -182,14 +191,14 @@ public class DataChangedTests
     public async Task UpsertingNewItemStreamToContainerInvokesChangedEvent()
     {
         var sut = new ContainerMock();
-        bool dataChangeCalled = false;
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
             args.ShouldNotBeNull();
             args.Operation.ShouldBe(Operation.Created);
         };
-        var item = new TestClass()
+        var item = new TestClass
         {
             Id = "MyId",
             PartitionKey = "APartition",
@@ -197,7 +206,7 @@ public class DataChangedTests
         };
         var bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms = new MemoryStream(bytes);
-        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"));
+        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
         dataChangeCalled.ShouldBe(true);
     }
@@ -214,9 +223,9 @@ public class DataChangedTests
         };
         var bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms = new MemoryStream(bytes);
-        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"));
+        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
-        bool dataChangeCalled = false;
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
@@ -226,7 +235,7 @@ public class DataChangedTests
         item.MyValue = "Value2";
         bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms2 = new MemoryStream(bytes);
-        await sut.UpsertItemStreamAsync(ms2, new PartitionKey("APartition"));
+        await sut.UpsertItemStreamAsync(ms2, new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
         dataChangeCalled.ShouldBe(true);
     }
@@ -243,16 +252,16 @@ public class DataChangedTests
         };
         var bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item));
         await using var ms = new MemoryStream(bytes);
-        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"));
+        await sut.UpsertItemStreamAsync(ms, new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
-        bool dataChangeCalled = false;
+        var dataChangeCalled = false;
         sut.DataChanged += (_, args) =>
         {
             dataChangeCalled = true;
             args.ShouldNotBeNull();
             args.Operation.ShouldBe(Operation.Deleted);
         };
-        await sut.DeleteItemStreamAsync("MyId", new PartitionKey("APartition"));
+        await sut.DeleteItemStreamAsync("MyId", new PartitionKey("APartition"), cancellationToken: TestContext.Current.CancellationToken);
 
         dataChangeCalled.ShouldBe(true);
     }

@@ -31,9 +31,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = "Bob Bobertson" });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { name = "Bob Bobertson" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.Name.ShouldBe("Bob Bobertson", "The patched value should be updated");
         updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
@@ -49,9 +53,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { count = 10 });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { count = 10 },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.Count.ShouldBe(10, "The patched value should be updated");
         updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
@@ -70,10 +78,11 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync(
             "/test-resource/12345",
-            new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } }
+            new { address = new { line1 = "Centenary Plaza", postCode = "B1 1TB" } },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
 
         updatedResource.Count.ShouldBe(0, "The patched value should be updated");
@@ -94,9 +103,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { description = "A fake Bobertson" });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { description = "A fake Bobertson" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.Description.ShouldBe("A fake Bobertson", "The patched value should be updated");
         updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
@@ -112,9 +125,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { description = (string?)null });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { description = (string?)null },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.Description.ShouldBeNull("The patched value should be updated");
         updatedResource.Name.ShouldBe("Bob", "Values that aren't patched should be unaltered");
@@ -130,9 +147,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { count = (string?)null });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { count = (string?)null },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Theory]
@@ -147,10 +168,11 @@ public class PatchTests
 
         var response = await client.PatchAsJsonAsync(
             "/test-resource/12345",
-            new { address = new { line1 = (string?)null, postCode = (string?)null } }
+            new { address = new { line1 = (string?)null, postCode = (string?)null } },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Theory]
@@ -163,9 +185,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = (string?)null });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { name = (string?)null },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Theory]
@@ -178,9 +204,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { name = "b" });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { name = "b" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Theory]
@@ -193,9 +223,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { state = "Published" });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { state = "Published" },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.State.ShouldBe(ResourceState.Published, "The patched value should be updated");
         updatedResource.Description.ShouldBe("Bobertson family patriarch", "Values that aren't patched should be unaltered");
@@ -211,9 +245,13 @@ public class PatchTests
 
         testApi.DataStore.UpsertResource(InitialState);
 
-        var response = await client.PatchAsJsonAsync("/test-resource/12345", new { people = new[] { "Bob", "Bobetta" } });
+        var response = await client.PatchAsJsonAsync(
+            "/test-resource/12345",
+            new { people = new[] { "Bob", "Bobetta" } },
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         var updatedResource = testApi.DataStore.GetResource("12345");
         updatedResource.People.ShouldContain("Bob", "The patched value should be updated");
         updatedResource.People.ShouldContain("Bobetta", "The patched value should be updated");

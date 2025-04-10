@@ -20,11 +20,16 @@ public class ConcurrencyTests
                 PartitionKey = "APartition",
                 MyValue = "Value1",
             },
-            new PartitionKey("APartition")
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
         );
         sut.TheNextWriteToDocumentRequiresEtagAndWillRaiseAConcurrencyException(new PartitionKey("APartition"), "MyId");
 
-        var documentInDb = await sut.ReadItemAsync<TestClass>("MyId", new PartitionKey("APartition"));
+        var documentInDb = await sut.ReadItemAsync<TestClass>(
+            "MyId",
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         Func<Task> mustPassETag = () =>
             sut.UpsertItemAsync(
@@ -34,7 +39,8 @@ public class ConcurrencyTests
                     PartitionKey = "APartition",
                     MyValue = "Value2",
                 },
-                new PartitionKey("APartition")
+                new PartitionKey("APartition"),
+                cancellationToken: TestContext.Current.CancellationToken
             );
         (await mustPassETag.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe(
             "An eTag must be provided as a concurrency exception is queued"
@@ -50,12 +56,17 @@ public class ConcurrencyTests
                     MyValue = "Value2",
                 },
                 new PartitionKey("APartition"),
-                new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }
+                new ItemRequestOptions { IfMatchEtag = documentInDb.ETag },
+                cancellationToken: TestContext.Current.CancellationToken
             );
         (await shouldPreConditionFail.ShouldThrowAsync<CosmosException>()).StatusCode.ShouldBe(HttpStatusCode.PreconditionFailed);
 
         // Second update should succeed if it has the correct etag
-        documentInDb = await sut.ReadItemAsync<TestClass>("MyId", new PartitionKey("APartition"));
+        documentInDb = await sut.ReadItemAsync<TestClass>(
+            "MyId",
+            new PartitionKey("APartition"),
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         var success = await sut.UpsertItemAsync(
             new TestClass
             {
@@ -64,7 +75,8 @@ public class ConcurrencyTests
                 MyValue = "Value2",
             },
             new PartitionKey("APartition"),
-            new ItemRequestOptions { IfMatchEtag = documentInDb.ETag }
+            new ItemRequestOptions { IfMatchEtag = documentInDb.ETag },
+            cancellationToken: TestContext.Current.CancellationToken
         );
         success.StatusCode.ShouldBe(HttpStatusCode.OK);
     }

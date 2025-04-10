@@ -56,7 +56,7 @@ internal class DefaultSerializer : CosmosSerializer
 
             using var sr = new StreamReader(stream);
             using var jsonTextReader = new JsonTextReader(sr);
-            return GetSerializer().Deserialize<T>(jsonTextReader);
+            return GetSerializer().Deserialize<T>(jsonTextReader)!;
         }
     }
 

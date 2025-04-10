@@ -40,7 +40,8 @@ public sealed class CosmosQuerySerializationTests
                 Name = "Bob Bobertson",
                 Value = false,
                 PartitionKey = "PartitionKeyValue",
-            }
+            },
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         var linqSerializerOptions = new CosmosLinqSerializerOptions();

@@ -10,14 +10,14 @@ public sealed class CosmosDeleteTests(IntegrationTestsFixture testFixture) : IAs
 {
     private readonly TestCosmos _testCosmos = testFixture.CreateTestCosmos();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var uniqueKeyPolicy = new UniqueKeyPolicy { UniqueKeys = { new UniqueKey { Paths = { "/Name" } } } };
 
         await _testCosmos.SetupAsync("/partitionKey", uniqueKeyPolicy);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _testCosmos.CleanupAsync();
     }
