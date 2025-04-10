@@ -404,11 +404,11 @@ internal class ContainerData
             foreach (var item in itemsArray.Children<JObject>())
             {
                 var containerItem = new ContainerItem(
-                    item.Value<string>("Id"),
-                    item.Value<string>("Json"),
-                    PartitionKeyHelpers.FromJsonString(item.Value<string>("PartitionKey")),
+                    item.Value<string>("Id")!,
+                    item.Value<string>("Json")!,
+                    PartitionKeyHelpers.FromJsonString(item.Value<string>("PartitionKey")!),
                     item.Value<int?>("ExpiryTime"),
-                    item.Value<string>("ETag"),
+                    item.Value<string>("ETag")!,
                     item.Value<bool>("RequireETagOnNextUpdate"),
                     item.Value<bool>("HasScheduledETagMismatch"),
                     _serializationHelper

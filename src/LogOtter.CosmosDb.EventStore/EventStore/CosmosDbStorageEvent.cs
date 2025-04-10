@@ -58,7 +58,7 @@ public class CosmosDbStorageEvent
         where TBaseEvent : class
     {
         var bodyType = typeMap.GetTypeFromName(BodyType);
-        var body = Body.ToObject(bodyType, serializer);
+        var body = Body.ToObject(bodyType, serializer)!;
 
         return new StorageEvent<TBaseEvent>(StreamId, new EventData<TBaseEvent>(EventId, (TBaseEvent)body, CreatedOn, Metadata), EventNumber);
     }
