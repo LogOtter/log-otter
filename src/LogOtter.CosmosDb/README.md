@@ -84,6 +84,13 @@ services
     .AddCosmosDb()
     .WithAutoProvisioning()
 ```
+> Note: The database and containers will be auto provisioned asynchronously as the application starts. A health check is automatically added that will not report healthy until the database has provisioned.
+
+If synchronous database provisioning is required before the application starts, then call
+
+```csharp
+app.ProvisionCosmosDb();
+```
 
 ## Adding Containers
 

@@ -1,6 +1,10 @@
 ﻿using Azure.Identity;
+using LogOtter.CosmosDb.Metadata;
+using LogOtter.CosmosDb.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb;
@@ -16,6 +20,7 @@ public static class ConfigureExtensions
 
         services.AddSingleton<IValidateOptions<CosmosDbOptions>, CosmosDbOptionsValidator>();
         services.AddSingleton(_ => new AutoProvisionSettings(false));
+        services.AddSingleton<ContainerCatalog>();
 
         services.AddSingleton(sp =>
         {
@@ -41,25 +46,37 @@ public static class ConfigureExtensions
             var cosmosDbOptions = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
             var client = sp.GetRequiredService<CosmosClient>();
 
-            var autoProvisionSettings = sp.GetRequiredService<AutoProvisionSettings>();
-
-            var database = autoProvisionSettings.Enabled
-                ? client
-                    .CreateDatabaseIfNotExistsAsync(cosmosDbOptions.DatabaseId, autoProvisionSettings.Throughput)
-                    .GetAwaiter()
-                    .GetResult()
-                    .Database
-                : client.GetDatabase(cosmosDbOptions.DatabaseId);
-
-            return database;
+            return client.GetDatabase(cosmosDbOptions.DatabaseId);
         });
 
         services.AddSingleton<IFeedIteratorFactory, FeedIteratorFactory>();
+        services.AddSingleton<ICosmosDatabaseFactory, CosmosDatabaseFactory>();
         services.AddSingleton<ICosmosContainerFactory, CosmosContainerFactory>();
         services.AddSingleton<IChangeFeedProcessorFactory, ChangeFeedProcessorFactory>();
 
-        services.AddHostedService<ChangeFeedProcessorRunnerService>();
+        services.AddHostedService<StartupService>();
+        services
+            .AddHealthChecks()
+            .Add(
+                new HealthCheckRegistration(
+                    "LogOtterCosmosAutoProvision",
+                    sp => sp.GetHostedService<StartupService>(),
+                    null,
+                    ["LogOtter", "CosmosDb"]
+                )
+            );
 
         return new CosmosDbBuilder(services);
+    }
+
+    public static async Task ProvisionCosmosDb(this IHost host, CancellationToken cancellationToken = default)
+    {
+        var startupService = host.Services.GetHostedService<StartupService>();
+        await startupService.ProvisionCosmosDb(cancellationToken);
+    }
+
+    private static T GetHostedService<T>(this IServiceProvider serviceProvider)
+    {
+        return (T)serviceProvider.GetServices<IHostedService>().Single(t => t is T);
     }
 }

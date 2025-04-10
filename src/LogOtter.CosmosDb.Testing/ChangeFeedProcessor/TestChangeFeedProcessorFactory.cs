@@ -28,6 +28,7 @@ public class TestChangeFeedProcessorFactory(IServiceScopeFactory serviceScopeFac
         }
 
         return new TestChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
+            processorName,
             (ContainerMock.ContainerMock)container.Container,
             changeConverter,
             changeHandler,

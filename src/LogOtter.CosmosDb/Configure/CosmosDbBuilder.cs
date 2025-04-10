@@ -183,26 +183,13 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
 
     private void RegisterCosmosContainer<T>(string containerName, AutoProvisionMetadata? autoProvisionMetadata)
     {
-        autoProvisionMetadata ??= new AutoProvisionMetadata();
+        Services.AddSingleton(new ContainerAutoProvisionMetadata(containerName, autoProvisionMetadata ?? new AutoProvisionMetadata()));
 
         Services.AddSingleton(sp =>
         {
             var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
-            var autoProvisionSettings = sp.GetRequiredService<AutoProvisionSettings>();
 
-            var container = autoProvisionSettings.Enabled
-                ? cosmosContainerFactory
-                    .CreateContainerIfNotExistsAsync(
-                        containerName,
-                        autoProvisionMetadata.PartitionKeyPath,
-                        autoProvisionMetadata.UniqueKeyPolicy,
-                        autoProvisionMetadata.DefaultTimeToLive,
-                        autoProvisionMetadata.IndexingPolicy,
-                        autoProvisionMetadata.ThroughputProperties
-                    )
-                    .GetAwaiter()
-                    .GetResult()
-                : cosmosContainerFactory.GetContainer(containerName);
+            var container = cosmosContainerFactory.GetContainer(containerName);
 
             return new CosmosContainer<T>(container);
         });

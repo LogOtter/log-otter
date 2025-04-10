@@ -228,11 +228,6 @@
           "Microsoft.Extensions.Options": "8.0.2"
         }
       },
-      "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": {
-        "type": "Transitive",
-        "resolved": "8.0.10",
-        "contentHash": "IRPhuY8RoP81Vhf9U0RFKVM9XHMGc297DWEE8J9qLEXG9yvW3DZtWRrm4MmE6gdl50FpMym8wZGLtRYdyyovog=="
-      },
       "Microsoft.Extensions.FileProviders.Abstractions": {
         "type": "Transitive",
         "resolved": "8.0.0",
@@ -605,6 +600,12 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
           "Microsoft.Extensions.Options": "8.0.2"
         }
+      },
+      "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.10, )",
+        "resolved": "8.0.10",
+        "contentHash": "IRPhuY8RoP81Vhf9U0RFKVM9XHMGc297DWEE8J9qLEXG9yvW3DZtWRrm4MmE6gdl50FpMym8wZGLtRYdyyovog=="
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "CentralTransitive",
