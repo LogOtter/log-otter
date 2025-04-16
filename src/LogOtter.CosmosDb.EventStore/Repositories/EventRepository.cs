@@ -61,15 +61,14 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         }
 
         var now = DateTimeOffset.Now;
-        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
+        var streamId = _options.EscapeIdIfRequired(id);
+        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot { Id = streamId };
         var revision = entity.Revision;
 
         foreach (var eventToApply in events)
         {
             eventToApply.Apply(entity, new(now, ++revision, new()));
         }
-
-        var streamId = _options.EscapeIdIfRequired(id);
 
         var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
@@ -98,15 +97,14 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         }
 
         var now = DateTimeOffset.Now;
-        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot();
+        var streamId = _options.EscapeIdIfRequired(id);
+        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot { Id = streamId };
         var revision = entity.Revision;
 
         foreach (var eventToApply in events)
         {
             eventToApply.Apply(entity, new(now, ++revision, new()));
         }
-
-        var streamId = _options.EscapeIdIfRequired(id);
 
         var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 

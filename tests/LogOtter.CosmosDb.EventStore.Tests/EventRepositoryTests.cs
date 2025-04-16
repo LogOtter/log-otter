@@ -51,7 +51,43 @@ public class EventRepositoryTests
     }
 
     [Fact]
-    public async Task GetSnapshotWithZeroEvents()
+    public async Task GetProjectionWithSingleEventOnApply()
+    {
+        var eventRepository = CreateEventRepository();
+
+        var id = Guid.NewGuid().ToString();
+        var name = "Bob Bobertson";
+
+        var testCreatedEvent = new TestEventCreated(id, name);
+
+        var projection = await eventRepository.ApplyEvents(id, null, testCreatedEvent);
+
+        projection.ShouldNotBeNull();
+        projection.Id.ShouldBe(id);
+        projection.Name.ShouldBe(name);
+    }
+
+    [Fact]
+    public async Task GetProjectionWithMultipleEventsOnApply()
+    {
+        var eventRepository = CreateEventRepository();
+
+        var id = Guid.NewGuid().ToString();
+        var name = "Bob Bobertson";
+        var newName = "Bobby Bobertson";
+
+        var testCreatedEvent = new TestEventCreated(id, name);
+        var testModifiedEvent = new TestEventModified(id, newName);
+
+        var projection = await eventRepository.ApplyEvents(id, null, testCreatedEvent, testModifiedEvent);
+
+        projection.ShouldNotBeNull();
+        projection.Id.ShouldBe(id);
+        projection.Name.ShouldBe(newName);
+    }
+
+    [Fact]
+    public async Task GetProjectionWithZeroEvents()
     {
         var eventRepository = CreateEventRepository();
 
@@ -62,7 +98,7 @@ public class EventRepositoryTests
     }
 
     [Fact]
-    public async Task GetSnapshotWithSingleEvents()
+    public async Task GetProjectionWithSingleEvents()
     {
         var eventRepository = CreateEventRepository();
 
@@ -80,7 +116,7 @@ public class EventRepositoryTests
     }
 
     [Fact]
-    public async Task GetSnapshotWithMultipleEvents()
+    public async Task GetProjectionWithMultipleEvents()
     {
         var eventRepository = CreateEventRepository();
 
