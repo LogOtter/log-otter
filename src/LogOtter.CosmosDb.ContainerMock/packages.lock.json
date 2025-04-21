@@ -4,9 +4,9 @@
     "net8.0": {
       "Microsoft.Azure.Cosmos": {
         "type": "Direct",
-        "requested": "[3.48.0, )",
-        "resolved": "3.48.0",
-        "contentHash": "OsjRhH0n9K+TtoV6JV1zsDKQeOcXtuUGRBs6V/hx3ik9YoeKERgv/ZMSrIXaEN6bGHK6pSN+3FvaGuUIAtnzrQ==",
+        "requested": "[3.49.0, )",
+        "resolved": "3.49.0",
+        "contentHash": "HUXzAP27/hEu3lD2SwZLAyc6qDknw+ycftxRgf9igsGhD61iPFlosooBTCQ5jrtWY0vBxK0g4oLxUzPcDg9VoA==",
         "dependencies": {
           "Azure.Core": "1.44.1",
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0",

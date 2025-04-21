@@ -868,15 +868,15 @@
       "logotter.cosmosdb.containermock": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Azure.Cosmos": "[3.48.0, )",
+          "Microsoft.Azure.Cosmos": "[3.49.0, )",
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
       "Microsoft.Azure.Cosmos": {
         "type": "CentralTransitive",
-        "requested": "[3.48.0, )",
-        "resolved": "3.48.0",
-        "contentHash": "OsjRhH0n9K+TtoV6JV1zsDKQeOcXtuUGRBs6V/hx3ik9YoeKERgv/ZMSrIXaEN6bGHK6pSN+3FvaGuUIAtnzrQ==",
+        "requested": "[3.49.0, )",
+        "resolved": "3.49.0",
+        "contentHash": "HUXzAP27/hEu3lD2SwZLAyc6qDknw+ycftxRgf9igsGhD61iPFlosooBTCQ5jrtWY0vBxK0g4oLxUzPcDg9VoA==",
         "dependencies": {
           "Azure.Core": "1.44.1",
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
