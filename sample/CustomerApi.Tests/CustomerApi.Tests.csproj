@@ -24,6 +24,22 @@
     </ItemGroup>
 
     <ItemGroup>
+
+      <PackageReference Include="Azure.Identity" VersionOverride="1.14.2" />
+
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" VersionOverride="8.0.18" />
+
+      <PackageReference Include="Microsoft.Azure.Cosmos" VersionOverride="3.52.1" />
+
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Microsoft.Extensions.Hosting" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Swashbuckle.AspNetCore" VersionOverride="9.0.3" />
         <AssemblyAttribute Include="Xunit.CaptureConsoleAttribute" />
     </ItemGroup>
 

@@ -32,6 +32,14 @@
     </ItemGroup>
 
     <ItemGroup>
+
+      <PackageReference Include="Azure.Identity" VersionOverride="1.14.2" />
+
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" VersionOverride="9.0.7" />
+
+      <PackageReference Include="Microsoft.Extensions.Logging" VersionOverride="9.0.7" />
         <Folder Include="EventStreamUI\wwwroot" />
     </ItemGroup>
 </Project>
