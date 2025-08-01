@@ -42,7 +42,7 @@ public class PatchCustomerController(
 
         var events = new List<CustomerEvent>();
 
-        if (request.EmailAddress.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.EmailAddress))
+        if (request.EmailAddress.IsIncludedInPatchAndDifferentFrom(customerReadModel.EmailAddress))
         {
             events.Add(
                 new CustomerEmailAddressChanged(customerUri, customerReadModel.EmailAddress, request.EmailAddress.Value!, DateTimeOffset.UtcNow)
@@ -53,8 +53,8 @@ public class PatchCustomerController(
         }
 
         if (
-            request.FirstName.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.FirstName)
-            || request.LastName.IsIncludedInPatchAndIsDifferentFrom(customerReadModel.LastName)
+            request.FirstName.IsIncludedInPatchAndDifferentFrom(customerReadModel.FirstName)
+            || request.LastName.IsIncludedInPatchAndDifferentFrom(customerReadModel.LastName)
         )
         {
             var newFirstName = request.FirstName.GetValueIfIncludedOrDefault(customerReadModel.FirstName);
