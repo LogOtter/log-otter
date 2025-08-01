@@ -24,9 +24,4 @@ public readonly record struct OptionallyPatched<T>(bool IsIncludedInPatch, T? Va
     {
         return Value?.ToString();
     }
-
-    public T GetValueIfIncludedOrDefault(T defaultValue)
-    {
-        return IsIncludedInPatch ? Value! : defaultValue;
-    }
 }
