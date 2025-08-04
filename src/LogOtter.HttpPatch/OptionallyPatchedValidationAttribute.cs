@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LogOtter.HttpPatch;
 
-[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property, AllowMultiple = true)]
 public abstract class OptionallyPatchedValidationAttribute(ValidationAttribute validationAttribute) : Attribute
 {
     public ValidationAttribute ValidationAttribute { get; } = validationAttribute;

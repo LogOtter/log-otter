@@ -13,3 +13,16 @@ public record TestResourcePatchRequest(
     OptionallyPatched<ResourceState> State,
     OptionallyPatched<ImmutableList<string>> People
 ) : BasePatchRequest;
+
+public record TestResourceWithPropertiesPatchRequest : BasePatchRequest
+{
+    [RequiredIfPatched]
+    [MinLengthIfPatched(2)]
+    public OptionallyPatched<string> Name { get; set; }
+
+    public OptionallyPatched<string?> Description { get; set; }
+    public OptionallyPatched<int> Count { get; set; }
+    public OptionallyPatched<Address> Address { get; set; }
+    public OptionallyPatched<ResourceState> State { get; set; }
+    public OptionallyPatched<ImmutableList<string>> People { get; set; }
+}

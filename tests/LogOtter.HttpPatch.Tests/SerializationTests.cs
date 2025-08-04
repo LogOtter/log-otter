@@ -1,8 +1,6 @@
 using System.Text.Json;
 using LogOtter.HttpPatch.Tests.Api;
 using Newtonsoft.Json;
-using Shouldly;
-using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 // ReSharper disable NotAccessedPositionalProperty.Local
