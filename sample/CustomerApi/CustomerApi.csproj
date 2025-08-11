@@ -34,6 +34,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Identity" VersionOverride="1.14.2" />
+      <PackageReference Include="Microsoft.Azure.Cosmos" VersionOverride="3.52.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" VersionOverride="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" VersionOverride="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" VersionOverride="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" VersionOverride="9.0.8" />
       <Folder Include="NonEventSourcedData\" />
     </ItemGroup>
 

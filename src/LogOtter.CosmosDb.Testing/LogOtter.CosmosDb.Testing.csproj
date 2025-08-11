@@ -15,6 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Identity" />
+      <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
         <ProjectReference Include="..\LogOtter.CosmosDb.ContainerMock\LogOtter.CosmosDb.ContainerMock.csproj"/>
         <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj"/>
     </ItemGroup>
