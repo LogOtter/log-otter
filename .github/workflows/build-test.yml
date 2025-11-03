@@ -33,7 +33,7 @@ jobs:
       - name: Check formatting
         run: |
           dotnet tool restore
-          dotnet csharpier --check .
+          dotnet csharpier check .
 
       - name: Restore dependencies
         run: dotnet restore
