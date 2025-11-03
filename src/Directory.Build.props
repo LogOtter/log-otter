@@ -1,25 +1,27 @@
 ﻿<Project>
-  <PropertyGroup>
-    <Authors>LogOtter</Authors>
-    <Company>LogOtter</Company>
-    <PackageProjectUrl>https://github.com/LogOtter/log-otter</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>icon.png</PackageIcon>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)..\.nupkgs</PackageOutputPath>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <ContainerFamily>jammy-chiseled</ContainerFamily>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-    <None Include="$(MSBuildThisFileDirectory)..\build\icons\log-otter-128.png" Pack="true" PackagePath="\icon.png" />
-  </ItemGroup>
+    <PropertyGroup>
+        <Authors>LogOtter</Authors>
+        <Company>LogOtter</Company>
+        <PackageProjectUrl>https://github.com/LogOtter/log-otter</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageOutputPath>$(MSBuildThisFileDirectory)..\.nupkgs</PackageOutputPath>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <ContainerFamily>jammy-chiseled</ContainerFamily>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)..\build\icons\log-otter-128.png" Pack="true" PackagePath="\icon.png"/>
+    </ItemGroup>
 </Project>

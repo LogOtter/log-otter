@@ -1,0 +1,4 @@
+*.slnx
+*.csproj
+*.props
+.idea
