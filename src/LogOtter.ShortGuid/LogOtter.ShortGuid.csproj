@@ -1,17 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <Description>A library to create string identifiers that are as unique as GUIDs.</Description>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="LogOtter.ShortGuid.Tests"/>
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Description>A library to create string identifiers that are as unique as GUIDs.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LogOtter.ShortGuid.Tests" />
+  </ItemGroup>
 </Project>

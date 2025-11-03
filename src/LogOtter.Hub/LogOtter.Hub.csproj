@@ -1,32 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <IsPackable>false</IsPackable>
-        <Title>LogOtter Hub</Title>
-        <Description>Hub combining event streams from multiple LogOtter services</Description>
-        <ContainerRepository>logotter/hub</ContainerRepository>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\LogOtter.Azure.AppServices.RequestMiddleware\LogOtter.Azure.AppServices.RequestMiddleware.csproj" />
-        <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Yarp.ReverseProxy" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Update="appsettings.*.json" CopyToPublishDirectory="Never" />
-        <Content Update="services.*.json" CopyToPublishDirectory="Never" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="wwwroot" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <IsPackable>false</IsPackable>
+    <Title>LogOtter Hub</Title>
+    <Description>Hub combining event streams from multiple LogOtter services</Description>
+    <ContainerRepository>logotter/hub</ContainerRepository>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogOtter.Azure.AppServices.RequestMiddleware\LogOtter.Azure.AppServices.RequestMiddleware.csproj" />
+    <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Yarp.ReverseProxy" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings.*.json" CopyToPublishDirectory="Never" />
+    <Content Update="services.*.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot" />
+  </ItemGroup>
 </Project>

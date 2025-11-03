@@ -1,21 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <Description>An in-memory version of a Cosmos Container for use with testing.</Description>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Azure.Cosmos" />
-        <PackageReference Include="Newtonsoft.Json" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="LogOtter.CosmosDb.ContainerMock.IntegrationTests" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Description>An in-memory version of a Cosmos Container for use with testing.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LogOtter.CosmosDb.ContainerMock.IntegrationTests" />
+  </ItemGroup>
 </Project>

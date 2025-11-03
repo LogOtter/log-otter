@@ -1,37 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <Description>A lightweight event sourcing abstraction for CosmosDb.</Description>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj" />
-        <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="LogOtter.CosmosDb.EventStore.Tests" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Include="EventStreamUI/**/*" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="EventStreamUI\wwwroot" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Description>A lightweight event sourcing abstraction for CosmosDb.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogOtter.CosmosDb\LogOtter.CosmosDb.csproj" />
+    <ProjectReference Include="..\LogOtter.JsonHal\LogOtter.JsonHal.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LogOtter.CosmosDb.EventStore.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EventStreamUI/**/*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EventStreamUI\wwwroot" />
+  </ItemGroup>
 </Project>

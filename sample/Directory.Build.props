@@ -1,8 +1,8 @@
 ﻿<Project>
-    <PropertyGroup>
-        <Authors>LogOtter</Authors>
-        <Company>LogOtter</Company>
-        <IsPackable>false</IsPackable>
-        <ContainerFamily>jammy-chiseled</ContainerFamily>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Authors>LogOtter</Authors>
+    <Company>LogOtter</Company>
+    <IsPackable>false</IsPackable>
+    <ContainerFamily>jammy-chiseled</ContainerFamily>
+  </PropertyGroup>
 </Project>
