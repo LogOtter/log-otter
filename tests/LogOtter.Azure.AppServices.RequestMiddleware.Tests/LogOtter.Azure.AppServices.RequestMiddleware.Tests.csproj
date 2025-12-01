@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" />
       <ProjectReference Include="..\..\src\LogOtter.Azure.AppServices.RequestMiddleware\LogOtter.Azure.AppServices.RequestMiddleware.csproj" />
     </ItemGroup>
 
