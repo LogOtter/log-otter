@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" />
         <ProjectReference Include="..\..\src\LogOtter.Obfuscate\LogOtter.Obfuscate.csproj" />
     </ItemGroup>
 </Project>
