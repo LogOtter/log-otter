@@ -10,7 +10,7 @@ internal static class HttpExtensions
     {
         var host = request.Host.Value;
 
-        var length = request.Scheme.Length + 3 + host.Length;
+        var length = request.Scheme.Length + 3 + (host?.Length ?? 0);
 
         return new StringBuilder(length).Append(request.Scheme).Append("://").Append(host).ToString();
     }

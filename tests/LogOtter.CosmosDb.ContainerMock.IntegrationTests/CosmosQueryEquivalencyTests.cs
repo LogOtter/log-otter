@@ -150,9 +150,11 @@ public sealed class CosmosQueryEquivalencyTests(IntegrationTestsFixture testFixt
             }
         );
 
+        // See issue: https://github.com/Azure/azure-cosmos-dotnet-v3/issues/5518
+        IReadOnlyCollection<string> stringifiedEnums = [TestEnum.Value2.ToString()];
         var (realResults, testResults) = await _testCosmos.WhenExecutingAQuery<TestModel>(
             "partition",
-            q => q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString()))
+            q => q.Where(tm => stringifiedEnums.Contains(tm.EnumValue.ToString()))
         );
 
         realResults.ShouldNotBeNull();

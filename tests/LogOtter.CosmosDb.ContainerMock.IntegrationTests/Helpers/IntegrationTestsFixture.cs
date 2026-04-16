@@ -18,7 +18,9 @@ public class IntegrationTestsFixture : IAsyncLifetime
 
         if (_useTestContainers)
         {
-            _container = new CosmosDbBuilder().WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", $"{CosmosEmulatorPartitionCount}").Build();
+            _container = new CosmosDbBuilder("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest")
+                .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", $"{CosmosEmulatorPartitionCount}")
+                .Build();
         }
     }
 
