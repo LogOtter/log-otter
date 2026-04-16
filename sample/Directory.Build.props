@@ -3,6 +3,6 @@
         <Authors>LogOtter</Authors>
         <Company>LogOtter</Company>
         <IsPackable>false</IsPackable>
-        <ContainerFamily>jammy-chiseled</ContainerFamily>
+        <ContainerFamily>noble-chiseled</ContainerFamily>
     </PropertyGroup>
 </Project>
