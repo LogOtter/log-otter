@@ -13,7 +13,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <ContainerFamily>jammy-chiseled</ContainerFamily>
+        <ContainerFamily>noble-chiseled</ContainerFamily>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
