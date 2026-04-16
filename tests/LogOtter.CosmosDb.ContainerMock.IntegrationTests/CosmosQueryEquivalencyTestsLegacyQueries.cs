@@ -55,8 +55,10 @@ public sealed class CosmosQueryEquivalencyTestsLegacyQueries(IntegrationTestsFix
             }
         );
 
+        // See issue: https://github.com/Azure/azure-cosmos-dotnet-v3/issues/5518
+        IReadOnlyCollection<string> stringifiedEnums = [TestEnum.Value2.ToString()];
         var (realResults, testResults) = _testCosmos.WhenExecutingAQuery<TestModel>(q =>
-            q.Where(tm => new[] { TestEnum.Value2.ToString() }.Contains(tm.EnumValue.ToString()))
+            q.Where(tm => stringifiedEnums.Contains(tm.EnumValue.ToString()))
         );
 
         realResults.Count().ShouldBe(1);
