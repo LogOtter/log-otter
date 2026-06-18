@@ -18,12 +18,12 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.6",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "prettier": "^3.0.3",
-    "sass": "^1.62.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.5",
-    "vue-tsc": "^1.8.5"
+    "@vitejs/plugin-vue": "^6.0.2",
+    "prettier": "^3.7.3",
+    "sass": "^1.94.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vue-tsc": "^3.1.5"
   },
   "engines": {
     "node": ">=20.0.0"
