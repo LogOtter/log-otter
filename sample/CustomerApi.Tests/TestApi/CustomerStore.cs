@@ -66,6 +66,19 @@ public class CustomerStore(
         await ApplyEvents(customerDeleted);
     }
 
+    public async Task GivenAnExistingCustomerNameIsChanged(CustomerUri customerUri, string newFirstName, string newLastName)
+    {
+        var customer = await customerEventRepository.Get(customerUri.Uri);
+        var nameChanged = new CustomerNameChanged(
+            customerUri,
+            customer!.FirstName,
+            newFirstName,
+            customer.LastName,
+            newLastName
+        );
+        await customerEventRepository.ApplyEvents(customerUri.Uri, customer.Revision, nameChanged);
+    }
+
     public async Task ThenTheCustomerShouldBeDeleted(CustomerUri customerUri)
     {
         var customerReadModel = await customerSnapshotRepository.GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);
@@ -89,6 +102,14 @@ public class CustomerStore(
         var revision = customer?.Revision ?? 0;
 
         return await customerEventRepository.ApplyEvents(customerUri.Uri, revision, events);
+    }
+
+    public async Task ThenTheCustomerStreamShouldOnlyContainTombstone(CustomerUri customerUri)
+    {
+        var events = await customerEventRepository.GetEventStream(customerUri.Uri);
+
+        events.Count.ShouldBe(1, "The stream should have been compacted to a single tombstone event");
+        events.Single().ShouldBeOfType<CustomerCompacted>();
     }
 
     public async Task ThenTheCustomerShouldMatch(CustomerUri customerUri, params Action<CustomerReadModel>[] conditions)

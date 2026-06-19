@@ -308,6 +308,43 @@ public class ContainerMock : Container
         return ReplaceItemAsync(item, id, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
     }
 
+    public override Task<ResponseMessage> ReplaceItemStreamAsync(
+        Stream streamPayload,
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return ReplaceItemStreamAsync(streamPayload, id, partitionKey, requestOptions, DataChangeMode.Auto, cancellationToken);
+    }
+
+    internal async Task<ResponseMessage> ReplaceItemStreamAsync(
+        Stream streamPayload,
+        string id,
+        PartitionKey partitionKey,
+        ItemRequestOptions? requestOptions = null,
+        DataChangeMode dataChangeMode = DataChangeMode.Auto,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ThrowNextExceptionIfPresent(new InvocationInformation(nameof(ReplaceItemStreamAsync)));
+
+        streamPayload.Position = 0;
+        var streamReader = new StreamReader(streamPayload);
+        var json = await streamReader.ReadToEndAsync(cancellationToken);
+
+        try
+        {
+            var response = await _containerData.ReplaceItem(id, json, partitionKey, dataChangeMode, requestOptions, cancellationToken);
+            return ToCosmosResponseMessage(response, streamPayload);
+        }
+        catch (ContainerMockException ex)
+        {
+            return new ResponseMessage(ex.StatusCode);
+        }
+    }
+
     internal async Task<ItemResponse<T>> ReplaceItemAsync<T>(
         T item,
         string id,
@@ -628,16 +665,6 @@ public class ContainerMock : Container
         throw new NotImplementedException();
     }
 
-    public override Task<ResponseMessage> ReplaceItemStreamAsync(
-        Stream streamPayload,
-        string id,
-        PartitionKey partitionKey,
-        ItemRequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        throw new NotImplementedException();
-    }
 
     public override Task<ResponseMessage> ReadManyItemsStreamAsync(
         IReadOnlyList<(string id, PartitionKey partitionKey)> items,

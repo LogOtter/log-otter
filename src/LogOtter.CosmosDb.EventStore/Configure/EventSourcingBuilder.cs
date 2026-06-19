@@ -105,6 +105,15 @@ public class EventSourcingBuilder
             return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory, simpleSerializationTypeMap);
         });
 
+        var streamCompactionService = typeof(StreamCompactionService<,>);
+        var streamCompactor = typeof(IStreamCompactor<,>);
+        foreach (var compaction in config.Compactions)
+        {
+            var compactorInterface = streamCompactor.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType);
+            Services.AddSingleton(compactorInterface, compaction.CompactorType);
+            Services.AddSingleton(streamCompactionService.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType));
+        }
+
         return this;
     }
 }

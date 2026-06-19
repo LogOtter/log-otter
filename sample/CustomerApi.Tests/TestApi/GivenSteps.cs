@@ -45,6 +45,11 @@ public class GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore
         await customerStore.GivenTheCustomerIsDeleted(customerUri);
     }
 
+    public async Task TheCustomerNameIsChanged(CustomerUri customerUri, string newFirstName, string newLastName)
+    {
+        await customerStore.GivenAnExistingCustomerNameIsChanged(customerUri, newFirstName, newLastName);
+    }
+
     public void CreatingACustomerWillConflict()
     {
         customerStore.GivenCreatingACustomerWillConflict();
