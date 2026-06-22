@@ -95,6 +95,29 @@ public class EventSourcingBuilder
             }
         );
 
+        var streamCompactor = typeof(IStreamCompactor<,>);
+        var streamCompactionService = typeof(StreamCompactionService<,>);
+        var streamCompactionChangeFeedProcessor = typeof(CompactionChangeFeedProcessor<,>);
+        foreach (var compaction in config.Compactions)
+        {
+            Services.AddSingleton(streamCompactor.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType), compaction.CompactorType);
+            Services.AddSingleton(streamCompactionService.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType));
+
+            var specificCompactionProcessor = streamCompactionChangeFeedProcessor.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType);
+            Services.AddSingleton(specificCompactionProcessor);
+            changeFeedProcessorsMetadata.Add(
+                new ChangeFeedProcessorMetadata(
+                    typeof(CosmosDbStorageEvent),
+                    typeof(TBaseEvent),
+                    typeof(Event<TBaseEvent>),
+                    typeof(EventConverter<TBaseEvent>),
+                    specificCompactionProcessor,
+                    $"{compaction.SnapshotType.Name}_Compactor",
+                    config.EnabledFunc
+                )
+            );
+        }
+
         _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, autoProvisionMetadata, changeFeedProcessorsMetadata);
 
         Services.AddSingleton(sp =>
@@ -104,15 +127,6 @@ public class EventSourcingBuilder
 
             return new EventStore<TBaseEvent>(cosmosContainer.Container, feedIteratorFactory, simpleSerializationTypeMap);
         });
-
-        var streamCompactionService = typeof(StreamCompactionService<,>);
-        var streamCompactor = typeof(IStreamCompactor<,>);
-        foreach (var compaction in config.Compactions)
-        {
-            var compactorInterface = streamCompactor.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType);
-            Services.AddSingleton(compactorInterface, compaction.CompactorType);
-            Services.AddSingleton(streamCompactionService.MakeGenericType(typeof(TBaseEvent), compaction.SnapshotType));
-        }
 
         return this;
     }

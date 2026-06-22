@@ -73,6 +73,13 @@ public class CustomerStore(
         await customerEventRepository.ApplyEvents(customerUri.Uri, customer.Revision, nameChanged);
     }
 
+    public async Task GivenCompactionIsRequested(CustomerUri customerUri)
+    {
+        var customer = await customerEventRepository.Get(customerUri.Uri);
+        var compactionRequested = new CustomerCompactionRequested(customerUri);
+        await customerEventRepository.ApplyEvents(customerUri.Uri, customer!.Revision, compactionRequested);
+    }
+
     public async Task ThenTheCustomerShouldBeDeleted(CustomerUri customerUri)
     {
         var customerReadModel = await customerSnapshotRepository.GetSnapshot(customerUri.Uri, CustomerReadModel.StaticPartitionKey);

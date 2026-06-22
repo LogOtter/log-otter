@@ -50,6 +50,11 @@ public class GivenSteps(CustomerStore customerStore, ConsumerStore consumerStore
         await customerStore.GivenAnExistingCustomerNameIsChanged(customerUri, newFirstName, newLastName);
     }
 
+    public async Task CompactionIsRequested(CustomerUri customerUri)
+    {
+        await customerStore.GivenCompactionIsRequested(customerUri);
+    }
+
     public void CreatingACustomerWillConflict()
     {
         customerStore.GivenCreatingACustomerWillConflict();
