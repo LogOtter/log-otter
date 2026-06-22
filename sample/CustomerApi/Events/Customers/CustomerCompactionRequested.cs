@@ -4,7 +4,8 @@ using LogOtter.CosmosDb.EventStore;
 namespace CustomerApi.Events.Customers;
 
 public class CustomerCompactionRequested(CustomerUri customerUri, DateTimeOffset? timestamp = null)
-    : CustomerEvent(customerUri, timestamp), ICompactionRequestedEvent<CustomerReadModel>
+    : CustomerEvent(customerUri, timestamp),
+        ICompactionRequestedEvent<CustomerReadModel>
 {
     public override void Apply(CustomerReadModel model, EventInfo eventInfo)
     {
