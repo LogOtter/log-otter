@@ -78,7 +78,12 @@ public class CompactCustomerTests
 
         using var customerApi = new TestCustomerApi();
         var authHeader = await customerApi.Given.AnExistingConsumer("Customers.Compact");
-        var original = await customerApi.Given.AnExistingCustomer(customerUri, emailAddress: "bob@bobertson.co.uk", firstName: "Bob", lastName: "Bobertson");
+        var original = await customerApi.Given.AnExistingCustomer(
+            customerUri,
+            emailAddress: "bob@bobertson.co.uk",
+            firstName: "Bob",
+            lastName: "Bobertson"
+        );
         var client = customerApi.CreateClient(authHeader);
 
         await client.PostAsync("/customers/CustomerId/compact", content: null, TestContext.Current.CancellationToken);

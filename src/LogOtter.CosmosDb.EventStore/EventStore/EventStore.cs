@@ -228,7 +228,13 @@ public class EventStore<TBaseEvent> : IEventStoreReader
             using var batchResponse = await batch.ExecuteAsync(cancellationToken);
             if (!batchResponse.IsSuccessStatusCode)
             {
-                throw new CosmosException(batchResponse.ErrorMessage, batchResponse.StatusCode, 0, batchResponse.ActivityId, batchResponse.RequestCharge);
+                throw new CosmosException(
+                    batchResponse.ErrorMessage,
+                    batchResponse.StatusCode,
+                    0,
+                    batchResponse.ActivityId,
+                    batchResponse.RequestCharge
+                );
             }
         }
     }

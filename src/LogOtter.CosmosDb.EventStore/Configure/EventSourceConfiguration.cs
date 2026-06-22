@@ -36,10 +36,7 @@ public class EventSourceConfiguration<TBaseEvent>
         var compactorInterface = typeof(IStreamCompactor<,>).MakeGenericType(typeof(TBaseEvent), typeof(TSnapshot));
         if (!compactorInterface.IsAssignableFrom(typeof(TCompactor)))
         {
-            throw new ArgumentException(
-                $"{typeof(TCompactor).Name} must implement {compactorInterface.Name}",
-                nameof(TCompactor)
-            );
+            throw new ArgumentException($"{typeof(TCompactor).Name} must implement {compactorInterface.Name}", nameof(TCompactor));
         }
 
         _compactions.Add(new CompactionMetadata(typeof(TCompactor), typeof(TSnapshot)));

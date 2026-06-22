@@ -665,7 +665,6 @@ public class ContainerMock : Container
         throw new NotImplementedException();
     }
 
-
     public override Task<ResponseMessage> ReadManyItemsStreamAsync(
         IReadOnlyList<(string id, PartitionKey partitionKey)> items,
         ReadManyRequestOptions? readManyRequestOptions = null,

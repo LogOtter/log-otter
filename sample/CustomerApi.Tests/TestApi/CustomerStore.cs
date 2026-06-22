@@ -69,13 +69,7 @@ public class CustomerStore(
     public async Task GivenAnExistingCustomerNameIsChanged(CustomerUri customerUri, string newFirstName, string newLastName)
     {
         var customer = await customerEventRepository.Get(customerUri.Uri);
-        var nameChanged = new CustomerNameChanged(
-            customerUri,
-            customer!.FirstName,
-            newFirstName,
-            customer.LastName,
-            newLastName
-        );
+        var nameChanged = new CustomerNameChanged(customerUri, customer!.FirstName, newFirstName, customer.LastName, newLastName);
         await customerEventRepository.ApplyEvents(customerUri.Uri, customer.Revision, nameChanged);
     }
 

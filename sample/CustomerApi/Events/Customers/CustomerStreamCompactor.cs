@@ -8,12 +8,6 @@ public class CustomerStreamCompactor : IStreamCompactor<CustomerEvent, CustomerR
 
     public CustomerEvent CreateTombstoneEvent(CustomerReadModel currentProjection, string streamId)
     {
-        return new CustomerCompacted(
-            currentProjection.CustomerUri,
-            RedactedValue,
-            RedactedValue,
-            RedactedValue,
-            currentProjection.CreatedOn
-        );
+        return new CustomerCompacted(currentProjection.CustomerUri, RedactedValue, RedactedValue, RedactedValue, currentProjection.CreatedOn);
     }
 }

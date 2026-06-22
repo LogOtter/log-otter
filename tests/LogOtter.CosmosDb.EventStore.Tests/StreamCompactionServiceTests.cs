@@ -63,7 +63,11 @@ public class StreamCompactionServiceTests
 
         await compactionService.CompactStream(id, TestContext.Current.CancellationToken);
 
-        await eventStore.AppendToStream(id, 1, new EventData<TestEvent>(Guid.NewGuid(), new TestEventModified(id, "New Name"), DateTimeOffset.UtcNow));
+        await eventStore.AppendToStream(
+            id,
+            1,
+            new EventData<TestEvent>(Guid.NewGuid(), new TestEventModified(id, "New Name"), DateTimeOffset.UtcNow)
+        );
 
         var events = await eventStore.ReadStreamForwards(id, cancellationToken: TestContext.Current.CancellationToken);
         events.Count.ShouldBe(2, "the raw store accepts the append");
@@ -264,7 +268,12 @@ public class StreamCompactionServiceTests
 
         var events = await eventStore.ReadStreamForwards(id, cancellationToken: TestContext.Current.CancellationToken);
         events.Count.ShouldBe(1);
-        events.First().EventId.ShouldBe(originalTombstone.EventId, "the retry should reuse the original tombstone rather than synthesise a new one from the truncated stream");
+        events
+            .First()
+            .EventId.ShouldBe(
+                originalTombstone.EventId,
+                "the retry should reuse the original tombstone rather than synthesise a new one from the truncated stream"
+            );
     }
 
     [Fact]
