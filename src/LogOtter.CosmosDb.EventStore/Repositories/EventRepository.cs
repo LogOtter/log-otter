@@ -11,8 +11,9 @@ public class EventRepository<TBaseEvent, TSnapshot>(
     where TSnapshot : class, ISnapshot, new()
 {
     private readonly EventStoreOptions _options = options.Value;
-    private readonly IReadOnlyCollection<IEventMetadataEnricher> _metadataEnrichers =
-        (metadataEnrichers ?? Array.Empty<IEventMetadataEnricher>()).ToArray();
+    private readonly IReadOnlyCollection<IEventMetadataEnricher> _metadataEnrichers = (
+        metadataEnrichers ?? Array.Empty<IEventMetadataEnricher>()
+    ).ToArray();
 
     public async Task<TSnapshot?> Get(string id, int? revision = null, bool includeDeleted = false, CancellationToken cancellationToken = default)
     {
