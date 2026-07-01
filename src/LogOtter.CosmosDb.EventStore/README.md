@@ -197,6 +197,134 @@ public class CustomerEventPublisher : ICatchupSubscription<CustomerEvent>
 
 ```
 
+ # Compacting a stream (GDPR erasure)
+
+Events are stored immutably, so when a GDPR Article 17 (right to erasure) request arrives, the PII contained in the event bodies has to be physically removed. Soft-deleting a projection (`ISnapshot.DeletedAt`) hides it from reads but leaves the underlying events — and their PII — in the store.
+
+Compaction solves this by replacing a stream's entire event history with a single **tombstone** event that reproduces a scrubbed version of the current projection (PII removed), then physically deleting the original events. After compaction the stream contains a single event at revision 1:
+
+```
+Before:
+  Event 1: CustomerCreated { Email: "alice@example.com", Name: "Alice Smith" }
+  Event 2: CustomerNameChanged { Name: "Alice Jones" }
+  Event 3: CustomerEmailChanged { Email: "alice.jones@example.com" }
+
+After:
+  Event 1: CustomerCompacted { Email: "[REDACTED]", Name: "[REDACTED]", CreatedOn: 2025-01-15 }
+```
+
+Compaction requires a projection with a snapshot (see [Adding a snapshot store](#adding-a-snapshot-store)) — the tombstone is derived by replaying the stream to the current projection, and the snapshot is upserted at revision 1.
+
+## Defining the scrubbing logic
+
+Implement `IStreamCompactor<TBaseEvent, TSnapshot>` to control exactly which fields are scrubbed and which are preserved. It receives the current projection and returns the tombstone event:
+
+```csharp
+using LogOtter.CosmosDb.EventStore;
+
+namespace Customer;
+
+public class CustomerStreamCompactor : IStreamCompactor<CustomerEvent, CustomerReadModel>
+{
+    public const string RedactedValue = "[REDACTED]";
+
+    public CustomerEvent CreateTombstoneEvent(CustomerReadModel currentProjection, string streamId)
+    {
+        return new CustomerCompacted(
+            currentProjection.CustomerUri,
+            emailAddress: RedactedValue,
+            firstName: RedactedValue,
+            lastName: RedactedValue,
+            createdOn: currentProjection.CreatedOn);
+    }
+}
+```
+
+The tombstone event must implement `ICompactionEvent`. This marker tells every read path to apply the tombstone and then stop — anything after it in the stream is ignored:
+
+```csharp
+using LogOtter.CosmosDb.EventStore;
+
+namespace Customer;
+
+public class CustomerCompacted(
+    CustomerUri customerUri,
+    string emailAddress,
+    string firstName,
+    string lastName,
+    DateTimeOffset createdOn
+) : CustomerEvent(customerUri), ICompactionEvent
+{
+    public string EmailAddress { get; } = emailAddress;
+    public string FirstName { get; } = firstName;
+    public string LastName { get; } = lastName;
+    public DateTimeOffset CreatedOn { get; } = createdOn;
+
+    public override void Apply(CustomerReadModel model, EventInfo eventInfo)
+    {
+        model.CustomerUri = CustomerUri;
+        model.EmailAddress = EmailAddress;
+        model.FirstName = FirstName;
+        model.LastName = LastName;
+        model.CreatedOn = CreatedOn;
+    }
+}
+```
+
+## Configuration
+
+Compaction is opt-in per event source. Chain a call to `.WithCompaction<TCompactor, TSnapshot>()`, where `TSnapshot` is a projection that already has a snapshot:
+
+```csharp
+services
+    .AddCosmosDb()
+    .WithAutoProvisioning()
+    .AddEventSourcing(options => options.AutoEscapeIds = true)
+    .AddEventSource<CustomerEvent>("CustomerEvents", c =>
+    {
+        c.AddProjection<CustomerReadModel>()
+            .WithSnapshot("Customers", _ => CustomerReadModel.StaticPartitionKey);
+
+        c.WithCompaction<CustomerStreamCompactor, CustomerReadModel>();
+    });
+```
+
+## Triggering compaction
+
+There are two ways to run a compaction.
+
+**Directly**, by requesting `StreamCompactionService<TBaseEvent, TSnapshot>` from the DI container and calling `CompactStream`:
+
+```csharp
+public class GdprDeletionService(
+    StreamCompactionService<CustomerEvent, CustomerReadModel> compactionService)
+{
+    public async Task HandleDeletionRequest(string customerId, CancellationToken ct)
+    {
+        await compactionService.CompactStream(customerId, ct);
+    }
+}
+```
+
+**Asynchronously via the change feed**, by appending an event that implements `ICompactionRequestedEvent<TSnapshot>`. Registering compaction also registers a `CompactionChangeFeedProcessor` that watches the stream and calls `CompactStream` whenever it sees such an event. This lets you request erasure using the normal `ApplyEvents`/`AppendToStream` flow:
+
+```csharp
+public class CustomerCompactionRequested(CustomerUri customerUri)
+    : CustomerEvent(customerUri), ICompactionRequestedEvent<CustomerReadModel>
+{
+    public override void Apply(CustomerReadModel model, EventInfo eventInfo)
+    {
+        // No projection change — this event exists purely as a signal to the compaction processor.
+    }
+}
+```
+
+## Behaviour to be aware of
+
+- **Revision resets to 1.** After compaction the stream is a single tombstone at revision 1. Any in-flight write holding a stale revision will get a `ConcurrencyException` on its next append and must retry.
+- **Post-compaction appends are ignored by projections.** The raw store accepts appends at position 2+ after compaction, but every projection read path stops at the tombstone, so those events are invisible to consumers. Once a stream is compacted the entity is logically gone and no further activity is expected; streams that must stay live after compaction are out of scope.
+- **Idempotent.** Compacting a stream whose first event is already a tombstone reuses that tombstone verbatim rather than re-deriving the projection, so retrying after a partial failure is safe.
+
 # Usage
 
 Depending on the setup steps you have used, you'll have one or more of the following:

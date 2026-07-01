@@ -117,6 +117,15 @@ internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock c
         throw new NotImplementedException();
     }
 
+    public override Microsoft.Azure.Cosmos.TransactionalBatch ReplaceItemStream(
+        string id,
+        Stream streamPayload,
+        TransactionalBatchItemRequestOptions? requestOptions = null
+    )
+    {
+        throw new NotImplementedException();
+    }
+
     public override Microsoft.Azure.Cosmos.TransactionalBatch UpsertItem<T>(T item, TransactionalBatchItemRequestOptions? requestOptions = null)
     {
         throw new NotImplementedException();
@@ -136,21 +145,40 @@ internal class TestTransactionalBatch(PartitionKey partitionKey, ContainerMock c
         TransactionalBatchItemRequestOptions? requestOptions = null
     )
     {
-        throw new NotImplementedException();
-    }
+        var itemRequestOptions = CreateItemRequestOptions(requestOptions);
 
-    public override Microsoft.Azure.Cosmos.TransactionalBatch ReplaceItemStream(
-        string id,
-        Stream streamPayload,
-        TransactionalBatchItemRequestOptions? requestOptions = null
-    )
-    {
-        throw new NotImplementedException();
+        _actions.Enqueue(response =>
+        {
+            var bytes = Encoding.UTF8.GetBytes(serializationHelper.SerializeObject(item));
+
+            using var ms = new MemoryStream(bytes);
+
+            var itemResponse = containerMock
+                .ReplaceItemStreamAsync(ms, id, partitionKey, itemRequestOptions, DataChangeMode.Manual)
+                .GetAwaiter()
+                .GetResult();
+
+            response.AddResult(itemResponse, item);
+        });
+
+        return this;
     }
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch DeleteItem(string id, TransactionalBatchItemRequestOptions? requestOptions = null)
     {
-        throw new NotImplementedException();
+        var itemRequestOptions = CreateItemRequestOptions(requestOptions);
+
+        _actions.Enqueue(response =>
+        {
+            var itemResponse = containerMock
+                .DeleteItemStreamAsync(id, partitionKey, itemRequestOptions, DataChangeMode.Manual)
+                .GetAwaiter()
+                .GetResult();
+
+            response.AddResult(itemResponse);
+        });
+
+        return this;
     }
 
     public override Microsoft.Azure.Cosmos.TransactionalBatch PatchItem(

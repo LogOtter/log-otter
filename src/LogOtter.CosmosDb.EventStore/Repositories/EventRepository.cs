@@ -28,6 +28,15 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         foreach (var @event in events)
         {
             @event.EventBody.Apply(model, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
+
+            // A compaction tombstone fully represents the stream state. Any subsequent events are
+            // either pending deletion (during in-flight cleanup) or stale leftovers from a crashed
+            // compaction — stop applying so they don't corrupt the projection.
+            if (@event.EventBody is ICompactionEvent)
+            {
+                model.Revision = 1;
+                break;
+            }
         }
 
         if (model.DeletedAt.HasValue && !includeDeleted)

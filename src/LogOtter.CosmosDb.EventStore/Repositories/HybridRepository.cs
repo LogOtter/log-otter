@@ -116,6 +116,14 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
 
         foreach (var @event in eventStoreEvents)
         {
+            if (@event.EventBody is ICompactionEvent)
+            {
+                snapshot = new TSnapshot { Id = streamId };
+                @event.EventBody.Apply(snapshot, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
+                snapshot.Revision = 1;
+                break;
+            }
+
             @event.EventBody.Apply(snapshot, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
             snapshot.Revision++;
         }

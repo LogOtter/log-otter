@@ -9,11 +9,15 @@ public class EventSourceConfiguration<TBaseEvent>
 
     private readonly Dictionary<Type, ICatchUpSubscriptionMetadata> _catchUpSubscriptions;
 
+    private readonly List<CompactionMetadata> _compactions;
+
     internal IReadOnlyCollection<Type> EventTypes { get; private set; }
 
     internal IReadOnlyCollection<IProjectionMetadata<TBaseEvent>> Projections => _projections.Values;
 
     internal IReadOnlyCollection<ICatchUpSubscriptionMetadata> CatchUpSubscriptions => _catchUpSubscriptions.Values;
+
+    internal IReadOnlyCollection<CompactionMetadata> Compactions => _compactions;
 
     internal Func<IServiceProvider, Task<bool>>? EnabledFunc;
 
@@ -22,6 +26,20 @@ public class EventSourceConfiguration<TBaseEvent>
         EventTypes = GetEventsOfTypeFromSameAssembly();
         _projections = new Dictionary<Type, IProjectionMetadata<TBaseEvent>>();
         _catchUpSubscriptions = new Dictionary<Type, ICatchUpSubscriptionMetadata>();
+        _compactions = new List<CompactionMetadata>();
+    }
+
+    public void WithCompaction<TCompactor, TSnapshot>()
+        where TCompactor : class
+        where TSnapshot : class, ISnapshot, new()
+    {
+        var compactorInterface = typeof(IStreamCompactor<,>).MakeGenericType(typeof(TBaseEvent), typeof(TSnapshot));
+        if (!compactorInterface.IsAssignableFrom(typeof(TCompactor)))
+        {
+            throw new ArgumentException($"{typeof(TCompactor).Name} must implement {compactorInterface.Name}", nameof(TCompactor));
+        }
+
+        _compactions.Add(new CompactionMetadata(typeof(TCompactor), typeof(TSnapshot)));
     }
 
     public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>()

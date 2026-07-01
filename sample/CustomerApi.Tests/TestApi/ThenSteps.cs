@@ -18,6 +18,11 @@ public class ThenSteps(CustomerStore customerStore, SearchableInterestStore sear
         await customerStore.ThenTheCustomerShouldMatch(customerUri, conditions);
     }
 
+    public async Task TheCustomerStreamShouldOnlyContainTombstone(CustomerUri customerUri)
+    {
+        await customerStore.ThenTheCustomerStreamShouldOnlyContainTombstone(customerUri);
+    }
+
     public async Task TheMovieShouldMatch(MovieUri movieUri, params Action<Movie>[] conditions)
     {
         await customerStore.ThenTheMovieShouldMatch(movieUri, conditions);
