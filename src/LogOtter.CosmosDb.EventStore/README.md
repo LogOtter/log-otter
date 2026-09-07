@@ -295,6 +295,19 @@ var customer = await _customerEventRepository.ApplyEvents(
     customerCreated);
 ```
 
+Each `ApplyEvents` (and `ApplyAndGetEvents`) call also has an overload that accepts an `IReadOnlyDictionary<string, string>? additionalMetadata`, which is stored alongside the events. See [Writing metadata to events](#writing-metadata-to-events).
+
+```csharp
+var additionalMetadata = new Dictionary<string, string> { ["idempotencyKey"] = idempotencyKey };
+
+var customer = await _customerEventRepository.ApplyEvents(
+    customerUri,
+    0,
+    additionalMetadata,
+    cancellationToken,
+    customerCreated);
+```
+
 ### GetEventStream
 
 This method is a thin layer on top of the `EventStore`'s `ReadStreamForwards` method. It will read the whole stream and extract the `TBaseEvent` from the `StorageEvent`, giving you the full stream of `TBaseEvent`:
@@ -303,6 +316,75 @@ This method is a thin layer on top of the `EventStore`'s `ReadStreamForwards` me
 var customerEvents = await _customerEventRepository.GetEventStream(
     customerUri,
     cancellationToken);
+```
+
+# Writing metadata to events
+
+Every stored event carries a `Dictionary<string, string> Metadata` that is persisted to Cosmos DB and surfaced back to catch-up subscription handlers (`Event<T>.Metadata`) and projection apply methods (`EventInfo.Metadata`). There are two ways to populate it when appending events.
+
+> ⚠️ Metadata is persisted and readable by anyone with access to the underlying Cosmos DB container. Do not write secrets, credentials or sensitive personal data into it.
+
+## Enrichers (ambient metadata)
+
+An `IEventMetadataEnricher` contributes metadata automatically, so call-sites don't have to know about it. Enrichers run once per `ApplyEvents`/`ApplyAndGetEvents` call, and every event in that batch shares the same metadata snapshot.
+
+```csharp
+public interface IEventMetadataEnricher
+{
+    void Enrich(IDictionary<string, string> metadata);
+}
+```
+
+Register enrichers in your service configuration. They are opt-in — none are registered by default:
+
+```csharp
+services.AddEventMetadataEnricher<ActivityMetadataEnricher>();
+```
+
+Enrichers are registered as singletons and resolved into the (singleton) `EventRepository`. To read per-request state, depend on an ambient accessor (e.g. `Activity.Current` or `IHttpContextAccessor`) and read it inside `Enrich()` rather than injecting a scoped service into the constructor:
+
+```csharp
+public sealed class UserMetadataEnricher(IHttpContextAccessor accessor) : IEventMetadataEnricher
+{
+    public void Enrich(IDictionary<string, string> metadata)
+    {
+        var userId = accessor.HttpContext?.User.FindFirst("sub")?.Value;
+        if (userId is not null)
+        {
+            metadata["userId"] = userId;
+        }
+    }
+}
+```
+
+### ActivityMetadataEnricher
+
+`ActivityMetadataEnricher` is a built-in enricher that captures the current [W3C trace context](https://www.w3.org/TR/trace-context/) from `Activity.Current`, so stored events can be correlated with the distributed trace that produced them:
+
+| Key | Value |
+|---|---|
+| `traceparent` | `Activity.Current.Id` (only when the activity uses the W3C id format) |
+| `tracestate` | `Activity.Current.TraceStateString` (when non-empty) |
+
+```csharp
+services.AddEventMetadataEnricher<ActivityMetadataEnricher>();
+```
+
+This works with any OpenTelemetry SDK that uses `ActivitySource`, as well as `HttpClient` propagation. Note that `Activity.Current` must be present on the async flow at append time — if you defer writes to a background service or queue, the ambient context will be gone, so use the explicit `additionalMetadata` overload (below) to carry the context.
+
+## Explicit metadata (per-call)
+
+When metadata isn't available via ambient context (e.g. an idempotency key), pass it directly to the `additionalMetadata` overload of `ApplyEvents`/`ApplyAndGetEvents`. Enrichers run first, then caller-supplied values are merged over the top — **the caller wins on key collision**.
+
+```csharp
+var additionalMetadata = new Dictionary<string, string> { ["idempotencyKey"] = idempotencyKey };
+
+await _customerEventRepository.ApplyEvents(
+    customerUri,
+    expectedRevision,
+    additionalMetadata,
+    cancellationToken,
+    customerCreated);
 ```
 
 # SnapshotRepository<TBaseEvent, TProjection>
