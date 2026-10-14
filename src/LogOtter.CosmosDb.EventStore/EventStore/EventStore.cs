@@ -8,6 +8,8 @@ namespace LogOtter.CosmosDb.EventStore;
 public class EventStore<TBaseEvent> : IEventStoreReader
     where TBaseEvent : class
 {
+    private const int MaxTransactionalBatchOperations = 100;
+
     private readonly Container _container;
     private readonly IFeedIteratorFactory _feedIteratorFactory;
     private readonly JsonSerializer _jsonSerializer;
@@ -169,6 +171,72 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     public StorageEvent<TBaseEvent> FromCosmosStorageEvent(CosmosDbStorageEvent cosmosDbStorageEvent)
     {
         return cosmosDbStorageEvent.ToStorageEvent<TBaseEvent>(_typeMap, _jsonSerializer);
+    }
+
+    public async Task CompactStream(string streamId, EventData<TBaseEvent> tombstone, CancellationToken cancellationToken = default)
+    {
+        var existingEvents = await ReadStreamForwards(streamId, cancellationToken);
+
+        if (existingEvents.Count == 0)
+        {
+            return;
+        }
+
+        var tombstoneStorageEvent = new StorageEvent<TBaseEvent>(streamId, tombstone, 1);
+        var tombstoneCosmosEvent = CosmosDbStorageEvent.FromStorageEvent(tombstoneStorageEvent, _typeMap, _jsonSerializer);
+        var partitionKey = new PartitionKey(streamId);
+        var batchRequestOptions = new TransactionalBatchItemRequestOptions { EnableContentResponseOnWrite = false };
+
+        // Highest event numbers first — these are deleted in the first batch alongside the tombstone replace.
+        var eventNumbersToDelete = existingEvents.Where(e => e.EventNumber > 1).Select(e => e.EventNumber).OrderByDescending(n => n).ToList();
+
+        // Phase A (atomic): replace event 1 with the tombstone, plus as many tail deletes as fit in a 100-op batch.
+        // After this batch a crashed retry sees a stream whose first event is already the tombstone — projecting
+        // through ICompactionEvent yields the correct (scrubbed) state without needing the deleted events.
+        var firstBatch = _container.CreateTransactionalBatch(partitionKey);
+        firstBatch.ReplaceItem(tombstoneCosmosEvent.Id, tombstoneCosmosEvent, batchRequestOptions);
+
+        var firstBatchDeleteCount = Math.Min(eventNumbersToDelete.Count, MaxTransactionalBatchOperations - 1);
+        for (var i = 0; i < firstBatchDeleteCount; i++)
+        {
+            firstBatch.DeleteItem($"{streamId}:{eventNumbersToDelete[i]}", batchRequestOptions);
+        }
+
+        using var firstBatchResponse = await firstBatch.ExecuteAsync(cancellationToken);
+        if (!firstBatchResponse.IsSuccessStatusCode)
+        {
+            throw new CosmosException(
+                firstBatchResponse.ErrorMessage,
+                firstBatchResponse.StatusCode,
+                0,
+                firstBatchResponse.ActivityId,
+                firstBatchResponse.RequestCharge
+            );
+        }
+
+        // Phase B: delete any remaining tail events in 100-op batches.
+        var remaining = eventNumbersToDelete.Skip(firstBatchDeleteCount).ToList();
+        for (var offset = 0; offset < remaining.Count; offset += MaxTransactionalBatchOperations)
+        {
+            var batch = _container.CreateTransactionalBatch(partitionKey);
+            var batchSize = Math.Min(MaxTransactionalBatchOperations, remaining.Count - offset);
+            for (var i = 0; i < batchSize; i++)
+            {
+                batch.DeleteItem($"{streamId}:{remaining[offset + i]}", batchRequestOptions);
+            }
+
+            using var batchResponse = await batch.ExecuteAsync(cancellationToken);
+            if (!batchResponse.IsSuccessStatusCode)
+            {
+                throw new CosmosException(
+                    batchResponse.ErrorMessage,
+                    batchResponse.StatusCode,
+                    0,
+                    batchResponse.ActivityId,
+                    batchResponse.RequestCharge
+                );
+            }
+        }
     }
 
     private static async Task<TransactionalBatchResponse> CreateEvents(TransactionalBatch batch, CancellationToken cancellationToken)
