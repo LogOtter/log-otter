@@ -6,4 +6,5 @@ public record ChangeFeedProcessorOptions
     public int DefaultBatchSize { get; set; } = 100;
     public TimeSpan FullBatchDelay { get; set; } = TimeSpan.FromMilliseconds(500);
     public TimeSpan ErrorDelay { get; set; } = TimeSpan.FromSeconds(5);
+    public string InstanceName { get; set; } = Environment.MachineName;
 }

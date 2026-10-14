@@ -20,7 +20,7 @@ internal class ChangeFeedProcessor<TRawDocument, TChangeFeedHandlerDocument>(
     private readonly TimeSpan _errorDelay = options.ErrorDelay;
 
     private readonly TimeSpan _fullBatchDelay = options.FullBatchDelay;
-    private readonly string _instanceName = Environment.MachineName;
+    private readonly string _instanceName = options.InstanceName;
     private ChangeFeedProcessor? _changeFeedProcessor;
 
     public string Name => name;
