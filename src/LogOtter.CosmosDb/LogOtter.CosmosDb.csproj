@@ -24,5 +24,6 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="LogOtter.CosmosDb.EventStore" />
+        <InternalsVisibleTo Include="LogOtter.CosmosDb.Tests" />
     </ItemGroup>
 </Project>
