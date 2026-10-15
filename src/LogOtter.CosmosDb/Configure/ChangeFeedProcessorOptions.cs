@@ -7,4 +7,5 @@ public record ChangeFeedProcessorOptions
     public TimeSpan FullBatchDelay { get; set; } = TimeSpan.FromMilliseconds(500);
     public TimeSpan ErrorDelay { get; set; } = TimeSpan.FromSeconds(5);
     public string InstanceName { get; set; } = Environment.MachineName;
+    public TimeSpan GracefulShutdownDrainTime { get; set; } = TimeSpan.FromSeconds(25);
 }
