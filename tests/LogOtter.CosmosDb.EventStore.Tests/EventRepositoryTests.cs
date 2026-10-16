@@ -135,13 +135,96 @@ public class EventRepositoryTests
         projection.Name.ShouldBe(newName);
     }
 
+    [Fact]
+    public async Task EnricherMetadataIsStored()
+    {
+        var (eventRepository, eventStore) = CreateEventStoreAndRepository(new StubMetadataEnricher(("traceparent", "trace-123")));
+
+        var id = Guid.NewGuid().ToString();
+        await eventRepository.ApplyEvents(id, null, new TestEventCreated(id, "Bob"));
+
+        var storedEvents = await eventStore.ReadStreamForwards(id, TestContext.Current.CancellationToken);
+        storedEvents.Single().Metadata.ShouldContainKeyAndValue("traceparent", "trace-123");
+    }
+
+    [Fact]
+    public async Task AllEventsInBatchShareEnricherMetadata()
+    {
+        var (eventRepository, eventStore) = CreateEventStoreAndRepository(new StubMetadataEnricher(("traceparent", "trace-123")));
+
+        var id = Guid.NewGuid().ToString();
+        await eventRepository.ApplyEvents(id, null, new TestEventCreated(id, "Bob"), new TestEventModified(id, "Bobby"));
+
+        var storedEvents = await eventStore.ReadStreamForwards(id, TestContext.Current.CancellationToken);
+        storedEvents.Count.ShouldBe(2);
+        storedEvents.ShouldAllBe(e => e.Metadata["traceparent"] == "trace-123");
+    }
+
+    [Fact]
+    public async Task AdditionalMetadataIsStored()
+    {
+        var (eventRepository, eventStore) = CreateEventStoreAndRepository();
+
+        var id = Guid.NewGuid().ToString();
+        var additionalMetadata = new Dictionary<string, string> { ["idempotencyKey"] = "key-1" };
+        await eventRepository.ApplyEvents(id, null, additionalMetadata, new TestEventCreated(id, "Bob"));
+
+        var storedEvents = await eventStore.ReadStreamForwards(id, TestContext.Current.CancellationToken);
+        storedEvents.Single().Metadata.ShouldContainKeyAndValue("idempotencyKey", "key-1");
+    }
+
+    [Fact]
+    public async Task AdditionalMetadataOverridesEnricherOnKeyCollision()
+    {
+        var (eventRepository, eventStore) = CreateEventStoreAndRepository(new StubMetadataEnricher(("traceparent", "from-enricher")));
+
+        var id = Guid.NewGuid().ToString();
+        var additionalMetadata = new Dictionary<string, string> { ["traceparent"] = "from-caller" };
+        await eventRepository.ApplyEvents(id, null, additionalMetadata, new TestEventCreated(id, "Bob"));
+
+        var storedEvents = await eventStore.ReadStreamForwards(id, TestContext.Current.CancellationToken);
+        storedEvents.Single().Metadata.ShouldContainKeyAndValue("traceparent", "from-caller");
+    }
+
+    [Fact]
+    public async Task NoEnrichersResultsInEmptyMetadata()
+    {
+        var (eventRepository, eventStore) = CreateEventStoreAndRepository();
+
+        var id = Guid.NewGuid().ToString();
+        await eventRepository.ApplyEvents(id, null, new TestEventCreated(id, "Bob"));
+
+        var storedEvents = await eventStore.ReadStreamForwards(id, TestContext.Current.CancellationToken);
+        storedEvents.Single().Metadata.ShouldBeEmpty();
+    }
+
     private static EventRepository<TestEvent, TestEventProjection> CreateEventRepository()
+    {
+        var (eventRepository, _) = CreateEventStoreAndRepository();
+        return eventRepository;
+    }
+
+    private static (EventRepository<TestEvent, TestEventProjection>, EventStore<TestEvent>) CreateEventStoreAndRepository(
+        params IEventMetadataEnricher[] enrichers
+    )
     {
         var container = new ContainerMock.ContainerMock();
         var feedIteratorFactory = new TestFeedIteratorFactory();
         var serializationTypeMap = new SimpleSerializationTypeMap(new[] { typeof(TestEventCreated), typeof(TestEventModified) });
         var eventStore = new EventStore<TestEvent>(container, feedIteratorFactory, serializationTypeMap);
         var options = new OptionsWrapper<EventStoreOptions>(new EventStoreOptions());
-        return new EventRepository<TestEvent, TestEventProjection>(eventStore, options);
+        var eventRepository = new EventRepository<TestEvent, TestEventProjection>(eventStore, options, enrichers);
+        return (eventRepository, eventStore);
+    }
+
+    private sealed class StubMetadataEnricher(params (string Key, string Value)[] entries) : IEventMetadataEnricher
+    {
+        public void Enrich(IDictionary<string, string> metadata)
+        {
+            foreach (var (key, value) in entries)
+            {
+                metadata[key] = value;
+            }
+        }
     }
 }

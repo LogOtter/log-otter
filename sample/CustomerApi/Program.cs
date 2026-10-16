@@ -75,6 +75,9 @@ services
         }
     );
 
+// Opt-in: capture the current W3C trace context into event metadata as events are appended.
+services.AddEventMetadataEnricher<ActivityMetadataEnricher>();
+
 services.AddHealthChecks().AddCheck<ResolveAllControllersHealthCheck>("Resolve All Controllers");
 
 if (environment.IsDevelopment())
