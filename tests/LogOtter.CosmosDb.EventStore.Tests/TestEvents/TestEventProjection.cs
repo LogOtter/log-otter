@@ -4,7 +4,7 @@ namespace LogOtter.CosmosDb.EventStore.Tests.TestEvents;
 
 public class TestEventProjection : ISnapshot
 {
-    private const string StaticPartitionKey = "/test";
+    public const string StaticPartitionKey = "/test";
 
     public int Revision { get; set; }
 

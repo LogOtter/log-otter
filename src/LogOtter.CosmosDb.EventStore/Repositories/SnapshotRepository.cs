@@ -103,6 +103,17 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>(
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (@event.Body is ICompactionEvent)
+            {
+                // Tombstone resets the snapshot to its scrubbed state regardless of current revision.
+                // Stop processing further events in this batch — anything after is either pending
+                // deletion or a stale leftover from a crashed compaction.
+                snapshot = new TSnapshot { Id = streamId };
+                @event.Body.Apply(snapshot, new(@event.CreatedOn, @event.EventNumber, @event.Metadata));
+                snapshot.Revision = @event.EventNumber;
+                break;
+            }
+
             if (snapshot.Revision >= @event.EventNumber)
             {
                 continue;
@@ -120,6 +131,11 @@ public class SnapshotRepository<TBaseEvent, TSnapshot>(
         );
 
         cancellationToken.ThrowIfCancellationRequested();
+    }
+
+    public async Task UpsertSnapshot(TSnapshot snapshot, CancellationToken cancellationToken = default)
+    {
+        await _snapshotContainer.UpsertItemAsync(snapshot, new PartitionKey(snapshot.PartitionKey), cancellationToken: cancellationToken);
     }
 
     private async Task<(TSnapshot Snapshot, string ETag)?> GetSnapshotInternal(

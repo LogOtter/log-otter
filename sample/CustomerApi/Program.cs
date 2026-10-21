@@ -63,6 +63,8 @@ services
                 );
 
             c.AddCatchupSubscription<TestCustomerEventCatchupSubscription>("TestCustomerEventCatchupSubscription");
+
+            c.WithCompaction<CustomerStreamCompactor, CustomerReadModel>();
         }
     )
     .AddEventSource<MovieEvent>(
