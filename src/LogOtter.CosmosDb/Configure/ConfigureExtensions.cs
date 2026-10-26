@@ -13,6 +13,13 @@ public static class ConfigureExtensions
 {
     public static CosmosDbBuilder AddCosmosDb(this IServiceCollection services, Action<CosmosDbOptions>? setupAction = null)
     {
+        if (services.Any(s => s.ServiceType == typeof(ContainerCatalog)))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(AddCosmosDb)} can only be called once as multiple databases are not supported. Register all containers using the {nameof(CosmosDbBuilder)} returned by the first call to {nameof(AddCosmosDb)}."
+            );
+        }
+
         if (setupAction != null)
         {
             services.Configure(setupAction);

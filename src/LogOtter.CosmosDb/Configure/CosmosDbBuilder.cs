@@ -24,6 +24,7 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
 
     private readonly IList<string> _changeFeedProcessors = new List<string>();
     private readonly IDictionary<Type, string> _containers = new Dictionary<Type, string>();
+    private readonly IDictionary<Type, Type> _subTypes = new Dictionary<Type, Type>();
 
     internal IServiceCollection Services { get; } = serviceCollection;
 
@@ -60,10 +61,10 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
         HashSet<Type> subTypes
     )
     {
-        RegisterContainer(documentType, containerName);
+        RegisterContainer(documentType, containerName, subTypes);
 
         var genericRegisterMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
-        genericRegisterMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata });
+        genericRegisterMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata, subTypes });
 
         foreach (var subType in subTypes)
         {
@@ -161,11 +162,18 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
         _changeFeedProcessors.Add(processorName);
     }
 
-    private void RegisterContainer(Type documentType, string containerName)
+    private void RegisterContainer(Type documentType, string containerName, HashSet<Type> subTypes)
     {
         if (_containers.ContainsKey(documentType))
         {
             throw new InvalidOperationException($"Container for {documentType.Name} has already been registered");
+        }
+
+        if (_subTypes.ContainsKey(documentType))
+        {
+            throw new InvalidOperationException(
+                $"Container for {documentType.Name} cannot be registered as it is already registered {DescribeRegistration(documentType)}"
+            );
         }
 
         if (_containers.Values.Contains(containerName))
@@ -178,12 +186,50 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
             throw new InvalidOperationException("Container name cannot be empty");
         }
 
+        foreach (var subType in subTypes)
+        {
+            if (subType == documentType)
+            {
+                throw new InvalidOperationException($"{subType.Name} cannot be registered as a subtype of itself");
+            }
+
+            var existingRegistration = DescribeRegistration(subType);
+            if (existingRegistration != null)
+            {
+                throw new InvalidOperationException(
+                    $"{subType.Name} cannot be registered as a subtype of {documentType.Name} as it is already registered {existingRegistration}"
+                );
+            }
+        }
+
         _containers.Add(documentType, containerName);
+
+        foreach (var subType in subTypes)
+        {
+            _subTypes.Add(subType, documentType);
+        }
     }
 
-    private void RegisterCosmosContainer<T>(string containerName, AutoProvisionMetadata? autoProvisionMetadata)
+    private string? DescribeRegistration(Type documentType)
     {
-        Services.AddSingleton(new ContainerAutoProvisionMetadata(containerName, autoProvisionMetadata ?? new AutoProvisionMetadata()));
+        if (_containers.TryGetValue(documentType, out var containerName))
+        {
+            return $"with container {containerName}";
+        }
+
+        if (_subTypes.TryGetValue(documentType, out var baseType))
+        {
+            return $"as a subtype of {baseType.Name} in container {_containers[baseType]}";
+        }
+
+        return null;
+    }
+
+    private void RegisterCosmosContainer<T>(string containerName, AutoProvisionMetadata? autoProvisionMetadata, HashSet<Type> subTypes)
+    {
+        Services.AddSingleton(
+            new ContainerAutoProvisionMetadata(containerName, typeof(T), subTypes.ToList(), autoProvisionMetadata ?? new AutoProvisionMetadata())
+        );
 
         Services.AddSingleton(sp =>
         {
