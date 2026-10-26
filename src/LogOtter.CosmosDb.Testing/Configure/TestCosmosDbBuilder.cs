@@ -16,6 +16,8 @@ public class TestCosmosDbBuilder(IServiceCollection services) : ITestCosmosDbBui
         ThroughputProperties? throughputProperties = null
     )
     {
+        Services.AddSingleton(new PreProvisionedContainer(containerName, typeof(TDocument)));
+
         Services.AddSingleton(sp =>
         {
             var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();

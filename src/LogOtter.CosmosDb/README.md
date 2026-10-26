@@ -6,6 +6,8 @@ A collection of helpers for using CosmosDb in a strongly typed way with dependen
 
 To configure CosmosDbOptions, you can either use the options pattern or the setup action. The options depend on your preferred connection method: Managed Identity (MI) or connection string.
 
+**Note:** We currently only support a single database, so `AddCosmosDb` can only be called once. Register all of your containers using the builder it returns.
+
 ### Options pattern
 
 ```csharp
@@ -177,7 +179,7 @@ Or, with the options pattern:
 | `FullBatchDelay`            | 500 milliseconds          | How long to pause after processing a full batch, so a processor working through a large backlog doesn't consume too many RUs.                                                                                                                                                                                                                                                                                                                                                                             |
 | `ErrorDelay`                | 5 seconds                 | How long to wait after a batch fails before the error is passed back to the change feed processor, which then retries the batch. Stops a failing batch from being retried in repeated rapid succession and consuming too many RUs.                                                                                                                                                                                                                                                                        |
 | `InstanceName`              | `Environment.MachineName` | Name of the CFP instance for lease purposes. InstanceName and ProcessorName must be unique for each running instance. Default is generally fine unless your hosting environment/cloud doesn't set a unique value, in which case you should provide one.                                                                                                                                                                                                                                                   |
-| `GracefulShutdownDrainTime` | `TimeSpan.Zero`           | When a CFP is stopped (e.g. on app shutdown/deployment), how long to give the in progress batchto finish, so it's checkpointed rather than processed again by the next lease owner and the app shuts down gracefully instead of throwing. Zero cancels the batch straight away. Only applies to a graceful stop - if the lease is lost to another instance the batch is still cancelled straight away. Should be below host shutdown timeout (30s in most .NET environments including Azure App Service). |
+| `GracefulShutdownDrainTime` | 25 seconds                | When a CFP is stopped (e.g. on app shutdown/deployment), how long to give the in progress batchto finish, so it's checkpointed rather than processed again by the next lease owner and the app shuts down gracefully instead of throwing. Zero cancels the batch straight away. Only applies to a graceful stop - if the lease is lost to another instance the batch is still cancelled straight away. Should be below host shutdown timeout (30s in most .NET environments including Azure App Service). |
 
 # Usage
 
