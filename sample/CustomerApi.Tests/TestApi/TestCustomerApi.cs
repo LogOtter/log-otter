@@ -46,27 +46,28 @@ public class TestCustomerApi : IDisposable
 
     private void ConfigureTestServices(IServiceCollection services)
     {
+        var testCosmosDb = services.AddTestCosmosDb();
+
         if (_disableCosmosAutoProvisioning)
         {
             services.RemoveAll<AutoProvisionSettings>();
             services.AddSingleton(_ => new AutoProvisionSettings(false));
-        }
 
-        services
-            .AddTestCosmosDb()
-            .WithPreProvisionedContainer<SearchableInterest>("SearchableInterest")
-            .WithPreProvisionedContainer<EmailAddressReservation>("EmailAddressReservations")
-            .WithPreProvisionedContainer<CustomerInterest>("LookupItems")
-            .WithPreProvisionedContainer<CustomerEvent>("CustomerEvents")
-            .WithPreProvisionedContainer<CustomerReadModel>(
-                "Customers",
-                indexingPolicy: new IndexingPolicy().WithCompositeIndex(
-                    new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
-                    new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+            testCosmosDb
+                .WithPreProvisionedContainer<SearchableInterest>("SearchableInterest")
+                .WithPreProvisionedContainer<EmailAddressReservation>("EmailAddressReservations")
+                .WithPreProvisionedContainer<CustomerInterest>("LookupItems")
+                .WithPreProvisionedContainer<CustomerEvent>("CustomerEvents")
+                .WithPreProvisionedContainer<CustomerReadModel>(
+                    "Customers",
+                    indexingPolicy: new IndexingPolicy().WithCompositeIndex(
+                        new() { Path = "/LastName", Order = CompositePathSortOrder.Ascending },
+                        new() { Path = "/FirstName", Order = CompositePathSortOrder.Ascending }
+                    )
                 )
-            )
-            .WithPreProvisionedContainer<MovieEvent>("MovieEvents")
-            .WithPreProvisionedContainer<MovieReadModel>("Movies");
+                .WithPreProvisionedContainer<MovieEvent>("MovieEvents")
+                .WithPreProvisionedContainer<MovieReadModel>("Movies");
+        }
 
         services.AddTransient<ConsumerStore>();
         services.AddTransient<CustomerStore>();
