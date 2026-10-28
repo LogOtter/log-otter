@@ -47,10 +47,18 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
         Type documentType,
         string containerName,
         AutoProvisionMetadata? autoProvisionMetadata,
-        List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata
+        List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata,
+        string? requiredPartitionKeyPath = null
     )
     {
-        return AddContainer(documentType, containerName, autoProvisionMetadata, changeFeedProcessorsMetadata, new HashSet<Type>());
+        return AddContainer(
+            documentType,
+            containerName,
+            autoProvisionMetadata,
+            changeFeedProcessorsMetadata,
+            new HashSet<Type>(),
+            requiredPartitionKeyPath
+        );
     }
 
     internal CosmosDbBuilder AddContainer(
@@ -58,13 +66,14 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
         string containerName,
         AutoProvisionMetadata? autoProvisionMetadata,
         List<ChangeFeedProcessorMetadata> changeFeedProcessorsMetadata,
-        HashSet<Type> subTypes
+        HashSet<Type> subTypes,
+        string? requiredPartitionKeyPath = null
     )
     {
         RegisterContainer(documentType, containerName, subTypes);
 
         var genericRegisterMethod = RegisterCosmosContainerMethod.MakeGenericMethod(documentType);
-        genericRegisterMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata, subTypes });
+        genericRegisterMethod.Invoke(this, new object?[] { containerName, autoProvisionMetadata, subTypes, requiredPartitionKeyPath });
 
         foreach (var subType in subTypes)
         {
@@ -225,10 +234,21 @@ public class CosmosDbBuilder(IServiceCollection serviceCollection)
         return null;
     }
 
-    private void RegisterCosmosContainer<T>(string containerName, AutoProvisionMetadata? autoProvisionMetadata, HashSet<Type> subTypes)
+    private void RegisterCosmosContainer<T>(
+        string containerName,
+        AutoProvisionMetadata? autoProvisionMetadata,
+        HashSet<Type> subTypes,
+        string? requiredPartitionKeyPath
+    )
     {
         Services.AddSingleton(
-            new ContainerAutoProvisionMetadata(containerName, typeof(T), subTypes.ToList(), autoProvisionMetadata ?? new AutoProvisionMetadata())
+            new ContainerAutoProvisionMetadata(
+                containerName,
+                typeof(T),
+                subTypes.ToList(),
+                autoProvisionMetadata ?? new AutoProvisionMetadata(),
+                requiredPartitionKeyPath
+            )
         );
 
         Services.AddSingleton(sp =>

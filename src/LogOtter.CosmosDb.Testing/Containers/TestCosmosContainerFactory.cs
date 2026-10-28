@@ -7,24 +7,35 @@ namespace LogOtter.CosmosDb.Testing;
 
 public class TestCosmosContainerFactory : ICosmosContainerFactory
 {
+    private const string DefaultPartitionKeyPath = "/partitionKey";
+
     private readonly ConcurrentBag<ContainerMock.ContainerMock> _containers = new();
 
     public TestCosmosContainerFactory() { }
 
     internal TestCosmosContainerFactory(
         IEnumerable<PreProvisionedContainer> preProvisionedContainers,
-        IEnumerable<ContainerAutoProvisionMetadata> autoProvisionedContainers
+        IReadOnlyCollection<ContainerAutoProvisionMetadata> registeredContainers,
+        bool autoProvisioningEnabled
     )
     {
         foreach (var container in preProvisionedContainers)
         {
-            CreateContainerIfNotExists(container.ContainerName, container.PartitionKeyPath, container.UniqueKeyPolicy, container.DefaultTimeToLive);
+            var requiredPartitionKeyPath = registeredContainers
+                .FirstOrDefault(c => c.ContainerName == container.ContainerName)
+                ?.RequiredPartitionKeyPath;
+            var partitionKeyPath = container.PartitionKeyPath ?? requiredPartitionKeyPath ?? DefaultPartitionKeyPath;
+
+            CreateContainerIfNotExists(container.ContainerName, partitionKeyPath, container.UniqueKeyPolicy, container.DefaultTimeToLive);
         }
 
-        foreach (var container in autoProvisionedContainers)
+        if (autoProvisioningEnabled)
         {
-            var metadata = container.AutoProvisionMetadata;
-            CreateContainerIfNotExists(container.ContainerName, metadata.PartitionKeyPath, metadata.UniqueKeyPolicy, metadata.DefaultTimeToLive);
+            foreach (var container in registeredContainers)
+            {
+                var metadata = container.AutoProvisionMetadata;
+                CreateContainerIfNotExists(container.ContainerName, metadata.PartitionKeyPath, metadata.UniqueKeyPolicy, metadata.DefaultTimeToLive);
+            }
         }
     }
 

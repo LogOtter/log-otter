@@ -9,7 +9,7 @@ public interface ITestCosmosDbBuilder
 
     public ITestCosmosDbBuilder WithPreProvisionedContainer<TDocument>(
         string containerName,
-        string partitionKeyPath = "/partitionKey",
+        string? partitionKeyPath = null,
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         int? defaultTimeToLive = -1,
         IndexingPolicy? indexingPolicy = null,

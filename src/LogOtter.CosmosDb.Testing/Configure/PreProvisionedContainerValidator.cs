@@ -10,7 +10,7 @@ internal static class PreProvisionedContainerValidator
         bool autoProvisioningEnabled
     )
     {
-        var preProvisioned = preProvisionedContainers.Select(c => (c.ContainerName, c.DocumentType)).Distinct().ToList();
+        var preProvisioned = preProvisionedContainers.ToList();
         var registered = registeredContainers.ToList();
         var registeredContainersByName = registered.ToDictionary(c => c.ContainerName);
         var registeredContainersByType = registered
@@ -19,7 +19,7 @@ internal static class PreProvisionedContainerValidator
 
         var errors = new List<string>();
 
-        foreach (var (containerName, documentType) in preProvisioned)
+        foreach (var (containerName, documentType) in preProvisioned.Select(c => (c.ContainerName, c.DocumentType)).Distinct())
         {
             registeredContainersByType.TryGetValue(documentType, out var typeRegistration);
             registeredContainersByName.TryGetValue(containerName, out var containerRegistration);
@@ -48,11 +48,10 @@ internal static class PreProvisionedContainerValidator
             }
         }
 
-        var preProvisionedContainerNames = preProvisioned.Select(c => c.ContainerName).ToHashSet();
-
         foreach (var container in registered)
         {
-            var isPreProvisioned = preProvisionedContainerNames.Contains(container.ContainerName);
+            var preProvisionedForContainer = preProvisioned.Where(c => c.ContainerName == container.ContainerName).ToList();
+            var isPreProvisioned = preProvisionedForContainer.Count > 0;
 
             if (autoProvisioningEnabled && isPreProvisioned)
             {
@@ -65,6 +64,20 @@ internal static class PreProvisionedContainerValidator
                 errors.Add(
                     $"Container {container.ContainerName} is not pre-provisioned in the test setup, but the live config does not use WithAutoProvisioning() so the container must already exist. Either pre-provision it in the test setup using WithPreProvisionedContainer<{container.DocumentType.Name}>(\"{container.ContainerName}\") with the same settings as the real container, or add WithAutoProvisioning() to the live config to create it automatically"
                 );
+            }
+            else if (!autoProvisioningEnabled && container.RequiredPartitionKeyPath != null)
+            {
+                var wrongPartitionKeyPaths = preProvisionedForContainer
+                    .Select(c => c.PartitionKeyPath)
+                    .Where(p => p != null && p != container.RequiredPartitionKeyPath)
+                    .Distinct();
+
+                foreach (var partitionKeyPath in wrongPartitionKeyPaths)
+                {
+                    errors.Add(
+                        $"Container {container.ContainerName} is pre-provisioned with partition key path {partitionKeyPath} in the test setup, but the live config requires it to be partitioned by {container.RequiredPartitionKeyPath}, so the real container must be too. Remove partitionKeyPath from WithPreProvisionedContainer<{container.DocumentType.Name}>(\"{container.ContainerName}\") to use {container.RequiredPartitionKeyPath}"
+                    );
+                }
             }
         }
 

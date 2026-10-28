@@ -8,6 +8,8 @@ namespace LogOtter.CosmosDb.EventStore;
 
 public class EventSourcingBuilder
 {
+    private const string EventStreamPartitionKeyPath = "/streamId";
+
     private readonly CosmosDbBuilder _cosmosDbBuilder;
 
     public IServiceCollection Services { get; }
@@ -83,7 +85,7 @@ public class EventSourcingBuilder
         }
 
         var autoProvisionMetadata = new AutoProvisionMetadata(
-            PartitionKeyPath: "/streamId",
+            PartitionKeyPath: EventStreamPartitionKeyPath,
             IndexingPolicy: new IndexingPolicy
             {
                 IncludedPaths = { new IncludedPath { Path = "/*" } },
@@ -95,7 +97,13 @@ public class EventSourcingBuilder
             }
         );
 
-        _cosmosDbBuilder.AddContainer(typeof(TBaseEvent), containerName, autoProvisionMetadata, changeFeedProcessorsMetadata);
+        _cosmosDbBuilder.AddContainer(
+            typeof(TBaseEvent),
+            containerName,
+            autoProvisionMetadata,
+            changeFeedProcessorsMetadata,
+            requiredPartitionKeyPath: EventStreamPartitionKeyPath
+        );
 
         Services.AddSingleton(sp =>
         {
