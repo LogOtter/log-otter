@@ -13,7 +13,7 @@ public static class ConfigureExtensions
 {
     public static CosmosDbBuilder AddCosmosDb(this IServiceCollection services, Action<CosmosDbOptions>? setupAction = null)
     {
-        if (services.Any(s => s.ServiceType == typeof(ContainerCatalog)))
+        if (services.IsCosmosDbAdded())
         {
             throw new InvalidOperationException(
                 $"{nameof(AddCosmosDb)} can only be called once as multiple databases are not supported. Register all containers using the {nameof(CosmosDbBuilder)} returned by the first call to {nameof(AddCosmosDb)}."
@@ -80,6 +80,11 @@ public static class ConfigureExtensions
     {
         var startupService = host.Services.GetHostedService<StartupService>();
         await startupService.ProvisionCosmosDb(cancellationToken);
+    }
+
+    internal static bool IsCosmosDbAdded(this IServiceCollection services)
+    {
+        return services.Any(s => s.ServiceType == typeof(ContainerCatalog));
     }
 
     private static T GetHostedService<T>(this IServiceProvider serviceProvider)

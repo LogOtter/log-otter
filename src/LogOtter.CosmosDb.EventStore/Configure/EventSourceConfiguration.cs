@@ -25,8 +25,15 @@ public class EventSourceConfiguration<TBaseEvent>
     }
 
     public ProjectionBuilder<TBaseEvent, TProjection> AddProjection<TProjection>()
-        where TProjection : class
+        where TProjection : class, ISnapshot, new()
     {
+        if (!typeof(IEvent<TProjection>).IsAssignableFrom(typeof(TBaseEvent)))
+        {
+            throw new InvalidOperationException(
+                $"{typeof(TProjection).Name} cannot be added as a projection of {typeof(TBaseEvent).Name} as {typeof(TBaseEvent).Name} does not implement IEvent<{typeof(TProjection).Name}>"
+            );
+        }
+
         var projectionConfiguration = new ProjectionMetadata<TBaseEvent, TProjection>();
         _projections.Add(typeof(TProjection), projectionConfiguration);
         return new ProjectionBuilder<TBaseEvent, TProjection>(UpdateMetadata, AddCatchUpSubscription);

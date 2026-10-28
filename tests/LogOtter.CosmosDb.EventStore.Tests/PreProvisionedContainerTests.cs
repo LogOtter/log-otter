@@ -14,7 +14,7 @@ public class PreProvisionedContainerTests
     [Fact]
     public async Task PreProvisionedContainersMatchingTheRegisteredContainersAreUsed()
     {
-        using var host = await StartHostWithDefaultContainersAndEventSource(builder => WithPreProvisionedEventSource(builder));
+        using var host = await StartHostWithDefaultContainersAndEventSource(builder => WithPreProvisionedDefaultContainersAndEventSource(builder));
 
         var eventRepository = host.Services.GetRequiredService<EventRepository<TestEvent, TestEventProjection>>();
         var containerFactory = host.Services.GetRequiredService<TestCosmosContainerFactory>();
@@ -44,7 +44,7 @@ public class PreProvisionedContainerTests
         );
 
         exception.Message.ShouldContain(
-            $"{nameof(TestEvent)} is pre-provisioned in container {SnapshotContainerName} but is registered with container {EventContainerName} (container {SnapshotContainerName} is registered for {nameof(TestEventProjection)})"
+            $"{nameof(TestEvent)} is pre-provisioned in container {SnapshotContainerName} in the test setup, but the live config registers it with container {EventContainerName} (and registers container {SnapshotContainerName} for {nameof(TestEventProjection)})"
         );
     }
 
@@ -56,7 +56,17 @@ public class PreProvisionedContainerTests
         );
 
         exception.Message.ShouldContain(
-            $"Container {SnapshotContainerName} is pre-provisioned for {nameof(UnregisteredDocument)} but is registered for {nameof(TestEventProjection)}"
+            $"Container {SnapshotContainerName} is pre-provisioned for {nameof(UnregisteredDocument)} in the test setup, but the live config registers it for {nameof(TestEventProjection)}"
+        );
+    }
+
+    [Fact]
+    public async Task NotPreProvisioningARegisteredContainerThrows()
+    {
+        var exception = await Should.ThrowAsync<InvalidOperationException>(() => StartHostWithDefaultContainersAndEventSource(_ => { }));
+
+        exception.Message.ShouldContain(
+            $"Container {DocumentContainerName} is not pre-provisioned in the test setup, but the live config does not use WithAutoProvisioning() so the container must already exist. Either pre-provision it in the test setup using WithPreProvisionedContainer<{nameof(BaseDocument)}>(\"{DocumentContainerName}\") with the same settings as the real container, or add WithAutoProvisioning() to the live config to create it automatically"
         );
     }
 
@@ -64,7 +74,7 @@ public class PreProvisionedContainerTests
     public async Task PreProvisioningARegisteredSubTypeInItsBaseTypesContainerIsAllowed()
     {
         using var host = await StartHostWithDefaultContainersAndEventSource(builder =>
-            WithPreProvisionedEventSource(builder).WithPreProvisionedContainer<SubDocument>(DocumentContainerName)
+            WithPreProvisionedDefaultContainersAndEventSource(builder).WithPreProvisionedContainer<SubDocument>(DocumentContainerName)
         );
 
         var container = host.Services.GetRequiredService<CosmosContainer<SubDocument>>();
@@ -80,7 +90,7 @@ public class PreProvisionedContainerTests
         );
 
         exception.Message.ShouldContain(
-            $"{nameof(SubDocument)} is pre-provisioned in container OtherDocuments but is registered with container {DocumentContainerName}"
+            $"{nameof(SubDocument)} is pre-provisioned in container OtherDocuments in the test setup, but the live config registers it with container {DocumentContainerName}"
         );
     }
 
@@ -94,7 +104,7 @@ public class PreProvisionedContainerTests
         );
 
         exception.Message.ShouldContain(
-            $"{nameof(UnregisteredSubDocument)} is pre-provisioned in container {DocumentContainerName} but is not registered as a subtype of {nameof(BaseDocument)} (use WithSubTypeThatMustHaveDistinctPartition<{nameof(UnregisteredSubDocument)}>() to register it)"
+            $"{nameof(UnregisteredSubDocument)} is pre-provisioned in container {DocumentContainerName} in the test setup, but the live config does not register it as a subtype of {nameof(BaseDocument)} (use WithSubTypeThatMustHaveDistinctPartition<{nameof(UnregisteredSubDocument)}>() to register it)"
         );
     }
 
@@ -102,7 +112,7 @@ public class PreProvisionedContainerTests
     public async Task PreProvisioningAnUnregisteredTypeInAnUnregisteredContainerIsAllowed()
     {
         using var host = await StartHostWithDefaultContainersAndEventSource(builder =>
-            WithPreProvisionedEventSource(builder).WithPreProvisionedContainer<UnregisteredDocument>("TestOnlyContainer")
+            WithPreProvisionedDefaultContainersAndEventSource(builder).WithPreProvisionedContainer<UnregisteredDocument>("TestOnlyContainer")
         );
 
         var container = host.Services.GetRequiredService<CosmosContainer<UnregisteredDocument>>();
@@ -110,9 +120,10 @@ public class PreProvisionedContainerTests
         container.Container.Id.ShouldBe("TestOnlyContainer");
     }
 
-    private static ITestCosmosDbBuilder WithPreProvisionedEventSource(ITestCosmosDbBuilder builder)
+    private static ITestCosmosDbBuilder WithPreProvisionedDefaultContainersAndEventSource(ITestCosmosDbBuilder builder)
     {
         return builder
+            .WithPreProvisionedContainer<BaseDocument>(DocumentContainerName)
             .WithPreProvisionedContainer<TestEvent>(EventContainerName)
             .WithPreProvisionedContainer<TestEventProjection>(SnapshotContainerName);
     }

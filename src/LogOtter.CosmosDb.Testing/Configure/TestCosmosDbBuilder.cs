@@ -16,25 +16,13 @@ public class TestCosmosDbBuilder(IServiceCollection services) : ITestCosmosDbBui
         ThroughputProperties? throughputProperties = null
     )
     {
-        Services.AddSingleton(new PreProvisionedContainer(containerName, typeof(TDocument)));
+        Services.AddSingleton(new PreProvisionedContainer(containerName, typeof(TDocument), partitionKeyPath, uniqueKeyPolicy, defaultTimeToLive));
 
         Services.AddSingleton(sp =>
         {
             var cosmosContainerFactory = sp.GetRequiredService<ICosmosContainerFactory>();
 
-            var container = cosmosContainerFactory
-                .CreateContainerIfNotExistsAsync(
-                    containerName,
-                    partitionKeyPath,
-                    uniqueKeyPolicy,
-                    defaultTimeToLive,
-                    indexingPolicy,
-                    throughputProperties
-                )
-                .GetAwaiter()
-                .GetResult();
-
-            return new CosmosContainer<TDocument>(container);
+            return new CosmosContainer<TDocument>(cosmosContainerFactory.GetContainer(containerName));
         });
         return this;
     }
