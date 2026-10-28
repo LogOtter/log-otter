@@ -147,7 +147,7 @@ public class CustomerRepo
 }
 ```
 
-Note that by adding the snapshot, you'll also get a background change feed processor that updates the snapshot every time new events are added. Because of this, you must use auto-provisioning or manually provision a Leases container.
+Note that by adding the snapshot, you'll also get a background change feed processor that updates the snapshot every time new events are added. Because of this, you must use auto-provisioning or manually provision a Leases container (see [Manual provisioning](#manual-provisioning)).
 
 # Adding a custom catch up subscription
 
@@ -196,6 +196,22 @@ public class CustomerEventPublisher : ICatchupSubscription<CustomerEvent>
 }
 
 ```
+
+# Auto Provisioning Settings
+
+When you use `.WithAutoProvisioning()` you'll get the necessary defaults on your event sourced containers.
+
+If you aren't using `.WithAutoProvisioning()` (e.g. you're creating collections using IaC), you should create:
+
+| Container                                                            | Partition key path                                            |
+|----------------------------------------------------------------------|---------------------------------------------------------------|
+| Each `.AddEventSource<T>()` container                                | `/streamId`                                                   |
+| Each `.WithSnapshot()` container                                     | Your snapshot's `PartitionKey` property, e.g. `/partitionKey` |
+| The leases container, if you add snapshots or catch up subscriptions | `/id`                                                         |
+
+`/streamId` is a property LogOtter adds to each event it stores, so it isn't your events' `EventStreamId` property. LogOtter **always** uses `/streamId` so be sure to provision it that way.
+
+Auto provisioning also excludes `/body/*` and `/metadata/*` from indexing on event sourced containers. We recommend doing the same, unless you plan to query event bodies a lot.
 
 # Usage
 

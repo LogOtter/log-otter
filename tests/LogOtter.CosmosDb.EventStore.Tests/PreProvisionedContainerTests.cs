@@ -61,6 +61,20 @@ public class PreProvisionedContainerTests
     }
 
     [Fact]
+    public async Task PreProvisioningAnEventStreamContainerWithADifferentPartitionKeyPathThrows()
+    {
+        var exception = await Should.ThrowAsync<InvalidOperationException>(() =>
+            StartHostWithDefaultContainersAndEventSource(builder =>
+                builder.WithPreProvisionedContainer<TestEvent>(EventContainerName, partitionKeyPath: "/eventStreamId")
+            )
+        );
+
+        exception.Message.ShouldContain(
+            $"Container {EventContainerName} is pre-provisioned with partition key path /eventStreamId in the test setup, but the live config requires it to be partitioned by /streamId, so the real container must be too. Remove partitionKeyPath from WithPreProvisionedContainer<{nameof(TestEvent)}>(\"{EventContainerName}\") to use /streamId"
+        );
+    }
+
+    [Fact]
     public async Task NotPreProvisioningARegisteredContainerThrows()
     {
         var exception = await Should.ThrowAsync<InvalidOperationException>(() => StartHostWithDefaultContainersAndEventSource(_ => { }));

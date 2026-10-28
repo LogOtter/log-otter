@@ -24,7 +24,7 @@ public static class ConfigureExtensions
             var autoProvisioningEnabled = sp.GetService<AutoProvisionSettings>()?.Enabled == true;
 
             PreProvisionedContainerValidator.Validate(preProvisionedContainers, registeredContainers, autoProvisioningEnabled);
-            return new TestCosmosContainerFactory(preProvisionedContainers, autoProvisioningEnabled ? registeredContainers : []);
+            return new TestCosmosContainerFactory(preProvisionedContainers, registeredContainers, autoProvisioningEnabled);
         });
         services.AddSingleton<ICosmosDatabaseFactory, TestCosmosDatabaseFactory>();
         services.AddSingleton<ICosmosContainerFactory>(sp => sp.GetRequiredService<TestCosmosContainerFactory>());
