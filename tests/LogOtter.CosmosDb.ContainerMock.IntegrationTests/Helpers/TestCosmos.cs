@@ -23,7 +23,12 @@ public sealed class TestCosmos(CosmosClient client, CosmosClientOptions cosmosCl
     {
         var response = await CreateCosmosContainer(partitionKeyPath, uniqueKeyPolicy);
         _realContainer = response.Container;
-        _testContainer = new ContainerMock(partitionKeyPath, uniqueKeyPolicy, cosmosSerializationOptions: cosmosClientOptions.SerializerOptions);
+        _testContainer = new ContainerMock(
+            partitionKeyPath,
+            uniqueKeyPolicy,
+            cosmosSerializationOptions: cosmosClientOptions.SerializerOptions,
+            connectionMode: cosmosClientOptions.ConnectionMode
+        );
     }
 
     public async Task<(CosmosException? realException, CosmosException? testException)> SetupAsyncProducesExceptions(

@@ -41,6 +41,31 @@ public sealed class CosmosReadTests(IntegrationTestsFixture testFixture) : IAsyn
     }
 
     [Fact]
+    public async Task ReadWithEmptyIdInGatewayModeIsEquivalent()
+    {
+        using var gatewayTestCosmos = testFixture.CreateTestCosmos(new CosmosClientOptions { ConnectionMode = ConnectionMode.Gateway });
+        await gatewayTestCosmos.SetupAsync("/partitionKey");
+
+        try
+        {
+            var (realException, testException) = await gatewayTestCosmos.WhenReadItemProducesException<TestModel>(string.Empty);
+
+            realException.ShouldNotBeNull();
+            testException.ShouldNotBeNull();
+            realException.ShouldBeOfType(testException!.GetType());
+
+            if (realException is CosmosException realCosmosException && testException is CosmosException testCosmosException)
+            {
+                realCosmosException.StatusCode.ShouldBe(testCosmosException.StatusCode);
+            }
+        }
+        finally
+        {
+            await gatewayTestCosmos.CleanupAsync();
+        }
+    }
+
+    [Fact]
     public async Task ReadWithInvalidIdIsEquivalent()
     {
         var isUsingCosmosDbEmulator = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("TEST_COSMOS_CONNECTION_STRING"));

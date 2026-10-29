@@ -1,4 +1,5 @@
 ﻿using LogOtter.CosmosDb.Metadata;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -23,10 +24,16 @@ public static class ConfigureExtensions
             var preProvisionedContainers = sp.GetServices<PreProvisionedContainer>().ToList();
             var registeredContainers = sp.GetServices<ContainerAutoProvisionMetadata>().ToList();
             var autoProvisioningEnabled = sp.GetService<AutoProvisionSettings>()?.Enabled == true;
-            var serializationOptions = sp.GetService<IOptions<CosmosDbOptions>>()?.Value.ClientOptions?.SerializerOptions;
+            var clientOptions = sp.GetService<IOptions<CosmosDbOptions>>()?.Value.ClientOptions;
 
             PreProvisionedContainerValidator.Validate(preProvisionedContainers, registeredContainers, autoProvisioningEnabled);
-            return new TestCosmosContainerFactory(preProvisionedContainers, registeredContainers, autoProvisioningEnabled, serializationOptions);
+            return new TestCosmosContainerFactory(
+                preProvisionedContainers,
+                registeredContainers,
+                autoProvisioningEnabled,
+                clientOptions?.SerializerOptions,
+                clientOptions?.ConnectionMode ?? ConnectionMode.Direct
+            );
         });
         services.AddSingleton<ICosmosDatabaseFactory, TestCosmosDatabaseFactory>();
         services.AddSingleton<ICosmosContainerFactory>(sp => sp.GetRequiredService<TestCosmosContainerFactory>());

@@ -11,6 +11,7 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
 
     private readonly ConcurrentBag<ContainerMock.ContainerMock> _containers = new();
     private readonly CosmosSerializationOptions? _serializationOptions;
+    private readonly ConnectionMode _connectionMode = ConnectionMode.Direct;
 
     public TestCosmosContainerFactory() { }
 
@@ -18,10 +19,12 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
         IEnumerable<PreProvisionedContainer> preProvisionedContainers,
         IReadOnlyCollection<ContainerAutoProvisionMetadata> registeredContainers,
         bool autoProvisioningEnabled,
-        CosmosSerializationOptions? serializationOptions
+        CosmosSerializationOptions? serializationOptions,
+        ConnectionMode connectionMode
     )
     {
         _serializationOptions = serializationOptions;
+        _connectionMode = connectionMode;
 
         foreach (var container in preProvisionedContainers)
         {
@@ -83,7 +86,8 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
             uniqueKeyPolicy,
             containerName,
             defaultTimeToLive ?? -1,
-            _serializationOptions
+            _serializationOptions,
+            _connectionMode
         );
         _containers.Add(container);
 

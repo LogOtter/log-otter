@@ -25,3 +25,7 @@ Pre-provisioned containers are also checked against the live config, so pre-prov
 ## Serialization
 
 Test containers serialize documents using the serializer settings from the live config (`ClientOptions.SerializerOptions`). They check documents in the same way Cosmos DB does, so a document without an `id` property, or whose partition key property doesn't match the partition key it's written with, fails in tests as it would in production. A custom serializer isn't used in tests.
+
+## Connection mode
+
+Some Cosmos DB responses differ between direct and gateway connection modes, so test containers respond as the connection mode from the live config would (`ClientOptions.ConnectionMode`, which defaults to `Direct`). For example, reading an item with an empty id returns `404 Not Found` in direct mode, but `400 Bad Request` in gateway mode.
