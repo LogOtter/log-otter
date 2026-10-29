@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.ComponentModel;
+using Microsoft.Extensions.Options;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -48,38 +49,89 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         return events;
     }
 
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params TBaseEvent[] events)
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, TBaseEvent firstEvent, params TBaseEvent[] additionalEvents)
+    {
+        return await ApplyEvents(id, expectedRevision, CancellationToken.None, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task<TSnapshot> ApplyEvents(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        TBaseEvent firstEvent,
+        params TBaseEvent[] additionalEvents
+    )
+    {
+        return await ApplyEvents(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, TBaseEvent[] events)
+    {
+        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events.AsEnumerable());
+    }
+
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, TBaseEvent[] events)
+    {
+        return await ApplyEvents(id, expectedRevision, cancellationToken, events.AsEnumerable());
+    }
+
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, IEnumerable<TBaseEvent> events)
     {
         return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
     }
 
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, params TBaseEvent[] events)
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, IEnumerable<TBaseEvent> events)
     {
-        if (events.Any(e => e.EventStreamId != id))
-        {
-            throw new ArgumentException("All events must be for the same entity", nameof(events));
-        }
-
-        var now = DateTimeOffset.Now;
-        var streamId = _options.EscapeIdIfRequired(id);
-        var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot { Id = streamId };
-        var revision = entity.Revision;
-
-        foreach (var eventToApply in events)
-        {
-            eventToApply.Apply(entity, new(now, ++revision, new()));
-        }
-
-        var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
-
-        await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
-
-        entity.Revision = revision;
-
-        return entity;
+        var (snapshot, _) = await ApplyAndGetEvents(id, expectedRevision, cancellationToken, events);
+        return snapshot;
     }
 
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, params TBaseEvent[] events)
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task<TSnapshot> ApplyEvents(string id, int? expectedRevision) => throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
+
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken) =>
+        throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
+        string id,
+        int? expectedRevision,
+        TBaseEvent firstEvent,
+        params TBaseEvent[] additionalEvents
+    )
+    {
+        return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        TBaseEvent firstEvent,
+        params TBaseEvent[] additionalEvents
+    )
+    {
+        return await ApplyAndGetEvents(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, TBaseEvent[] events)
+    {
+        return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, events.AsEnumerable());
+    }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        TBaseEvent[] events
+    )
+    {
+        return await ApplyAndGetEvents(id, expectedRevision, cancellationToken, events.AsEnumerable());
+    }
+
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, IEnumerable<TBaseEvent> events)
     {
         return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, events);
     }
@@ -88,10 +140,12 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         string id,
         int? expectedRevision,
         CancellationToken cancellationToken,
-        params TBaseEvent[] events
+        IEnumerable<TBaseEvent> events
     )
     {
-        if (events.Any(e => e.EventStreamId != id))
+        var eventsToApply = EventArguments.ToNonEmptyListOrThrow(events);
+
+        if (eventsToApply.Any(e => e.EventStreamId != id))
         {
             throw new ArgumentException("All events must be for the same entity", nameof(events));
         }
@@ -101,12 +155,12 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         var entity = await Get(id, null, true, cancellationToken) ?? new TSnapshot { Id = streamId };
         var revision = entity.Revision;
 
-        foreach (var eventToApply in events)
+        foreach (var eventToApply in eventsToApply)
         {
             eventToApply.Apply(entity, new(now, ++revision, new()));
         }
 
-        var eventData = events.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
+        var eventData = eventsToApply.Select(e => new EventData<TBaseEvent>(Guid.NewGuid(), e, now)).ToArray();
 
         await eventStore.AppendToStream(streamId, expectedRevision ?? 0, cancellationToken, eventData);
 
@@ -114,4 +168,16 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
 
         return (entity, eventData);
     }
+
+    // The Obsolete/non-EditorBrowsable overloads catch scenarios where a user doesn't pass at least one event (otherwise they'd
+    // be picked up by the params overload)
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision) =>
+        throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
+
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, CancellationToken cancellationToken) =>
+        throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
 }

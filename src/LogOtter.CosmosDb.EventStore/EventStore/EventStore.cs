@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System.ComponentModel;
+using System.Net;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
+using Container = Microsoft.Azure.Cosmos.Container;
 
 namespace LogOtter.CosmosDb.EventStore;
 
@@ -34,23 +36,71 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     async Task<IStorageEvent> IEventStoreReader.ReadEventFromStream(string streamId, Guid eventId, CancellationToken cancellationToken) =>
         (await ReadEventFromStream(streamId, eventId, cancellationToken));
 
-    public async Task AppendToStream(string streamId, int expectedVersion, params EventData<TBaseEvent>[] events)
+    public async Task AppendToStream(
+        string streamId,
+        int expectedVersion,
+        EventData<TBaseEvent> firstEvent,
+        params EventData<TBaseEvent>[] additionalEvents
+    )
     {
-        await AppendToStream(streamId, expectedVersion, default, events);
+        await AppendToStream(streamId, expectedVersion, CancellationToken.None, [firstEvent, .. additionalEvents]);
     }
 
-    public async Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, params EventData<TBaseEvent>[] events)
+    public async Task AppendToStream(
+        string streamId,
+        int expectedVersion,
+        CancellationToken cancellationToken,
+        EventData<TBaseEvent> firstEvent,
+        params EventData<TBaseEvent>[] additionalEvents
+    )
     {
+        await AppendToStream(streamId, expectedVersion, cancellationToken, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task AppendToStream(string streamId, int expectedVersion, EventData<TBaseEvent>[] events)
+    {
+        await AppendToStream(streamId, expectedVersion, CancellationToken.None, events.AsEnumerable());
+    }
+
+    public async Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, EventData<TBaseEvent>[] events)
+    {
+        await AppendToStream(streamId, expectedVersion, cancellationToken, events.AsEnumerable());
+    }
+
+    public async Task AppendToStream(string streamId, int expectedVersion, IEnumerable<EventData<TBaseEvent>> events)
+    {
+        await AppendToStream(streamId, expectedVersion, CancellationToken.None, events);
+    }
+
+    public async Task AppendToStream(
+        string streamId,
+        int expectedVersion,
+        CancellationToken cancellationToken,
+        IEnumerable<EventData<TBaseEvent>> events
+    )
+    {
+        var eventsToAppend = EventArguments.ToNonEmptyListOrThrow(events);
         var storageEvents = new List<StorageEvent<TBaseEvent>>();
         var eventVersion = expectedVersion;
 
-        foreach (var @event in events)
+        foreach (var @event in eventsToAppend)
         {
             storageEvents.Add(new StorageEvent<TBaseEvent>(streamId, @event, ++eventVersion));
         }
 
         await AppendToStreamInternal(streamId, storageEvents, cancellationToken);
     }
+
+    // The Obsolete/non-EditorBrowsable overloads catch scenarios where a user doesn't pass at least one event (otherwise they'd
+    // be picked up by the params overload)
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task AppendToStream(string streamId, int expectedVersion) => throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
+
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken) =>
+        throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
 
     private async Task AppendToStreamInternal(
         string streamId,

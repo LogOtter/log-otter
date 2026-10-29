@@ -288,7 +288,9 @@ public async Task<ActionResult<CustomerResponse>> GetCustomer(
 
 ### ApplyEvents
 
-You can apply events to the stream by providing the streamId, the expected revision (`0` if this is a new stream) and the events. If you have more than 1 event you can pass them in all at once and they'll be batched.
+You can apply events to the stream by providing the streamId, the expected revision (`0` if this is a new stream) and the events. If you have more than 1 event you can pass them in all at once and they'll be batched, either individually or as a collection such as a `List`.
+
+You must pass at least one event. Passing none doesn't compile, and passing an empty collection throws an `ArgumentException`.
 
 If the stream already exists and the expectedRevision doesn't match the current revision, you'll get a concurrency error.
 

@@ -142,6 +142,30 @@ public class EventStoreTests
         await shouldThrowAction.ShouldThrowAsync<ArgumentOutOfRangeException>();
     }
 
+    [Fact]
+    public async Task AppendingEmptyEventListThrows()
+    {
+        var eventStore = CreateEventStore();
+
+        var exception = await Should.ThrowAsync<ArgumentException>(() => eventStore.AppendToStream("id", 0, new List<EventData<TestEvent>>()));
+
+        exception.Message.ShouldBe(
+            "At least one event must be provided when applying events, make sure you pass at least one event, or an IEnumerable or array with at least 1 event in it. (Parameter 'events')"
+        );
+    }
+
+    [Fact]
+    public async Task AppendingEmptyEventArrayThrows()
+    {
+        var eventStore = CreateEventStore();
+
+        var exception = await Should.ThrowAsync<ArgumentException>(() => eventStore.AppendToStream("id", 0, Array.Empty<EventData<TestEvent>>()));
+
+        exception.Message.ShouldBe(
+            "At least one event must be provided when applying events, make sure you pass at least one event, or an IEnumerable or array with at least 1 event in it. (Parameter 'events')"
+        );
+    }
+
     private static EventStore<TestEvent> CreateEventStore()
     {
         var container = new ContainerMock.ContainerMock();
