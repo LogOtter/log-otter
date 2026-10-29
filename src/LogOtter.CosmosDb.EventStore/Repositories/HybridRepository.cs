@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using LogOtter.CosmosDb.EventStore.Metadata;
 using Microsoft.Extensions.Options;
 
@@ -74,14 +75,36 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
         string id,
         int? expectedRevision,
         CancellationToken cancellationToken,
-        params TBaseEvent[] events
+        TBaseEvent firstEvent,
+        params TBaseEvent[] additionalEvents
     )
     {
-        var (snapshot, eventData) = await eventRepository.ApplyAndGetEvents(id, expectedRevision, cancellationToken, events);
+        return await ApplyEventsAndUpdateSnapshotImmediately(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
+    }
+
+    public async Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        TBaseEvent[] events
+    )
+    {
+        return await ApplyEventsAndUpdateSnapshotImmediately(id, expectedRevision, cancellationToken, events.AsEnumerable());
+    }
+
+    public async Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(
+        string id,
+        int? expectedRevision,
+        CancellationToken cancellationToken,
+        IEnumerable<TBaseEvent> events
+    )
+    {
+        var eventsToApply = EventArguments.ToNonEmptyListOrThrow(events);
+        var (snapshot, eventData) = await eventRepository.ApplyAndGetEvents(id, expectedRevision, cancellationToken, eventsToApply);
 
         try
         {
-            var partitionKey = _snapshotPartitionKeyResolver(events.First());
+            var partitionKey = _snapshotPartitionKeyResolver(eventsToApply.First());
             var eventRevision = expectedRevision.GetValueOrDefault(0);
             var eventsToUpdate = eventData.Select(e => new Event<TBaseEvent>(id, eventRevision++, e.Body, e.CreatedOn, e.Metadata)).ToList();
 
@@ -95,6 +118,13 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
 
         return snapshot;
     }
+
+    // The Obsolete/non-EditorBrowsable overload catches scenarios where a user doesn't pass at least one event (otherwise they'd
+    // be picked up by the params overload)
+    [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(string id, int? expectedRevision, CancellationToken cancellationToken) =>
+        throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
 
     private async Task<TSnapshot?> ApplyNewEvents(
         TSnapshot? snapshot,

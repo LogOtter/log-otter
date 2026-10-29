@@ -135,6 +135,30 @@ public class EventRepositoryTests
         projection.Name.ShouldBe(newName);
     }
 
+    [Fact]
+    public async Task ApplyingEmptyEventListThrows()
+    {
+        var eventRepository = CreateEventRepository();
+
+        var exception = await Should.ThrowAsync<ArgumentException>(() => eventRepository.ApplyEvents("id", null, new List<TestEvent>()));
+
+        exception.Message.ShouldBe(
+            "At least one event must be provided when applying events, make sure you pass at least one event, or an IEnumerable or array with at least 1 event in it. (Parameter 'events')"
+        );
+    }
+
+    [Fact]
+    public async Task ApplyingEmptyEventArrayThrows()
+    {
+        var eventRepository = CreateEventRepository();
+
+        var exception = await Should.ThrowAsync<ArgumentException>(() => eventRepository.ApplyEvents("id", null, Array.Empty<TestEvent>()));
+
+        exception.Message.ShouldBe(
+            "At least one event must be provided when applying events, make sure you pass at least one event, or an IEnumerable or array with at least 1 event in it. (Parameter 'events')"
+        );
+    }
+
     private static EventRepository<TestEvent, TestEventProjection> CreateEventRepository()
     {
         var container = new ContainerMock.ContainerMock();
