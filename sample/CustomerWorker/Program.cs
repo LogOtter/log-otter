@@ -8,9 +8,13 @@ var host = Host.CreateDefaultBuilder(args)
         config.AddJsonFile("appsettings.json", false).AddEnvironmentVariables();
     })
     .ConfigureServices(
-        (_, services) =>
+        (context, services) =>
         {
-            services.AddApplicationInsightsTelemetryWorkerService();
+            // Application Insights throws on startup without a valid connection string, which is only provided outside of development
+            if (!context.HostingEnvironment.IsDevelopment())
+            {
+                services.AddApplicationInsightsTelemetryWorkerService();
+            }
 
             services
                 .AddHealthChecks()

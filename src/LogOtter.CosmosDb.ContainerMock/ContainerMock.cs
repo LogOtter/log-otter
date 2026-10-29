@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
@@ -21,6 +22,7 @@ public class ContainerMock : Container
 
     private readonly StringSerializationHelper _serializationHelper;
     private readonly CosmosSerializationOptions _cosmosSerializationOptions;
+    private readonly ConnectionMode _connectionMode;
 
     public override string Id { get; }
     public override Conflicts? Conflicts => null;
@@ -32,10 +34,12 @@ public class ContainerMock : Container
         UniqueKeyPolicy? uniqueKeyPolicy = null,
         string containerName = "TestContainer",
         int defaultDocumentTimeToLive = -1,
-        CosmosSerializationOptions? cosmosSerializationOptions = null
+        CosmosSerializationOptions? cosmosSerializationOptions = null,
+        ConnectionMode connectionMode = ConnectionMode.Direct
     )
     {
         _cosmosSerializationOptions = cosmosSerializationOptions ?? new CosmosSerializationOptions();
+        _connectionMode = connectionMode;
         _serializationHelper = new StringSerializationHelper(_cosmosSerializationOptions);
         _containerData = new ContainerData(uniqueKeyPolicy, defaultDocumentTimeToLive, _serializationHelper);
         _exceptionsToThrow = new ConcurrentQueue<(CosmosException, Func<InvocationInformation, bool> condition)>();
@@ -179,6 +183,14 @@ public class ContainerMock : Container
 
         if (id == string.Empty)
         {
+            // Since v3.59.0 of the Cosmos SDK, reading an item with an empty id returns NotFound in direct mode, but still returns BadRequest in gateway mode
+            if (_connectionMode == ConnectionMode.Direct)
+            {
+                var notFoundResponse = new ResponseMessage(HttpStatusCode.NotFound);
+                notFoundResponse.Headers.Add("x-ms-substatus", "1002");
+                return Task.FromResult(notFoundResponse);
+            }
+
             return Task.FromResult(new ResponseMessage(HttpStatusCode.BadRequest));
         }
 
@@ -208,6 +220,17 @@ public class ContainerMock : Container
 
         if (id == string.Empty)
         {
+            if (_connectionMode == ConnectionMode.Direct)
+            {
+                throw new CosmosException(
+                    $"Response status code does not indicate success: NotFound (404); Substatus: 1002;",
+                    HttpStatusCode.NotFound,
+                    1002,
+                    Guid.NewGuid().ToString(),
+                    0
+                );
+            }
+
             throw new CosmosException(
                 "Response status code does not indicate success: BadRequest (400);",
                 HttpStatusCode.BadRequest,

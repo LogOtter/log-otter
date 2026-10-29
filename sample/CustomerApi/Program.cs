@@ -19,7 +19,12 @@ var configuration = builder.Configuration;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddApplicationInsightsTelemetry();
+
+// Application Insights throws on startup without a valid connection string, which is only provided outside of development
+if (!environment.IsDevelopment())
+{
+    services.AddApplicationInsightsTelemetry();
+}
 
 services.AddAuthentication().AddJwtBearer();
 
