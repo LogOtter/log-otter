@@ -168,7 +168,7 @@ public class EventStoreTests
 
     private static EventStore<TestEvent> CreateEventStore()
     {
-        var container = new ContainerMock.ContainerMock();
+        var container = new ContainerMock.ContainerMock("/streamId");
         var feedIteratorFactory = new TestFeedIteratorFactory();
         var serializationTypeMap = new SimpleSerializationTypeMap(new[] { typeof(TestEventCreated), typeof(TestEventModified) });
 

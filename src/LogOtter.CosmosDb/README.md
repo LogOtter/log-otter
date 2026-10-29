@@ -99,6 +99,21 @@ app.ProvisionCosmosDb();
 
 Before performing useful operations, add a container using `.AddContainer<T>()` where `T` is the type you want to store. Each container can store one type of object, preventing mixed document types in a container.
 
+Cosmos DB requires every document to have an `id` property, and a property at the container's partition key path (`/partitionKey` by default). Property names are case sensitive, and by default C# property names are used as they are, so a property called `Id` is serialized as `Id` and the document is rejected. Either name the properties explicitly:
+
+```csharp
+public class Customer
+{
+    [JsonProperty("id")]
+    public string Id { get; init; }
+
+    [JsonProperty("partitionKey")] // Note: If you're using a different partition key path than the default then make sure you specify that here
+    public string PartitionKey { get; init; }
+}
+```
+
+or use camel case for all properties by setting `ClientOptions.SerializerOptions.PropertyNamingPolicy` to `CosmosPropertyNamingPolicy.CamelCase`.
+
 ### Auto Provisioning Settings
 
 The default container settings when you have called `.WithAutoProvisioning()` are:

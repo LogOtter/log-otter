@@ -161,7 +161,7 @@ public class EventRepositoryTests
 
     private static EventRepository<TestEvent, TestEventProjection> CreateEventRepository()
     {
-        var container = new ContainerMock.ContainerMock();
+        var container = new ContainerMock.ContainerMock("/streamId");
         var feedIteratorFactory = new TestFeedIteratorFactory();
         var serializationTypeMap = new SimpleSerializationTypeMap(new[] { typeof(TestEventCreated), typeof(TestEventModified) });
         var eventStore = new EventStore<TestEvent>(container, feedIteratorFactory, serializationTypeMap);

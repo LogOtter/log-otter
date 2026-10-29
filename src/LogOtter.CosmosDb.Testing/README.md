@@ -21,3 +21,7 @@ services
 ```
 
 Pre-provisioned containers are also checked against the live config, so pre-provisioning a type in a container it isn't registered with throws.
+
+## Serialization
+
+Test containers serialize documents using the serializer settings from the live config (`ClientOptions.SerializerOptions`). They check documents in the same way Cosmos DB does, so a document without an `id` property, or whose partition key property doesn't match the partition key it's written with, fails in tests as it would in production. A custom serializer isn't used in tests.

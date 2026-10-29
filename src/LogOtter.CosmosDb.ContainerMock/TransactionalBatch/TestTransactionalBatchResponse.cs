@@ -8,8 +8,12 @@ internal class TestTransactionalBatchResponse(StringSerializationHelper serializ
 {
     private readonly List<TransactionalBatchOperationResult> _results = new();
     private HttpStatusCode _statusCode = HttpStatusCode.OK;
+    private string? _errorMessage;
 
     public override HttpStatusCode StatusCode => _statusCode;
+    public override string? ErrorMessage => _errorMessage;
+    public override string ActivityId => string.Empty;
+    public override double RequestCharge => 0;
     public override int Count => _results.Count;
     public override TransactionalBatchOperationResult this[int index] => _results[index];
 
@@ -38,6 +42,7 @@ internal class TestTransactionalBatchResponse(StringSerializationHelper serializ
         if (!responseMessage.IsSuccessStatusCode)
         {
             _statusCode = responseMessage.StatusCode;
+            _errorMessage ??= responseMessage.ErrorMessage;
         }
 
         _results.Add(new TestTransactionalBatchOperationResult<T>(new TestTransactionalBatchOperationResult(responseMessage), item));
@@ -48,6 +53,7 @@ internal class TestTransactionalBatchResponse(StringSerializationHelper serializ
         if (!responseMessage.IsSuccessStatusCode)
         {
             _statusCode = responseMessage.StatusCode;
+            _errorMessage ??= responseMessage.ErrorMessage;
         }
 
         _results.Add(new TestTransactionalBatchOperationResult(responseMessage));
@@ -56,10 +62,12 @@ internal class TestTransactionalBatchResponse(StringSerializationHelper serializ
     public void SetException(CosmosException exception)
     {
         _statusCode = exception.StatusCode;
+        _errorMessage = exception.ResponseBody;
     }
 
     public void SetException(Exception exception)
     {
         _statusCode = HttpStatusCode.InternalServerError;
+        _errorMessage = exception.Message;
     }
 }

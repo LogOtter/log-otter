@@ -105,4 +105,48 @@ public sealed class CosmosCreateTests(IntegrationTestsFixture testFixture) : IAs
         realException!.StatusCode.ShouldBe(testException!.StatusCode);
         realException.ShouldBeOfType(testException.GetType());
     }
+
+    [Fact]
+    public async Task CreateWithIdSerializedAsPascalCaseIsEquivalent()
+    {
+        var testModel = new PascalCaseIdModel { Id = "RECORD1", PartitionKey = "pk" };
+
+        var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
+
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
+    }
+
+    [Fact]
+    public async Task CreateWithPartitionKeySerializedAsPascalCaseIsEquivalent()
+    {
+        var testModel = new PascalCasePartitionKeyModel { Id = "RECORD1", PartitionKey = "pk" };
+
+        var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey(testModel.PartitionKey));
+
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
+    }
+
+    [Fact]
+    public async Task CreateWithDifferentPartitionKeyValueIsEquivalent()
+    {
+        var testModel = new TestModel
+        {
+            Id = "RECORD1",
+            Name = "Bob Bobertson",
+            PartitionKey = "a",
+        };
+
+        var (realException, testException) = await _testCosmos.WhenCreatingProducesException(testModel, new PartitionKey("b"));
+
+        realException.ShouldNotBeNull();
+        testException.ShouldNotBeNull();
+        realException!.StatusCode.ShouldBe(testException!.StatusCode);
+        realException.ShouldBeOfType(testException.GetType());
+    }
 }
