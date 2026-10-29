@@ -5,6 +5,7 @@ using LogOtter.CosmosDb.ContainerMock.ContainerMockData;
 using LogOtter.CosmosDb.ContainerMock.TransactionalBatch;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Scripts;
+using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS1998
 
@@ -85,20 +86,22 @@ public class ContainerMock : Container
         var streamReader = new StreamReader(streamPayload);
         var json = await streamReader.ReadToEndAsync(cancellationToken);
 
-        if (JsonHelpers.GetIdFromJson(json) == string.Empty)
-        {
-            return new ResponseMessage(HttpStatusCode.BadRequest);
-        }
-
         try
         {
+            ValidateDocument(json, partitionKey, null);
+
+            if (JsonHelpers.GetIdFromJson(json) == string.Empty)
+            {
+                return new ResponseMessage(HttpStatusCode.BadRequest);
+            }
+
             var response = await _containerData.AddItem(json, partitionKey, dataChangeMode, requestOptions, cancellationToken);
 
             return ToCosmosResponseMessage(response, streamPayload);
         }
         catch (ContainerMockException ex)
         {
-            return new ResponseMessage(ex.StatusCode);
+            return new ResponseMessage(ex.StatusCode, errorMessage: ex.Message);
         }
     }
 
@@ -122,33 +125,24 @@ public class ContainerMock : Container
     {
         ThrowNextExceptionIfPresent(new InvocationInformation(nameof(CreateItemAsync)));
 
-        if (partitionKey != null && partitionKey == PartitionKey.None && _partitionKeyPath != null)
-        {
-            throw new CosmosException(
-                "PartitionKey extracted from document doesn't match the one specified in the header. Learn more: https://aka.ms/CosmosDB/sql/errors/wrong-pk-value",
-                HttpStatusCode.BadRequest,
-                0,
-                string.Empty,
-                0
-            );
-        }
-
         var json = _serializationHelper.SerializeObject(item);
-
-        if (JsonHelpers.GetIdFromJson(json) == string.Empty)
-        {
-            throw new CosmosException(
-                "Response status code does not indicate success: BadRequest (400);",
-                HttpStatusCode.BadRequest,
-                400,
-                Guid.NewGuid().ToString(),
-                0
-            );
-        }
 
         try
         {
-            var response = await _containerData.AddItem(json, GetPartitionKey(json, partitionKey), dataChangeMode, requestOptions, cancellationToken);
+            var resolvedPartitionKey = ValidateDocument(json, partitionKey, item?.GetType());
+
+            if (JsonHelpers.GetIdFromJson(json) == string.Empty)
+            {
+                throw new CosmosException(
+                    "Response status code does not indicate success: BadRequest (400);",
+                    HttpStatusCode.BadRequest,
+                    400,
+                    Guid.NewGuid().ToString(),
+                    0
+                );
+            }
+
+            var response = await _containerData.AddItem(json, resolvedPartitionKey, dataChangeMode, requestOptions, cancellationToken);
 
             return ToCosmosItemResponse<T>(response);
         }
@@ -158,9 +152,20 @@ public class ContainerMock : Container
         }
     }
 
-    private PartitionKey GetPartitionKey(string json, PartitionKey? partitionKey)
+    private PartitionKey ValidateDocument(string json, PartitionKey? partitionKey, Type? documentType)
     {
-        return partitionKey ?? new PartitionKey(JsonHelpers.GetValueFromJson(json, _partitionKeyPath));
+        var document = JObject.Parse(json);
+
+        DocumentValidation.EnsureHasId(document, Id, documentType);
+
+        if (partitionKey == null)
+        {
+            DocumentValidation.EnsureHasPartitionKeyProperty(document, _partitionKeyPath, Id, documentType);
+            return new PartitionKey(JsonHelpers.GetValueFromJson(json, _partitionKeyPath));
+        }
+
+        DocumentValidation.EnsurePartitionKeyMatches(document, _partitionKeyPath, partitionKey.Value, Id, documentType);
+        return partitionKey.Value;
     }
 
     public override Task<ResponseMessage> ReadItemStreamAsync(
@@ -249,12 +254,14 @@ public class ContainerMock : Container
 
         try
         {
+            ValidateDocument(json, partitionKey, null);
+
             var response = await _containerData.UpsertItem(json, partitionKey, dataChangeMode, requestOptions, cancellationToken);
             return ToCosmosResponseMessage(response, streamPayload);
         }
         catch (ContainerMockException ex)
         {
-            return new ResponseMessage(ex.StatusCode);
+            return new ResponseMessage(ex.StatusCode, errorMessage: ex.Message);
         }
     }
 
@@ -284,7 +291,7 @@ public class ContainerMock : Container
         {
             var response = await _containerData.UpsertItem(
                 json,
-                GetPartitionKey(json, partitionKey),
+                ValidateDocument(json, partitionKey, item?.GetType()),
                 dataChangeMode,
                 requestOptions,
                 cancellationToken
@@ -326,7 +333,7 @@ public class ContainerMock : Container
             var response = await _containerData.ReplaceItem(
                 id,
                 json,
-                GetPartitionKey(json, partitionKey),
+                ValidateDocument(json, partitionKey, item?.GetType()),
                 dataChangeMode,
                 requestOptions,
                 cancellationToken

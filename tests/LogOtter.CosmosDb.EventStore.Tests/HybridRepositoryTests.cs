@@ -44,7 +44,7 @@ public class HybridRepositoryTests
             .AddEventSourcing()
             .AddEventSource<TestEvent>(
                 "TestEventStreams",
-                c => c.AddProjection<TestEventProjection>().WithSnapshot("TestEventSnapshots", _ => nameof(TestEventProjection))
+                c => c.AddProjection<TestEventProjection>().WithSnapshot("TestEventSnapshots", _ => TestEventProjection.StaticPartitionKey)
             );
 
         services.AddTestCosmosDb();

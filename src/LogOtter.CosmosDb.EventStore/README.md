@@ -102,6 +102,8 @@ services
     });
 ```
 
+Snapshots are stored as documents, so your snapshot's `Id` and `PartitionKey` properties must be serialized as `id` and the container's partition key path, like any other document (see [Adding Containers](https://github.com/LogOtter/log-otter/tree/main/src/LogOtter.CosmosDb#adding-containers)). The expression passed to `.WithSnapshot` must return the same value as the snapshot's `PartitionKey` property.
+
 When adding the snapshot, the auto-provisioning functionality is the same as in the CosmosDb package.
 
 If you want to override the settings you can do so by chaining a call to `.WithAutoProvisionSettings` (see the [LogOtter.CosmosDb](https://github.com/LogOtter/log-otter/tree/main/src/LogOtter.CosmosDb) documentation for more information)

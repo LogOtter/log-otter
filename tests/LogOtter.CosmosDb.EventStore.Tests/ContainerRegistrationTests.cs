@@ -16,7 +16,7 @@ public class ContainerRegistrationTests
         var exception = Should.Throw<InvalidOperationException>(() =>
             builder.AddEventSource<TestEvent>(
                 "TestEventStreams",
-                c => c.AddProjection<TestEventProjection>().WithSnapshot("TestEventSnapshots", _ => nameof(TestEventProjection))
+                c => c.AddProjection<TestEventProjection>().WithSnapshot("TestEventSnapshots", _ => TestEventProjection.StaticPartitionKey)
             )
         );
 

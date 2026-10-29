@@ -10,15 +10,19 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
     private const string DefaultPartitionKeyPath = "/partitionKey";
 
     private readonly ConcurrentBag<ContainerMock.ContainerMock> _containers = new();
+    private readonly CosmosSerializationOptions? _serializationOptions;
 
     public TestCosmosContainerFactory() { }
 
     internal TestCosmosContainerFactory(
         IEnumerable<PreProvisionedContainer> preProvisionedContainers,
         IReadOnlyCollection<ContainerAutoProvisionMetadata> registeredContainers,
-        bool autoProvisioningEnabled
+        bool autoProvisioningEnabled,
+        CosmosSerializationOptions? serializationOptions
     )
     {
+        _serializationOptions = serializationOptions;
+
         foreach (var container in preProvisionedContainers)
         {
             var requiredPartitionKeyPath = registeredContainers
@@ -74,7 +78,13 @@ public class TestCosmosContainerFactory : ICosmosContainerFactory
             return existingContainer;
         }
 
-        var container = new ContainerMock.ContainerMock(partitionKeyPath, uniqueKeyPolicy, containerName, defaultTimeToLive ?? -1);
+        var container = new ContainerMock.ContainerMock(
+            partitionKeyPath,
+            uniqueKeyPolicy,
+            containerName,
+            defaultTimeToLive ?? -1,
+            _serializationOptions
+        );
         _containers.Add(container);
 
         return container;

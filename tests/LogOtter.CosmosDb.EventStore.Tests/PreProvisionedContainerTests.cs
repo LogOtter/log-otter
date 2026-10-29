@@ -152,7 +152,7 @@ public class PreProvisionedContainerTests
             .AddEventSourcing()
             .AddEventSource<TestEvent>(
                 EventContainerName,
-                c => c.AddProjection<TestEventProjection>().WithSnapshot(SnapshotContainerName, _ => nameof(TestEventProjection))
+                c => c.AddProjection<TestEventProjection>().WithSnapshot(SnapshotContainerName, _ => TestEventProjection.StaticPartitionKey)
             );
 
         configureTestCosmosDb(builder.Services.AddTestCosmosDb());
