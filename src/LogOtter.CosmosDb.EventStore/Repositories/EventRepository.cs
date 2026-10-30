@@ -49,43 +49,24 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         return events;
     }
 
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, TBaseEvent firstEvent, params TBaseEvent[] additionalEvents)
+    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, params IEnumerable<TBaseEvent> events)
     {
-        return await ApplyEvents(id, expectedRevision, CancellationToken.None, [firstEvent, .. additionalEvents]);
+        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
     }
 
     public async Task<TSnapshot> ApplyEvents(
         string id,
         int? expectedRevision,
         CancellationToken cancellationToken,
-        TBaseEvent firstEvent,
-        params TBaseEvent[] additionalEvents
+        params IEnumerable<TBaseEvent> events
     )
-    {
-        return await ApplyEvents(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, TBaseEvent[] events)
-    {
-        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events.AsEnumerable());
-    }
-
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, TBaseEvent[] events)
-    {
-        return await ApplyEvents(id, expectedRevision, cancellationToken, events.AsEnumerable());
-    }
-
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, IEnumerable<TBaseEvent> events)
-    {
-        return await ApplyEvents(id, expectedRevision, CancellationToken.None, events);
-    }
-
-    public async Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken, IEnumerable<TBaseEvent> events)
     {
         var (snapshot, _) = await ApplyAndGetEvents(id, expectedRevision, cancellationToken, events);
         return snapshot;
     }
 
+    // The Obsolete/non-EditorBrowsable overloads catch scenarios where a user doesn't pass at least one event (otherwise they'd
+    // be picked up by the params overload)
     [Obsolete(EventArguments.AtLeastOneEventRequired, error: true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Task<TSnapshot> ApplyEvents(string id, int? expectedRevision) => throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
@@ -95,43 +76,7 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
     public Task<TSnapshot> ApplyEvents(string id, int? expectedRevision, CancellationToken cancellationToken) =>
         throw new ArgumentException(EventArguments.AtLeastOneEventRequired);
 
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
-        string id,
-        int? expectedRevision,
-        TBaseEvent firstEvent,
-        params TBaseEvent[] additionalEvents
-    )
-    {
-        return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
-        string id,
-        int? expectedRevision,
-        CancellationToken cancellationToken,
-        TBaseEvent firstEvent,
-        params TBaseEvent[] additionalEvents
-    )
-    {
-        return await ApplyAndGetEvents(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, TBaseEvent[] events)
-    {
-        return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, events.AsEnumerable());
-    }
-
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(
-        string id,
-        int? expectedRevision,
-        CancellationToken cancellationToken,
-        TBaseEvent[] events
-    )
-    {
-        return await ApplyAndGetEvents(id, expectedRevision, cancellationToken, events.AsEnumerable());
-    }
-
-    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, IEnumerable<TBaseEvent> events)
+    public async Task<(TSnapshot, EventData<TBaseEvent>[])> ApplyAndGetEvents(string id, int? expectedRevision, params IEnumerable<TBaseEvent> events)
     {
         return await ApplyAndGetEvents(id, expectedRevision, CancellationToken.None, events);
     }
@@ -140,7 +85,7 @@ public class EventRepository<TBaseEvent, TSnapshot>(EventStore<TBaseEvent> event
         string id,
         int? expectedRevision,
         CancellationToken cancellationToken,
-        IEnumerable<TBaseEvent> events
+        params IEnumerable<TBaseEvent> events
     )
     {
         var eventsToApply = EventArguments.ToNonEmptyListOrThrow(events);

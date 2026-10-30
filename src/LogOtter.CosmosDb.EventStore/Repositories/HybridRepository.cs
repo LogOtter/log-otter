@@ -75,28 +75,7 @@ public class HybridRepository<TBaseEvent, TSnapshot>(
         string id,
         int? expectedRevision,
         CancellationToken cancellationToken,
-        TBaseEvent firstEvent,
-        params TBaseEvent[] additionalEvents
-    )
-    {
-        return await ApplyEventsAndUpdateSnapshotImmediately(id, expectedRevision, cancellationToken, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(
-        string id,
-        int? expectedRevision,
-        CancellationToken cancellationToken,
-        TBaseEvent[] events
-    )
-    {
-        return await ApplyEventsAndUpdateSnapshotImmediately(id, expectedRevision, cancellationToken, events.AsEnumerable());
-    }
-
-    public async Task<TSnapshot> ApplyEventsAndUpdateSnapshotImmediately(
-        string id,
-        int? expectedRevision,
-        CancellationToken cancellationToken,
-        IEnumerable<TBaseEvent> events
+        params IEnumerable<TBaseEvent> events
     )
     {
         var eventsToApply = EventArguments.ToNonEmptyListOrThrow(events);
