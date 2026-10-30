@@ -36,38 +36,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
     async Task<IStorageEvent> IEventStoreReader.ReadEventFromStream(string streamId, Guid eventId, CancellationToken cancellationToken) =>
         (await ReadEventFromStream(streamId, eventId, cancellationToken));
 
-    public async Task AppendToStream(
-        string streamId,
-        int expectedVersion,
-        EventData<TBaseEvent> firstEvent,
-        params EventData<TBaseEvent>[] additionalEvents
-    )
-    {
-        await AppendToStream(streamId, expectedVersion, CancellationToken.None, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task AppendToStream(
-        string streamId,
-        int expectedVersion,
-        CancellationToken cancellationToken,
-        EventData<TBaseEvent> firstEvent,
-        params EventData<TBaseEvent>[] additionalEvents
-    )
-    {
-        await AppendToStream(streamId, expectedVersion, cancellationToken, [firstEvent, .. additionalEvents]);
-    }
-
-    public async Task AppendToStream(string streamId, int expectedVersion, EventData<TBaseEvent>[] events)
-    {
-        await AppendToStream(streamId, expectedVersion, CancellationToken.None, events.AsEnumerable());
-    }
-
-    public async Task AppendToStream(string streamId, int expectedVersion, CancellationToken cancellationToken, EventData<TBaseEvent>[] events)
-    {
-        await AppendToStream(streamId, expectedVersion, cancellationToken, events.AsEnumerable());
-    }
-
-    public async Task AppendToStream(string streamId, int expectedVersion, IEnumerable<EventData<TBaseEvent>> events)
+    public async Task AppendToStream(string streamId, int expectedVersion, params IEnumerable<EventData<TBaseEvent>> events)
     {
         await AppendToStream(streamId, expectedVersion, CancellationToken.None, events);
     }
@@ -76,7 +45,7 @@ public class EventStore<TBaseEvent> : IEventStoreReader
         string streamId,
         int expectedVersion,
         CancellationToken cancellationToken,
-        IEnumerable<EventData<TBaseEvent>> events
+        params IEnumerable<EventData<TBaseEvent>> events
     )
     {
         var eventsToAppend = EventArguments.ToNonEmptyListOrThrow(events);
