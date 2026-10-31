@@ -108,10 +108,10 @@ public class ShortGuidTests
             {
                 if (accumulator > 0)
                 {
-                    accumulator *= (ulong)System.ShortGuid.Alphabet.Length;
+                    accumulator *= (ulong)ShortGuid.Alphabet.Length;
                 }
 
-                var value = System.ShortGuid.Alphabet.IndexOf(part[0]);
+                var value = ShortGuid.Alphabet.IndexOf(part[0]);
                 Assert.True(value >= 0);
                 accumulator += (ulong)value;
                 part = part.Remove(0, 1);

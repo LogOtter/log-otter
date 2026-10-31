@@ -1,8 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-// ReSharper disable CheckNamespace
-namespace System;
+namespace LogOtter.ShortGuid;
 
 public static class ShortGuid
 {
@@ -10,45 +9,39 @@ public static class ShortGuid
 
     private static readonly Regex ValidShortGuid = new($"^[{Alphabet}]{{1,24}}$", RegexOptions.Compiled);
 
-    extension(Guid inputGuid)
+    public static string ToShortString(Guid inputGuid)
     {
-        public string ToShortString()
+        var guidBytes = inputGuid.ToByteArray();
+
+        var stringBuilder = new StringBuilder();
+
+        for (var guidSection = 0; guidSection < 2; guidSection++)
         {
-            var guidBytes = inputGuid.ToByteArray();
+            var section = new StringBuilder();
 
-            var stringBuilder = new StringBuilder();
+            var startIndex = guidSection * 8;
+            var numericRepresentation = BitConverter.ToUInt64(guidBytes, startIndex);
 
-            for (var guidSection = 0; guidSection < 2; guidSection++)
+            while (numericRepresentation > 0)
             {
-                var section = new StringBuilder();
-
-                var startIndex = guidSection * 8;
-                var numericRepresentation = BitConverter.ToUInt64(guidBytes, startIndex);
-
-                while (numericRepresentation > 0)
-                {
-                    var mod = (int)(numericRepresentation % (ulong)Alphabet.Length);
-                    section.Append(Alphabet[mod]);
-                    numericRepresentation /= (ulong)Alphabet.Length;
-                }
-
-                stringBuilder.Append(section.ToString().PadRight(12, 'B'));
+                var mod = (int)(numericRepresentation % (ulong)Alphabet.Length);
+                section.Append(Alphabet[mod]);
+                numericRepresentation /= (ulong)Alphabet.Length;
             }
 
-            return stringBuilder.ToString();
+            stringBuilder.Append(section.ToString().PadRight(12, 'B'));
         }
 
-        public static string NewShortGuid()
-        {
-            return Guid.NewGuid().ToShortString();
-        }
+        return stringBuilder.ToString();
     }
 
-    extension(string guidString)
+    public static string NewShortGuid()
     {
-        public bool IsValidShortGuid()
-        {
-            return ValidShortGuid.IsMatch(guidString);
-        }
+        return Guid.NewGuid().ToShortString();
+    }
+
+    public static bool IsValidShortGuid(string guidString)
+    {
+        return ValidShortGuid.IsMatch(guidString);
     }
 }
