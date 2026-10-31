@@ -45,7 +45,7 @@ public class Id : IEquatable<Id>
 
     public static Id Generate()
     {
-        var id = Guid.NewGuid().ToShortString();
+        var id = Guid.NewShortGuid();
         return new Id(id);
     }
 
