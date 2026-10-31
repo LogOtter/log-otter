@@ -3,7 +3,7 @@ using Xunit;
 
 namespace LogOtter.ShortGuid.Tests;
 
-public class GuidExtensionsTests
+public class ShortGuidTests
 {
     [Fact]
     public void KnownShortGuid_CorrectlyConverts()
@@ -108,10 +108,10 @@ public class GuidExtensionsTests
             {
                 if (accumulator > 0)
                 {
-                    accumulator *= (ulong)GuidExtensions.Alphabet.Length;
+                    accumulator *= (ulong)ShortGuid.Alphabet.Length;
                 }
 
-                var value = GuidExtensions.Alphabet.IndexOf(part[0]);
+                var value = ShortGuid.Alphabet.IndexOf(part[0]);
                 Assert.True(value >= 0);
                 accumulator += (ulong)value;
                 part = part.Remove(0, 1);
